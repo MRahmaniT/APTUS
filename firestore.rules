@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+    match /admins/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+    }
+    match /analytics/{date} {
+      // Anyone can increment view count (write)
+      // For MVP local admin bypass, allow public read
+      allow read: if true;
+      allow write: if true;
+    }
+    match /cms/{docId} {
+      // Anyone can read CMS data
+      // For MVP local admin bypass, allow public write
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

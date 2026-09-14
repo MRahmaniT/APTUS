@@ -72,7 +72,7 @@ export default function Header() {
 
   return (
     <div className="fixed top-4 left-0 right-0 w-full flex justify-center z-50 px-4 md:px-8">
-      <header className="bg-white/80 backdrop-blur-2xl backdrop-saturate-[1.8] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/60 flex items-center justify-between px-4 py-5 w-full max-w-7xl mx-auto">
+      <header className="bg-white/80 backdrop-blur-2xl backdrop-saturate-[1.8] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/60 flex items-center justify-between px-4 py-5 w-full max-w-8xl mx-auto">
         
         {/* Left: Logo */}
         <div className="flex items-center shrink-0">

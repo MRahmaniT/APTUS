@@ -48,13 +48,16 @@ export default function Layout() {
                   {t("nav", "about")}
                 </h4>
                 <ul className="space-y-2.5 list-none m-0 p-0">
-                  {[t("nav", "about_location"), t("nav", "about_contact")].map((item) => (
-                    <li key={item}>
-                      <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors">
-                        {item}
-                      </a>
-                    </li>
-                  ))}
+                  <li>
+                    <a href="/about/location" className="text-sm text-gray-500 hover:text-black transition-colors">
+                      {t("nav", "about_location")}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/about/contact" className="text-sm text-gray-500 hover:text-black transition-colors">
+                      {t("nav", "about_contact")}
+                    </a>
+                  </li>
                 </ul>
               </div>
               
@@ -63,13 +66,21 @@ export default function Layout() {
                   {t("nav", "elements")}
                 </h4>
                 <ul className="space-y-2.5 list-none m-0 p-0">
-                  {[t("nav", "elem_foundations"), t("nav", "elem_columns"), t("nav", "elem_panels")].map((item) => (
-                    <li key={item}>
-                      <a href="#" className="text-sm text-gray-500 hover:text-black transition-colors">
-                        {item}
-                      </a>
-                    </li>
-                  ))}
+                  <li>
+                    <a href="/products#elem_foundations" className="text-sm text-gray-500 hover:text-black transition-colors">
+                      {t("nav", "elem_foundations")}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/products#elem_columns" className="text-sm text-gray-500 hover:text-black transition-colors">
+                      {t("nav", "elem_columns")}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/products#elem_panels" className="text-sm text-gray-500 hover:text-black transition-colors">
+                      {t("nav", "elem_panels")}
+                    </a>
+                  </li>
                 </ul>
               </div>
               

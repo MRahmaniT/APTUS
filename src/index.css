@@ -28,6 +28,24 @@ body {
   color: #111;
 }
 
+/* Apple-inspired clear liquid-glass treatment for the existing header shell only. */
+.fixed.top-4 > header {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.24)) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    0 10px 35px rgba(15, 23, 42, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.20) !important;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .fixed.top-4 > header {
+    background: rgba(255, 255, 255, 0.92) !important;
+  }
+}
+
 /* Scrollbar: hide by default, show on scroll */
 ::-webkit-scrollbar {
   width: 5px;

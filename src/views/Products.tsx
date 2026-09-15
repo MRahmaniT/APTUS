@@ -4,7 +4,6 @@ import { useAppContext } from '../controllers/AppContext';
 export default function Products() {
   const { t, locale } = useAppContext();
 
-  // Define data arrays using translations
   const designs = [
     { key: "design_single", img: "https://images.unsplash.com/photo-1549791084-5f78368b208b?w=600&h=800&fit=crop&auto=format" },
     { key: "design_double", img: "https://images.unsplash.com/photo-1614595737476-42487331b8a1?w=600&h=800&fit=crop&auto=format" },
@@ -35,73 +34,76 @@ export default function Products() {
     return `Technical specifications and comprehensive details regarding ${title}.`;
   };
 
-  const renderCard = (item: {key: string, img: string}) => (
-    <div key={item.key} className="group relative aspect-[3/4] bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      {/* Default State: Image top, Title bottom */}
-      <div className="absolute inset-0 pb-16 flex flex-col bg-white">
-        <div className="flex-1 overflow-hidden">
-          <img src={item.img} alt={t("nav", item.key as any)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-        </div>
-      </div>
-      
-      {/* Title Bar (Default State) */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-white px-5 flex items-center border-t border-gray-100 group-hover:translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
-        <h3 className="text-lg font-bold text-gray-900">{t("nav", item.key as any)}</h3>
-      </div>
+  const renderCard = (item: { key: string, img: string }) => (
+    <article
+      id={item.key}
+      key={item.key}
+      className="group relative aspect-[4/5] rounded-xl overflow-hidden bg-[#e0e0db] scroll-mt-32"
+    >
+      <img
+        src={item.img}
+        alt={t("nav", item.key as any)}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
 
-      {/* Hover Overlay */}
-      <div className="absolute inset-0 bg-[#f8f9fa] opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] p-8 flex flex-col justify-center items-start pointer-events-none group-hover:pointer-events-auto">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 -translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100 ease-[cubic-bezier(0.25,1,0.5,1)]">
+      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/60 group-hover:backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]" />
+
+      <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+        <h3 className="text-xl font-bold mb-0 group-hover:mb-3 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
           {t("nav", item.key as any)}
         </h3>
-        <p className="text-gray-600 mb-8 -translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150 ease-[cubic-bezier(0.25,1,0.5,1)]">
-          {getDescText(item.key)}
-        </p>
-        <div className="-translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-200 ease-[cubic-bezier(0.25,1,0.5,1)]">
-          <button className="bg-[#0055ff] hover:bg-[#0044cc] text-white font-semibold py-2.5 px-6 transition-colors shadow-sm">
-            {getButtonText()}
-          </button>
+
+        <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
+          <div className="overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 ease-[cubic-bezier(0.25,1,0.5,1)]">
+            <p className="text-sm text-gray-200 line-clamp-3 mb-5 font-light leading-relaxed">
+              {getDescText(item.key)}
+            </p>
+
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider border border-white/30 px-4 py-2 rounded-full group-hover:hover:bg-white group-hover:hover:text-black transition-colors duration-300">
+              {getButtonText()}
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 
   return (
     <div className="min-h-screen bg-white pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-20">
-        
-        {/* Header Title */}
         <div className="max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t("nav", "products")}</h1>
           <p className="text-xl text-gray-600 font-light">
-            {locale === 'fa' 
-              ? 'مجموعه کامل محصولات پیش‌ساخته بتنی و طرح‌های سازه‌ای ما.' 
+            {locale === 'fa'
+              ? 'مجموعه کامل محصولات پیش‌ساخته بتنی و طرح‌های سازه‌ای ما.'
+              : locale === 'tr'
+              ? 'Prefabrik beton ürünlerimizin ve yapısal tasarımlarımızın eksiksiz koleksiyonu.'
               : 'Our complete range of precast concrete products and structural designs.'}
           </p>
         </div>
 
-        {/* Designs Section */}
         <section>
           <div className="flex items-center gap-4 mb-8">
             <h2 className="text-2xl font-bold text-gray-900">{t("nav", "designs")}</h2>
-            <div className="h-px bg-gray-200 flex-1"></div>
+            <div className="h-px bg-gray-200 flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {designs.map(renderCard)}
           </div>
         </section>
 
-        {/* Precast Elements Section */}
         <section>
           <div className="flex items-center gap-4 mb-8">
             <h2 className="text-2xl font-bold text-gray-900">{t("nav", "elements")}</h2>
-            <div className="h-px bg-gray-200 flex-1"></div>
+            <div className="h-px bg-gray-200 flex-1" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {elements.map(renderCard)}
           </div>
         </section>
-
       </div>
     </div>
   );

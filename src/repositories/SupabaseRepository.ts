@@ -6,14 +6,24 @@ function encode(value: string) {
   return encodeURIComponent(value);
 }
 
+function mapProfile(row: any) {
+  return {
+    uid: row.id,
+    name: row.name || "User",
+    role: row.role,
+    phone: row.phone || "",
+    photoURL: row.photo_url || "",
+    bio: row.bio || "",
+  };
+}
+
 export const SupabaseRepository = {
   async getUserProfile(uid: string) {
     if (!isSupabaseConfigured) return null;
     const token = SupabaseAuth.getAccessToken();
     if (!token) return null;
     const rows = await supabaseRequest<any[]>(`/rest/v1/profiles?id=eq.${encode(uid)}&select=*`, {}, token);
-    const row = rows[0];
-    return row ? { uid: row.id, name: row.name || "User", role: row.role } : null;
+    return rows[0] ? mapProfile(rows[0]) : null;
   },
 
   async getAllUsers() {
@@ -21,7 +31,7 @@ export const SupabaseRepository = {
     const token = SupabaseAuth.getAccessToken();
     if (!token) return [];
     const rows = await supabaseRequest<any[]>("/rest/v1/profiles?select=*&order=created_at.desc", {}, token);
-    return rows.map((row) => ({ uid: row.id, name: row.name || "User", role: row.role }));
+    return rows.map(mapProfile);
   },
 
   async updateUserRole(uid: string, role: string) {
@@ -33,6 +43,24 @@ export const SupabaseRepository = {
       headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
       body: JSON.stringify({ role }),
     }, token);
+  },
+
+  async updateUserProfile(uid: string, data: { name: string; phone?: string; photoURL?: string; bio?: string }) {
+    if (!isSupabaseConfigured) throw new Error("Supabase is not configured.");
+    const token = SupabaseAuth.getAccessToken();
+    if (!token) throw new Error("Authentication is required to edit a profile.");
+    const rows = await supabaseRequest<any[]>(`/rest/v1/profiles?id=eq.${encode(uid)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Prefer: "return=representation" },
+      body: JSON.stringify({
+        name: data.name,
+        phone: data.phone || null,
+        photo_url: data.photoURL || null,
+        bio: data.bio || null,
+      }),
+    }, token);
+    if (!rows[0]) throw new Error("Profile could not be updated.");
+    return mapProfile(rows[0]);
   },
 
   async trackPageView(date: string, path = "/") {

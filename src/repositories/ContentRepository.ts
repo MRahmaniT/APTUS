@@ -17,11 +17,15 @@ function saveLocalContent(items: ContentItem[]) {
   localStorage.setItem(LOCAL_CONTENT_KEY, JSON.stringify(items));
 }
 
+function sortContent(items: ContentItem[]) {
+  return [...items].sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
+}
+
 function listLocal(type: ContentType, locale: string, includeDrafts = false) {
   const items = getLocalContent().filter((item) => item.type === type && (includeDrafts || item.status === "published"));
   const exact = items.filter((item) => item.locale === locale);
-  const fallback = items.filter((item) => item.locale === "en");
-  return (exact.length ? exact : fallback).sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
+  const fallback = items.filter((item) => item.locale === "en" && !exact.some((entry) => entry.slug === item.slug));
+  return sortContent([...exact, ...fallback]);
 }
 
 function getLocalBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false) {
@@ -88,6 +92,18 @@ function encode(value: string) {
   return encodeURIComponent(value);
 }
 
+function mergeBySlug(primary: ContentItem[], fallback: ContentItem[]) {
+  const result = [...primary];
+  const existing = new Set(primary.map((item) => item.slug));
+  fallback.forEach((item) => {
+    if (!existing.has(item.slug)) {
+      result.push(item);
+      existing.add(item.slug);
+    }
+  });
+  return result;
+}
+
 async function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -103,14 +119,17 @@ export const ContentRepository = {
 
     const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
     const statusFilter = includeDrafts ? "" : "&status=eq.published";
-    const query = `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.${encode(locale)}${statusFilter}&order=published_at.desc.nullslast`;
-    let rows = await supabaseRequest<any[]>(query, {}, accessToken);
+    const fetchLocale = (targetLocale: string) => supabaseRequest<any[]>(
+      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.${encode(targetLocale)}${statusFilter}&order=published_at.desc.nullslast`,
+      {},
+      accessToken,
+    );
 
-    if (!rows.length && locale !== "en") {
-      rows = await supabaseRequest<any[]>(`/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.en${statusFilter}&order=published_at.desc.nullslast`, {}, accessToken);
-    }
-
-    return rows.length ? rows.map(itemFromDb) : listLocal(type, locale, includeDrafts);
+    const exact = (await fetchLocale(locale)).map(itemFromDb);
+    const english = locale === "en" ? [] : (await fetchLocale("en")).map(itemFromDb);
+    const databaseItems = mergeBySlug(exact, english);
+    const withSeedBaseline = mergeBySlug(databaseItems, listLocal(type, locale, includeDrafts));
+    return sortContent(withSeedBaseline);
   },
 
   async getBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false): Promise<ContentItem | null> {

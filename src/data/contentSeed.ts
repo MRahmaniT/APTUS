@@ -28,9 +28,7 @@ const product = (
   specs,
   cta: { label: "Discuss this product", url: "/about/contact" },
   seo: { title: `${title} | APTUS`, description: abstract },
-  media: [
-    { mediaType: "image", url: coverImage, alt: title, sortOrder: 0 },
-  ],
+  media: [{ mediaType: "image", url: coverImage, alt: title, sortOrder: 0 }],
 });
 
 export const CONTENT_SEED: ContentItem[] = [
@@ -66,7 +64,7 @@ export const CONTENT_SEED: ContentItem[] = [
   ),
   product(
     "seed-product-facade-design",
-    "facade-design",
+    "facades",
     "Facade Design",
     "Architectural precast façade concepts with configurable textures, openings, finishes, and panel rhythms.",
     "https://images.unsplash.com/photo-1720762256650-ea429f429226?w=1200&h=900&fit=crop&auto=format",
@@ -96,7 +94,7 @@ export const CONTENT_SEED: ContentItem[] = [
   ),
   product(
     "seed-product-girders",
-    "girders-and-beams",
+    "beams",
     "Girders & Beams",
     "Precast and prestressed beam systems engineered for long spans, predictable quality, and rapid frame assembly.",
     "https://images.unsplash.com/photo-1614595737683-1740e41bfaac?w=1200&h=900&fit=crop&auto=format",
@@ -113,6 +111,16 @@ export const CONTENT_SEED: ContentItem[] = [
     "Precast Elements",
     "showcase",
     { "Use": "Envelope / load-bearing options", "Insulation": "Available", "Finish": "Custom" },
+  ),
+  product(
+    "seed-product-slabs",
+    "slabs",
+    "Roof & Floor Slabs",
+    "Hollow-core and solid slab systems optimized for efficient spans, repeatable production, and fast floor cycles.",
+    "https://images.unsplash.com/photo-1614595737683-1740e41bfaac?w=1200&h=900&fit=crop&auto=format",
+    "Precast Elements",
+    "technical",
+    { "Use": "Roof and floor systems", "System": "Hollow-core / solid", "Span": "Project-specific" },
   ),
   product(
     "seed-product-tiebeams",
@@ -143,6 +151,16 @@ export const CONTENT_SEED: ContentItem[] = [
     "Precast Elements",
     "gallery",
     { "Use": "Envelope transitions", "Geometry": "Project-specific", "Finish": "Matched to adjacent panels" },
+  ),
+  product(
+    "seed-product-modular",
+    "modular",
+    "Modular Units",
+    "Volumetric precast modules coordinated for factory completion and rapid assembly into larger building systems.",
+    "https://images.unsplash.com/photo-1691425700573-5e2e6e4f6157?w=1200&h=900&fit=crop&auto=format",
+    "Precast Elements",
+    "case-study",
+    { "Use": "Volumetric modular construction", "Integration": "Structure + enclosure", "Assembly": "Project-specific" },
   ),
 
   {

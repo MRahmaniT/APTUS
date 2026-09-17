@@ -13,7 +13,7 @@ export const PageRepository = {
   },
 
   async save(page: EditablePage) {
-    await SupabaseRepository.updateSiteSetting(settingKey(page.path, page.locale), page);
+    await SupabaseRepository.updateSiteSetting(settingKey(page.path, page.locale), { ...page });
     return page;
   },
 };

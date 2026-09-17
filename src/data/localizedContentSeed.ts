@@ -17,12 +17,12 @@ const CTA: Record<"fa" | "tr", string> = {
   tr: "APTUS ekibiyle görüşün",
 };
 
-export const LOCALIZED_CONTENT_SEED: ContentItem[] = (["fa", "tr"] as const).flatMap((locale) =>
-  CONTENT_SEED.map((item) => {
+export const LOCALIZED_CONTENT_SEED: ContentItem[] = (["fa", "tr"] as const).reduce<ContentItem[]>((all, locale) => {
+  CONTENT_SEED.forEach((item) => {
     const translated = CONTENT_TRANSLATIONS[locale][item.slug];
-    if (!translated) return null;
+    if (!translated) return;
 
-    return {
+    all.push({
       ...item,
       id: `${item.id}-${locale}`,
       locale,
@@ -35,6 +35,7 @@ export const LOCALIZED_CONTENT_SEED: ContentItem[] = (["fa", "tr"] as const).fla
       cta: item.cta?.url ? { label: CTA[locale], url: item.cta.url } : {},
       seo: { title: `${translated.title} | APTUS`, description: translated.abstract },
       media: (item.media || []).map((media) => ({ ...media, alt: translated.title })),
-    } satisfies ContentItem;
-  }).filter((item): item is ContentItem => Boolean(item)),
-);
+    });
+  });
+  return all;
+}, []);

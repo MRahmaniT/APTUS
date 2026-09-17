@@ -62,5 +62,10 @@ jobs:
           DATABASE_URL: postgresql://aptus:aptus-ci-password@127.0.0.1:5432/aptus
           PORT: 3000
 
-      - name: Verify API and database
+      - name: Verify API and database health
         run: curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:3000/api/health
+
+      - name: Exercise auth and CMS against PostgreSQL
+        run: npm run smoke --prefix server
+        env:
+          API_BASE: http://127.0.0.1:3000/api

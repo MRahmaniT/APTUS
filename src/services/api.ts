@@ -62,4 +62,13 @@ export const ApiService = {
       throw e;
     }
   },
+
+  updateUserProfile: async (uid: string, data: { name: string; phone?: string; photoURL?: string; bio?: string }) => {
+    try {
+      return await SupabaseRepository.updateUserProfile(uid, data);
+    } catch (e) {
+      console.error(`Failed to update profile for ${uid}`, e);
+      throw e;
+    }
+  },
 };

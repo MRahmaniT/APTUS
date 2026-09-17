@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Locale, translations } from "../config/translations";
-import { auth, googleProvider } from "../config/firebase";
-import { signInWithPopup, signOut as fbSignOut, onAuthStateChanged, User } from "firebase/auth";
+import { SupabaseAuth, SupabaseUser, isSupabaseConfigured } from "../config/supabase";
 import { ApiService } from "../services/api";
 
 export type Role = "guest" | "member" | "admin" | "manager";
@@ -12,7 +11,7 @@ interface AppContextType {
   t: (category: keyof typeof translations.en, key: string) => string;
   role: Role;
   setRole: (role: Role) => void;
-  user: { name: string; phone?: string, uid?: string, photoURL?: string, email?: string } | null;
+  user: { name: string; phone?: string; uid?: string; photoURL?: string; email?: string } | null;
   login: () => void;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
   signUpWithEmail: (name: string, email: string, pass: string) => Promise<void>;
@@ -25,124 +24,81 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<Locale>("fa");
   const [role, setRole] = useState<Role>("guest");
-  const [user, setUser] = useState<{ name: string; phone?: string, uid?: string, photoURL?: string, email?: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; phone?: string; uid?: string; photoURL?: string; email?: string } | null>(null);
 
-  // Load language preference
   useEffect(() => {
     const savedLocale = localStorage.getItem("locale") as Locale;
-    if (savedLocale && ["fa", "en", "tr"].includes(savedLocale)) {
-      setLocale(savedLocale);
-    }
+    if (savedLocale && ["fa", "en", "tr"].includes(savedLocale)) setLocale(savedLocale);
   }, []);
 
-  // Sync language with document
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === "fa" ? "rtl" : "ltr";
-    if (locale === "fa") {
-      document.body.style.fontFamily = "'Vazirmatn', sans-serif";
-    } else {
-      document.body.style.fontFamily = "system-ui, -apple-system, sans-serif";
-    }
+    document.body.style.fontFamily = locale === "fa" ? "'Vazirmatn', sans-serif" : "system-ui, -apple-system, sans-serif";
     localStorage.setItem("locale", locale);
   }, [locale]);
 
-  // Firebase auth state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        let userRole = "member";
-        try {
-          const userDoc = await ApiService.getUserProfile(firebaseUser.uid);
-          
-          if (!userDoc) {
-            // New user, create profile
-            if (firebaseUser.email === "admin@aptus.com" || firebaseUser.email === "hesamasadinezhad@gmail.com") {
-              userRole = "manager"; // Make the owner a manager automatically
-            }
-            
-            await ApiService.updateUserRole(firebaseUser.uid, userRole);
-          } else {
-            userRole = userDoc.role || "member";
-          }
-        } catch (e) {
-          console.error("Error fetching user profile", e);
-        }
+  const applyAuthenticatedUser = async (authUser: SupabaseUser) => {
+    let userRole: Role = "member";
+    let profileName = String(authUser.user_metadata?.name || authUser.email || "User");
 
-        setUser({ 
-          name: firebaseUser.displayName || firebaseUser.email || "User", 
-          uid: firebaseUser.uid,
-          photoURL: firebaseUser.photoURL || undefined,
-          email: firebaseUser.email || undefined
-        });
-        setRole(userRole as Role);
-      } else {
-        setUser(null);
-        setRole("guest");
-      }
+    try {
+      const profile = await ApiService.getUserProfile(authUser.id);
+      if (profile?.role) userRole = profile.role as Role;
+      if (profile?.name) profileName = profile.name;
+    } catch (error) {
+      console.error("Error fetching Supabase profile", error);
+    }
+
+    setUser({
+      name: profileName,
+      uid: authUser.id,
+      email: authUser.email,
     });
+    setRole(userRole);
+  };
 
-    return () => unsubscribe();
+  useEffect(() => {
+    let active = true;
+    if (!isSupabaseConfigured) return;
+
+    SupabaseAuth.restoreSession()
+      .then((result) => {
+        if (active && result?.user) return applyAuthenticatedUser(result.user);
+      })
+      .catch((error) => console.error("Failed to restore Supabase session", error));
+
+    return () => { active = false; };
   }, []);
 
-  const login = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (e) {
-      console.error("Login failed", e);
-    }
+  const login = () => {
+    SupabaseAuth.signInWithGoogle();
   };
 
   const loginWithEmail = async (email: string, pass: string) => {
-    const { signInWithEmailAndPassword } = await import("firebase/auth");
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e: any) {
-      console.error("Login with email failed", e);
-      throw e;
-    }
+    const result = await SupabaseAuth.signInWithPassword(email, pass);
+    await applyAuthenticatedUser(result.user);
   };
 
   const signUpWithEmail = async (name: string, email: string, pass: string) => {
-    const { createUserWithEmailAndPassword, updateProfile } = await import("firebase/auth");
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-      await updateProfile(userCred.user, { displayName: name });
-      
-      // Setup role immediately
-      const defaultRole = (email === "admin@aptus.com" || email === "hesamasadinezhad@gmail.com") ? "manager" : "member";
-      await ApiService.updateUserRole(userCred.user.uid, defaultRole);
-
-      setUser({
-        name,
-        uid: userCred.user.uid,
-        email
-      });
-      setRole(defaultRole as Role);
-    } catch (e: any) {
-      console.error("Signup failed", e);
-      throw e;
+    const result = await SupabaseAuth.signUp(name, email, pass);
+    if (result.session && result.user) {
+      await applyAuthenticatedUser(result.user);
     }
   };
 
   const resetPassword = async (email: string) => {
-    const { sendPasswordResetEmail } = await import("firebase/auth");
-    try {
-      await sendPasswordResetEmail(auth, email);
-    } catch (e: any) {
-      console.error("Password reset failed", e);
-      throw e;
-    }
+    await SupabaseAuth.resetPassword(email);
   };
 
   const logout = async () => {
-    await fbSignOut(auth);
+    await SupabaseAuth.signOut();
     setUser(null);
     setRole("guest");
   };
 
   const t = (category: keyof typeof translations.en, key: string): string => {
-    // @ts-ignore
+    // @ts-ignore dynamic translation lookup is intentionally tolerant of CMS keys
     return translations[locale][category]?.[key] || key;
   };
 

@@ -1,10 +1,9 @@
-import { FirebaseRepository } from "../repositories/FirebaseRepository";
+import { SupabaseRepository } from "../repositories/SupabaseRepository";
 
 export const ApiService = {
-  // Analytics Endpoints
-  trackPageView: async (date: string) => {
+  trackPageView: async (date: string, path = window.location.pathname) => {
     try {
-      await FirebaseRepository.saveDocument("analytics", date, { views: 1, date }); // In a real Spring Boot app, this would call your pure Java backend
+      await SupabaseRepository.trackPageView(date, path);
     } catch (e) {
       console.error("Failed to track view", e);
     }
@@ -12,38 +11,34 @@ export const ApiService = {
 
   getAnalytics: async (date: string) => {
     try {
-      const data = await FirebaseRepository.getDocument("analytics", date);
-      return data ? (data.views || 0) : 0;
+      return await SupabaseRepository.getAnalytics(date);
     } catch (e) {
       console.error("Failed to fetch analytics", e);
       throw e;
     }
   },
 
-  // CMS Endpoints
-  getCMSContent: async (page: string) => {
+  getCMSContent: async <T = any>(page: string): Promise<T | null> => {
     try {
-      const data = await FirebaseRepository.getDocument("cms", page);
-      return data;
+      return await SupabaseRepository.getSiteSetting<T>(page);
     } catch (e) {
       console.error(`Failed to fetch CMS for ${page}`, e);
       throw e;
     }
   },
 
-  updateCMSContent: async (page: string, data: any) => {
+  updateCMSContent: async (page: string, data: Record<string, unknown>) => {
     try {
-      await FirebaseRepository.saveDocument("cms", page, data);
+      await SupabaseRepository.updateSiteSetting(page, data);
     } catch (e) {
       console.error(`Failed to update CMS for ${page}`, e);
       throw e;
     }
   },
 
-  // User Management Endpoints
   getAllUsers: async () => {
     try {
-      return await FirebaseRepository.getAllDocuments("users");
+      return await SupabaseRepository.getAllUsers();
     } catch (e) {
       console.error("Failed to fetch users", e);
       throw e;
@@ -52,7 +47,7 @@ export const ApiService = {
 
   updateUserRole: async (uid: string, role: string) => {
     try {
-      await FirebaseRepository.saveDocument("users", uid, { role });
+      await SupabaseRepository.updateUserRole(uid, role);
     } catch (e) {
       console.error(`Failed to update role for ${uid}`, e);
       throw e;
@@ -61,10 +56,10 @@ export const ApiService = {
 
   getUserProfile: async (uid: string) => {
     try {
-      return await FirebaseRepository.getDocument("users", uid);
+      return await SupabaseRepository.getUserProfile(uid);
     } catch (e) {
       console.error(`Failed to fetch profile for ${uid}`, e);
       throw e;
     }
-  }
+  },
 };

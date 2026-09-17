@@ -28,6 +28,7 @@ Run these SQL files in order from the Supabase SQL editor or Supabase CLI:
 
 1. `supabase/migrations/001_content_platform.sql`
 2. `supabase/migrations/002_site_settings.sql`
+3. `supabase/migrations/003_public_policy_permissions.sql`
 
 They create:
 
@@ -97,12 +98,16 @@ Available detail templates:
 
 ## 6. Existing/seed content
 
-The application includes seed content for the current product catalogue plus sample news/projects. Seed content is used when Supabase has no matching rows, so the site stays populated immediately after the code migration.
+The application includes a baseline catalogue for the current products plus sample news/projects. The baseline is merged with database content by slug, so the site remains populated while you migrate entries gradually.
 
-When an editor saves a seed item while Supabase is connected, it becomes a real database row.
+When an editor saves a baseline item while Supabase is connected, the real database row with the same slug takes precedence over the baseline version.
 
 ## 7. If old Firestore data exists
 
 Before deleting the old Firebase project, inspect/export the `users`, `cms`, and `analytics` collections. The new Supabase schema does not automatically delete or mutate Firebase data.
 
 For user accounts, passwords cannot be copied as plain text. Create/migrate accounts through an authentication migration process or ask users to reset passwords in Supabase.
+
+## 8. Lockfile note
+
+Firebase is removed from the application source and `package.json`. The existing npm/bun lockfiles may still contain historical Firebase package entries until the next local dependency refresh. Running `npm install` (and, if Bun is used, the equivalent Bun install) will rewrite those lockfiles; this does not change the application code or database migration.

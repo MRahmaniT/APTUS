@@ -63,4 +63,4 @@ jobs:
           PORT: 3000
 
       - name: Verify API and database
-        run: curl --fail --retry 10 --retry-delay 1 http://127.0.0.1:3000/api/health
+        run: curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:3000/api/health

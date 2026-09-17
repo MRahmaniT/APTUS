@@ -2,15 +2,28 @@ import { apiRequest, isServerDatabaseEnabled } from "../config/apiClient";
 
 const LOCAL_SETTINGS_PREFIX = "aptus.site-setting.";
 
+function mapProfile(row: any) {
+  if (!row) return null;
+  return {
+    ...row,
+    uid: row.uid || row.id,
+    name: row.name || "User",
+    phone: row.phone || "",
+    photoURL: row.photoURL || "",
+    bio: row.bio || "",
+  };
+}
+
 export const ServerRepository = {
   async getUserProfile(uid: string) {
     if (!isServerDatabaseEnabled) return null;
-    return apiRequest<any>(`/profile/${encodeURIComponent(uid)}`);
+    return mapProfile(await apiRequest<any>(`/profile/${encodeURIComponent(uid)}`));
   },
 
   async getAllUsers() {
     if (!isServerDatabaseEnabled) return [];
-    return apiRequest<any[]>("/profiles");
+    const rows = await apiRequest<any[]>("/profiles");
+    return rows.map(mapProfile);
   },
 
   async updateUserRole(uid: string, role: string) {
@@ -24,11 +37,12 @@ export const ServerRepository = {
 
   async updateUserProfile(uid: string, data: { name: string; phone?: string; photoURL?: string; bio?: string }) {
     if (!isServerDatabaseEnabled) throw new Error("Server database mode is disabled.");
-    return apiRequest<any>(`/profile/${encodeURIComponent(uid)}`, {
+    const row = await apiRequest<any>(`/profile/${encodeURIComponent(uid)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    return mapProfile(row);
   },
 
   async trackPageView(date: string, path = "/") {

@@ -1,9 +1,9 @@
-import { SupabaseRepository } from "../repositories/SupabaseRepository";
+import { ServerRepository } from "../repositories/ServerRepository";
 
 export const ApiService = {
   trackPageView: async (date: string, path = window.location.pathname) => {
     try {
-      await SupabaseRepository.trackPageView(date, path);
+      await ServerRepository.trackPageView(date, path);
     } catch (e) {
       console.error("Failed to track view", e);
     }
@@ -11,7 +11,7 @@ export const ApiService = {
 
   getAnalytics: async (date: string) => {
     try {
-      return await SupabaseRepository.getAnalytics(date);
+      return await ServerRepository.getAnalytics(date);
     } catch (e) {
       console.error("Failed to fetch analytics", e);
       throw e;
@@ -20,7 +20,7 @@ export const ApiService = {
 
   getCMSContent: async <T = any>(page: string): Promise<T | null> => {
     try {
-      return await SupabaseRepository.getSiteSetting<T>(page);
+      return await ServerRepository.getSiteSetting<T>(page);
     } catch (e) {
       console.error(`Failed to fetch CMS for ${page}`, e);
       throw e;
@@ -29,7 +29,7 @@ export const ApiService = {
 
   updateCMSContent: async (page: string, data: Record<string, unknown>) => {
     try {
-      await SupabaseRepository.updateSiteSetting(page, data);
+      await ServerRepository.updateSiteSetting(page, data);
     } catch (e) {
       console.error(`Failed to update CMS for ${page}`, e);
       throw e;
@@ -38,7 +38,7 @@ export const ApiService = {
 
   getAllUsers: async () => {
     try {
-      return await SupabaseRepository.getAllUsers();
+      return await ServerRepository.getAllUsers();
     } catch (e) {
       console.error("Failed to fetch users", e);
       throw e;
@@ -47,7 +47,7 @@ export const ApiService = {
 
   updateUserRole: async (uid: string, role: string) => {
     try {
-      await SupabaseRepository.updateUserRole(uid, role);
+      await ServerRepository.updateUserRole(uid, role);
     } catch (e) {
       console.error(`Failed to update role for ${uid}`, e);
       throw e;
@@ -56,7 +56,7 @@ export const ApiService = {
 
   getUserProfile: async (uid: string) => {
     try {
-      return await SupabaseRepository.getUserProfile(uid);
+      return await ServerRepository.getUserProfile(uid);
     } catch (e) {
       console.error(`Failed to fetch profile for ${uid}`, e);
       throw e;
@@ -65,7 +65,7 @@ export const ApiService = {
 
   updateUserProfile: async (uid: string, data: { name: string; phone?: string; photoURL?: string; bio?: string }) => {
     try {
-      return await SupabaseRepository.updateUserProfile(uid, data);
+      return await ServerRepository.updateUserProfile(uid, data);
     } catch (e) {
       console.error(`Failed to update profile for ${uid}`, e);
       throw e;

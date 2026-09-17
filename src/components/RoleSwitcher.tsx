@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useAppContext, Role } from "../controllers/AppContext";
+import React, { useState } from "react";
+import { useAppContext } from "../controllers/AppContext";
 import { Shield, Users } from "lucide-react";
 import { ApiService } from "../services/api";
 
@@ -9,39 +9,37 @@ export default function RoleSwitcher() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Only render for manager
   if (role !== "manager") return null;
 
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const fetchedUsers = await ApiService.getAllUsers();
-      setUsers(fetchedUsers);
-    } catch (e) {
-      console.error("Failed to load users", e);
+      setUsers(await ApiService.getAllUsers());
+    } catch (error) {
+      console.error("Failed to load users", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const toggleModal = () => {
-    if (!isOpen) {
-      loadUsers();
-    }
-    setIsOpen(!isOpen);
+    if (!isOpen) loadUsers().catch(console.error);
+    setIsOpen((value) => !value);
   };
 
-  const handleRoleChange = async (uid: string, newRole: string) => {
+  const handleRoleChange = async (uid: string, newRole: "member" | "admin" | "manager") => {
     try {
       await ApiService.updateUserRole(uid, newRole);
-      setUsers(users.map(u => u.id === uid ? { ...u, role: newRole } : u));
-    } catch (e) {
-      alert("Failed to update role");
+      setUsers((current) => current.map((user) => (user.uid === uid || user.id === uid) ? { ...user, role: newRole } : user));
+    } catch (error: any) {
+      alert(error?.message || "Failed to update role");
+      await loadUsers();
     }
   };
 
   return (
     <>
-      <button 
+      <button
         onClick={toggleModal}
         className="fixed bottom-4 right-4 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-colors z-50 flex items-center justify-center"
         title="Manager Dashboard"
@@ -57,11 +55,9 @@ export default function RoleSwitcher() {
                 <Users className="w-4 h-4 text-purple-600" />
                 User Management
               </h3>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-black">
-                &times;
-              </button>
+              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-black" aria-label="Close user management">&times;</button>
             </div>
-            
+
             <div className="p-4 overflow-y-auto flex-1">
               {loading ? (
                 <div className="text-center text-sm text-gray-500 py-4">Loading users...</div>
@@ -69,24 +65,26 @@ export default function RoleSwitcher() {
                 <div className="text-center text-sm text-gray-500 py-4">No users found.</div>
               ) : (
                 <div className="space-y-3">
-                  {users.map(u => (
-                    <div key={u.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                      <div>
-                        <p className="font-medium text-sm">{u.name || "Unknown"}</p>
-                        <p className="text-xs text-gray-500">{u.email || u.id}</p>
+                  {users.map((user) => {
+                    const uid = user.uid || user.id;
+                    return (
+                      <div key={uid} className="flex items-center justify-between gap-4 p-3 border rounded-lg hover:bg-gray-50">
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">{user.name || "Unknown"}</p>
+                          <p className="text-xs text-gray-500 truncate">{user.email || uid}</p>
+                        </div>
+                        <select
+                          value={user.role || "member"}
+                          onChange={(event) => handleRoleChange(uid, event.target.value as "member" | "admin" | "manager")}
+                          className="text-sm border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 py-1"
+                        >
+                          <option value="member">Member</option>
+                          <option value="admin">Admin</option>
+                          <option value="manager">Manager</option>
+                        </select>
                       </div>
-                      <select 
-                        value={u.role || "member"}
-                        onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                        className="text-sm border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 py-1"
-                      >
-                        <option value="guest">Guest</option>
-                        <option value="member">Member</option>
-                        <option value="admin">Admin</option>
-                        <option value="manager">Manager</option>
-                      </select>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

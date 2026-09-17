@@ -1,17 +1,21 @@
-import { SupabaseAuth, isSupabaseConfigured, supabaseRequest } from "../config/supabase";
+import { apiRequest, isServerDatabaseEnabled, ServerAuth } from "../config/apiClient";
 import { CONTENT_SEED } from "../data/contentSeed";
 import { LOCALIZED_CONTENT_SEED } from "../data/localizedContentSeed";
-import { ContentDraft, ContentItem, ContentMedia, ContentType } from "../models";
+import { ContentDraft, ContentItem, ContentType } from "../models";
 
-const LOCAL_CONTENT_KEY = "aptus.cms.content.v2";
+const LOCAL_CONTENT_KEY = "aptus.cms.content.v3";
 const BASE_CONTENT = [...CONTENT_SEED, ...LOCALIZED_CONTENT_SEED];
+
+function cloneBaseContent() {
+  return BASE_CONTENT.map((item) => ({ ...item, media: [...item.media] }));
+}
 
 function getLocalContent(): ContentItem[] {
   try {
     const stored = localStorage.getItem(LOCAL_CONTENT_KEY);
-    return stored ? JSON.parse(stored) : BASE_CONTENT.map((item) => ({ ...item, media: [...item.media] }));
+    return stored ? JSON.parse(stored) : cloneBaseContent();
   } catch {
-    return BASE_CONTENT.map((item) => ({ ...item, media: [...item.media] }));
+    return cloneBaseContent();
   }
 }
 
@@ -35,74 +39,15 @@ function getLocalBySlug(type: ContentType, slug: string, locale: string, include
   ) || null;
 }
 
-function mediaFromDb(row: any): ContentMedia {
-  return {
-    id: row.id,
-    mediaType: row.media_type,
-    url: row.url,
-    caption: row.caption || undefined,
-    alt: row.alt || undefined,
-    sortOrder: row.sort_order || 0,
-  };
-}
-
-function itemFromDb(row: any): ContentItem {
-  return {
-    id: row.id,
-    type: row.type,
-    slug: row.slug,
-    locale: row.locale,
-    status: row.status,
-    templateKey: row.template_key,
-    title: row.title,
-    abstract: row.abstract || "",
-    body: row.body || "",
-    coverImage: row.cover_image || "",
-    category: row.category || undefined,
-    publishedAt: row.published_at || undefined,
-    highlights: Array.isArray(row.highlights) ? row.highlights : [],
-    specs: row.specs || {},
-    cta: row.cta || {},
-    seo: row.seo || {},
-    media: (row.content_media || []).map(mediaFromDb).sort((a: ContentMedia, b: ContentMedia) => (a.sortOrder || 0) - (b.sortOrder || 0)),
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
-function itemToDb(item: ContentDraft) {
-  return {
-    type: item.type,
-    slug: item.slug,
-    locale: item.locale,
-    status: item.status,
-    template_key: item.templateKey,
-    title: item.title,
-    abstract: item.abstract,
-    body: item.body,
-    cover_image: item.coverImage || null,
-    category: item.category || null,
-    published_at: item.status === "published" ? (item.publishedAt || new Date().toISOString()) : null,
-    highlights: item.highlights || [],
-    specs: item.specs || {},
-    cta: item.cta || {},
-    seo: item.seo || {},
-  };
-}
-
-function encode(value: string) {
-  return encodeURIComponent(value);
-}
-
-function mergeBySlug(primary: ContentItem[], fallback: ContentItem[]) {
+function mergeBySlug(primary: ContentItem[], baseline: ContentItem[]) {
   const result = [...primary];
   const existing = new Set(primary.map((item) => item.slug));
-  fallback.forEach((item) => {
+  for (const item of baseline) {
     if (!existing.has(item.slug)) {
       result.push(item);
       existing.add(item.slug);
     }
-  });
+  }
   return result;
 }
 
@@ -117,36 +62,35 @@ async function readAsDataUrl(file: File): Promise<string> {
 
 export const ContentRepository = {
   async list(type: ContentType, locale: string, includeDrafts = false): Promise<ContentItem[]> {
-    if (!isSupabaseConfigured) return listLocal(type, locale, includeDrafts);
+    if (!isServerDatabaseEnabled) return listLocal(type, locale, includeDrafts);
 
-    const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
-    const statusFilter = includeDrafts ? "" : "&status=eq.published";
-    const rows = await supabaseRequest<any[]>(
-      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.${encode(locale)}${statusFilter}&order=published_at.desc.nullslast`,
-      {},
-      accessToken,
-    );
-
-    const databaseItems = rows.map(itemFromDb);
-    return sortContent(mergeBySlug(databaseItems, listLocal(type, locale, includeDrafts)));
+    try {
+      const rows = await apiRequest<ContentItem[]>(
+        `/content?type=${encodeURIComponent(type)}&locale=${encodeURIComponent(locale)}&includeDrafts=${includeDrafts ? "true" : "false"}`,
+      );
+      return sortContent(mergeBySlug(rows, listLocal(type, locale, includeDrafts)));
+    } catch (error) {
+      if (includeDrafts) throw error;
+      console.warn("APTUS API unavailable; showing bundled content.", error);
+      return listLocal(type, locale, includeDrafts);
+    }
   },
 
   async getBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false): Promise<ContentItem | null> {
-    if (!isSupabaseConfigured) return getLocalBySlug(type, slug, locale, includeDrafts);
+    if (!isServerDatabaseEnabled) return getLocalBySlug(type, slug, locale, includeDrafts);
 
-    const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
-    const statusFilter = includeDrafts ? "" : "&status=eq.published";
-    const rows = await supabaseRequest<any[]>(
-      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&slug=eq.${encode(slug)}&locale=eq.${encode(locale)}${statusFilter}&limit=1`,
-      {},
-      accessToken,
-    );
-
-    return rows[0] ? itemFromDb(rows[0]) : getLocalBySlug(type, slug, locale, includeDrafts);
+    try {
+      return await apiRequest<ContentItem>(
+        `/content/${encodeURIComponent(type)}/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}&includeDrafts=${includeDrafts ? "true" : "false"}`,
+      );
+    } catch (error: any) {
+      if (error?.status === 404 || !includeDrafts) return getLocalBySlug(type, slug, locale, includeDrafts);
+      throw error;
+    }
   },
 
   async upsert(item: ContentDraft): Promise<ContentItem> {
-    if (!isSupabaseConfigured) {
+    if (!isServerDatabaseEnabled) {
       const items = getLocalContent();
       const id = item.id || `local-${crypto.randomUUID()}`;
       const value: ContentItem = {
@@ -163,81 +107,40 @@ export const ContentRepository = {
       return value;
     }
 
-    const accessToken = SupabaseAuth.getAccessToken();
-    if (!accessToken) throw new Error("Sign in as an editor before saving content.");
-
-    const payload = itemToDb(item);
-    let rows: any[];
-    if (item.id && !item.id.startsWith("seed-") && !item.id.startsWith("local-")) {
-      rows = await supabaseRequest<any[]>(`/rest/v1/content_items?id=eq.${encode(item.id)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Prefer: "return=representation" },
-        body: JSON.stringify(payload),
-      }, accessToken);
-    } else {
-      rows = await supabaseRequest<any[]>("/rest/v1/content_items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Prefer: "return=representation" },
-        body: JSON.stringify(payload),
-      }, accessToken);
-    }
-
-    const saved = rows[0];
-    if (!saved) throw new Error("Supabase did not return the saved content item.");
-
-    await supabaseRequest(`/rest/v1/content_media?content_id=eq.${encode(saved.id)}`, { method: "DELETE" }, accessToken);
-
-    if (item.media?.length) {
-      await supabaseRequest("/rest/v1/content_media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
-        body: JSON.stringify(item.media.map((media, index) => ({
-          content_id: saved.id,
-          media_type: media.mediaType,
-          url: media.url,
-          caption: media.caption || null,
-          alt: media.alt || null,
-          sort_order: media.sortOrder ?? index,
-        }))),
-      }, accessToken);
-    }
-
-    return itemFromDb({
-      ...saved,
-      content_media: (item.media || []).map((media, index) => ({
-        ...media,
-        media_type: media.mediaType,
-        sort_order: media.sortOrder ?? index,
-      })),
+    if (!ServerAuth.getAccessToken()) throw new Error("Sign in as an editor before saving content.");
+    const isDatabaseItem = Boolean(item.id && !item.id.startsWith("seed-") && !item.id.startsWith("local-"));
+    return apiRequest<ContentItem>(isDatabaseItem ? `/content/${encodeURIComponent(item.id!)}` : "/content", {
+      method: isDatabaseItem ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item),
     });
   },
 
   async remove(id: string) {
-    if (!isSupabaseConfigured) {
+    if (!isServerDatabaseEnabled) {
       saveLocalContent(getLocalContent().filter((item) => item.id !== id));
       return;
     }
-
-    const accessToken = SupabaseAuth.getAccessToken();
-    if (!accessToken) throw new Error("Sign in as an editor before deleting content.");
-    await supabaseRequest(`/rest/v1/content_items?id=eq.${encode(id)}`, { method: "DELETE" }, accessToken);
+    if (id.startsWith("seed-") || id.startsWith("local-")) {
+      throw new Error("Bundled seed content cannot be deleted until it has been saved to the server database.");
+    }
+    if (!ServerAuth.getAccessToken()) throw new Error("Sign in as an editor before deleting content.");
+    await apiRequest(`/content/${encodeURIComponent(id)}`, { method: "DELETE" });
   },
 
   async uploadMedia(file: File): Promise<string> {
-    if (!isSupabaseConfigured) return readAsDataUrl(file);
-
-    const accessToken = SupabaseAuth.getAccessToken();
-    if (!accessToken) throw new Error("Sign in as an editor before uploading media.");
-
+    if (!isServerDatabaseEnabled) return readAsDataUrl(file);
+    if (!ServerAuth.getAccessToken()) throw new Error("Sign in as an editor before uploading media.");
     const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-");
-    const objectPath = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
-    await supabaseRequest(`/storage/v1/object/content-media/${objectPath}`, {
+    const result = await apiRequest<{ url: string }>("/media", {
       method: "POST",
-      headers: { "Content-Type": file.type || "application/octet-stream", "x-upsert": "false" },
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+        "x-file-type": file.type || "application/octet-stream",
+        "x-file-name": safeName || "upload.bin",
+      },
       body: file,
-    }, accessToken);
-
-    const base = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
-    return `${base}/storage/v1/object/public/content-media/${objectPath}`;
+    });
+    return result.url;
   },
 };

@@ -18,9 +18,9 @@ export const ApiService = {
     }
   },
 
-  getCMSContent: async (page: string) => {
+  getCMSContent: async <T = any>(page: string): Promise<T | null> => {
     try {
-      return await SupabaseRepository.getSiteSetting(page);
+      return await SupabaseRepository.getSiteSetting<T>(page);
     } catch (e) {
       console.error(`Failed to fetch CMS for ${page}`, e);
       throw e;

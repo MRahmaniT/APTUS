@@ -29,8 +29,11 @@ Run these SQL files in order from the Supabase SQL editor or Supabase CLI:
 1. `supabase/migrations/001_content_platform.sql`
 2. `supabase/migrations/002_site_settings.sql`
 3. `supabase/migrations/003_public_policy_permissions.sql`
+4. `supabase/migrations/004_security_hardening.sql`
+5. `supabase/migrations/005_performance_tuning.sql`
+6. `supabase/migrations/006_least_privilege_data_api.sql`
 
-They create:
+They create and harden:
 
 - user profiles + roles
 - products/news/projects
@@ -40,6 +43,8 @@ They create:
 - shared site settings
 - `content-media` storage bucket
 - row-level security policies
+- least-privilege Data API grants
+- safer helper functions and policy execution
 
 ## 3. Configure authentication
 

@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, ArrowRight, Check, ExternalLink } from "lucide-react";
 import { ContentItem, ContentMedia } from "../../models";
+import { useAppContext } from "../../controllers/AppContext";
+import { contentUi } from "../../config/contentUi";
 
 function backHref(type: ContentItem["type"]) {
   if (type === "product") return "/products";
@@ -38,7 +40,7 @@ function Media({ media, className = "" }: { media: ContentMedia; className?: str
 
 function Meta({ item }: { item: ContentItem }) {
   const published = item.publishedAt
-    ? new Intl.DateTimeFormat(undefined, { year: "numeric", month: "long", day: "numeric" }).format(new Date(item.publishedAt))
+    ? new Intl.DateTimeFormat(item.locale === "fa" ? "fa-IR" : item.locale === "tr" ? "tr-TR" : "en-US", { year: "numeric", month: "long", day: "numeric" }).format(new Date(item.publishedAt))
     : null;
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs uppercase tracking-[0.14em] text-[#777]">
@@ -62,6 +64,8 @@ function CTA({ item }: { item: ContentItem }) {
 }
 
 function Slideshow({ item }: { item: ContentItem }) {
+  const { locale } = useAppContext();
+  const ui = contentUi(locale);
   const media = useMemo(() => normalizeMedia(item), [item]);
   const [index, setIndex] = useState(0);
   if (!media.length) return <div className="aspect-[16/9] rounded-2xl bg-[#e8e8e3]" />;
@@ -72,20 +76,20 @@ function Slideshow({ item }: { item: ContentItem }) {
       <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-black">
         <Media media={active} className="w-full h-full object-cover" />
         {media.length > 1 && (
-          <div className="absolute bottom-4 right-4 flex gap-2">
+          <div className="absolute bottom-4 right-4 rtl:right-auto rtl:left-4 flex gap-2">
             <button
               onClick={() => setIndex((current) => (current - 1 + media.length) % media.length)}
               className="p-2.5 rounded-full bg-white/80 backdrop-blur text-black hover:bg-white"
-              aria-label="Previous media"
+              aria-label={ui.previousMedia}
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
             </button>
             <button
               onClick={() => setIndex((current) => (current + 1) % media.length)}
               className="p-2.5 rounded-full bg-white/80 backdrop-blur text-black hover:bg-white"
-              aria-label="Next media"
+              aria-label={ui.nextMedia}
             >
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </button>
           </div>
         )}
@@ -169,6 +173,8 @@ function EditorialTemplate({ item }: { item: ContentItem }) {
 }
 
 function TechnicalTemplate({ item }: { item: ContentItem }) {
+  const { locale } = useAppContext();
+  const ui = contentUi(locale);
   return (
     <div className="space-y-12">
       <div className="grid lg:grid-cols-2 gap-10 items-start">
@@ -182,12 +188,12 @@ function TechnicalTemplate({ item }: { item: ContentItem }) {
       </div>
       <div className="grid lg:grid-cols-[1fr_0.8fr] gap-12">
         <div className="space-y-6 text-[17px] leading-8 text-[#3f3f3b]">
-          <h2 className="text-2xl font-semibold text-[#111]">Overview</h2>
+          <h2 className="text-2xl font-semibold text-[#111]">{ui.overview}</h2>
           {bodyParagraphs(item.body).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <Highlights item={item} />
         </div>
         <div className="lg:sticky lg:top-32 rounded-2xl bg-white border border-[#e1e1dc] p-6">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] mb-5">Specifications</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] mb-5">{ui.specifications}</h2>
           <Specs item={item} />
         </div>
       </div>
@@ -245,6 +251,8 @@ function GalleryTemplate({ item }: { item: ContentItem }) {
 }
 
 export default function ContentDetail({ item }: { item: ContentItem }) {
+  const { locale } = useAppContext();
+  const ui = contentUi(locale);
   const Template = item.templateKey === "editorial"
     ? EditorialTemplate
     : item.templateKey === "technical"
@@ -255,11 +263,13 @@ export default function ContentDetail({ item }: { item: ContentItem }) {
     ? GalleryTemplate
     : ShowcaseTemplate;
 
+  const backLabel = item.type === "product" ? ui.backProducts : item.type === "news" ? ui.backNews : ui.backWork;
+
   return (
     <article className="max-w-7xl mx-auto px-2 md:px-6 py-8 md:py-14">
       <Link to={backHref(item.type)} className="inline-flex items-center gap-2 text-sm text-[#666] hover:text-black mb-10">
         <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
-        Back to {item.type === "project" ? "work" : `${item.type}s`}
+        {backLabel}
       </Link>
       <Template item={item} />
       {item.seo?.description && (

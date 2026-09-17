@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ContentCard from "../components/content/ContentCard";
 import { useAppContext } from "../controllers/AppContext";
+import { contentUi } from "../config/contentUi";
 import { ContentItem, ContentType } from "../models";
 import { ContentRepository } from "../repositories/ContentRepository";
 
@@ -19,6 +20,7 @@ const COPY: Record<"news" | "project", Record<string, { eyebrow: string; title: 
 
 export default function ContentIndex({ type }: { type: Extract<ContentType, "news" | "project"> }) {
   const { locale } = useAppContext();
+  const ui = contentUi(locale);
   const [items, setItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
@@ -26,6 +28,7 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
   useEffect(() => {
     let active = true;
     setLoading(true);
+    setCategory("all");
     ContentRepository.list(type, locale)
       .then((data) => active && setItems(data))
       .catch((error) => console.error(`Failed to load ${type} content`, error))
@@ -35,7 +38,7 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
 
   const categories = useMemo(() => Array.from(new Set(items.map((item) => item.category).filter(Boolean))) as string[], [items]);
   const visible = category === "all" ? items : items.filter((item) => item.category === category);
-  const copy = COPY[type][locale] || COPY[type].en;
+  const copy = COPY[type][locale];
 
   return (
     <div className="min-h-screen pt-16 pb-24">
@@ -48,7 +51,7 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
 
         {categories.length > 1 && (
           <div className="flex flex-wrap gap-2 mb-8">
-            <button onClick={() => setCategory("all")} className={`px-4 py-2 rounded-full text-sm border transition-colors ${category === "all" ? "bg-[#111] text-white border-[#111]" : "bg-white border-[#ddd] text-[#555] hover:border-[#999]"}`}>All</button>
+            <button onClick={() => setCategory("all")} className={`px-4 py-2 rounded-full text-sm border transition-colors ${category === "all" ? "bg-[#111] text-white border-[#111]" : "bg-white border-[#ddd] text-[#555] hover:border-[#999]"}`}>{ui.all}</button>
             {categories.map((value) => (
               <button key={value} onClick={() => setCategory(value)} className={`px-4 py-2 rounded-full text-sm border transition-colors ${category === value ? "bg-[#111] text-white border-[#111]" : "bg-white border-[#ddd] text-[#555] hover:border-[#999]"}`}>{value}</button>
             ))}
@@ -56,13 +59,13 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
         )}
 
         {loading ? (
-          <div className="py-24 text-center text-[#777]">Loading…</div>
+          <div className="py-24 text-center text-[#777]">{ui.loading}</div>
         ) : visible.length ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {visible.map((item) => <ContentCard key={item.id} item={item} />)}
           </div>
         ) : (
-          <div className="py-24 text-center border-y border-[#e5e5e0] text-[#777]">No published content yet.</div>
+          <div className="py-24 text-center border-y border-[#e5e5e0] text-[#777]">{ui.noContent}</div>
         )}
       </section>
     </div>

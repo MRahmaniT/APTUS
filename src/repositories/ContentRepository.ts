@@ -1,15 +1,17 @@
 import { SupabaseAuth, isSupabaseConfigured, supabaseRequest } from "../config/supabase";
 import { CONTENT_SEED } from "../data/contentSeed";
+import { LOCALIZED_CONTENT_SEED } from "../data/localizedContentSeed";
 import { ContentDraft, ContentItem, ContentMedia, ContentType } from "../models";
 
-const LOCAL_CONTENT_KEY = "aptus.cms.content.v1";
+const LOCAL_CONTENT_KEY = "aptus.cms.content.v2";
+const BASE_CONTENT = [...CONTENT_SEED, ...LOCALIZED_CONTENT_SEED];
 
 function getLocalContent(): ContentItem[] {
   try {
     const stored = localStorage.getItem(LOCAL_CONTENT_KEY);
-    return stored ? JSON.parse(stored) : CONTENT_SEED.map((item) => ({ ...item, media: [...item.media] }));
+    return stored ? JSON.parse(stored) : BASE_CONTENT.map((item) => ({ ...item, media: [...item.media] }));
   } catch {
-    return CONTENT_SEED.map((item) => ({ ...item, media: [...item.media] }));
+    return BASE_CONTENT.map((item) => ({ ...item, media: [...item.media] }));
   }
 }
 
@@ -22,15 +24,15 @@ function sortContent(items: ContentItem[]) {
 }
 
 function listLocal(type: ContentType, locale: string, includeDrafts = false) {
-  const items = getLocalContent().filter((item) => item.type === type && (includeDrafts || item.status === "published"));
-  const exact = items.filter((item) => item.locale === locale);
-  const fallback = items.filter((item) => item.locale === "en" && !exact.some((entry) => entry.slug === item.slug));
-  return sortContent([...exact, ...fallback]);
+  return sortContent(getLocalContent().filter(
+    (item) => item.type === type && item.locale === locale && (includeDrafts || item.status === "published"),
+  ));
 }
 
 function getLocalBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false) {
-  const candidates = getLocalContent().filter((item) => item.type === type && item.slug === slug && (includeDrafts || item.status === "published"));
-  return candidates.find((item) => item.locale === locale) || candidates.find((item) => item.locale === "en") || null;
+  return getLocalContent().find(
+    (item) => item.type === type && item.slug === slug && item.locale === locale && (includeDrafts || item.status === "published"),
+  ) || null;
 }
 
 function mediaFromDb(row: any): ContentMedia {
@@ -119,17 +121,14 @@ export const ContentRepository = {
 
     const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
     const statusFilter = includeDrafts ? "" : "&status=eq.published";
-    const fetchLocale = (targetLocale: string) => supabaseRequest<any[]>(
-      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.${encode(targetLocale)}${statusFilter}&order=published_at.desc.nullslast`,
+    const rows = await supabaseRequest<any[]>(
+      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.${encode(locale)}${statusFilter}&order=published_at.desc.nullslast`,
       {},
       accessToken,
     );
 
-    const exact = (await fetchLocale(locale)).map(itemFromDb);
-    const english = locale === "en" ? [] : (await fetchLocale("en")).map(itemFromDb);
-    const databaseItems = mergeBySlug(exact, english);
-    const withSeedBaseline = mergeBySlug(databaseItems, listLocal(type, locale, includeDrafts));
-    return sortContent(withSeedBaseline);
+    const databaseItems = rows.map(itemFromDb);
+    return sortContent(mergeBySlug(databaseItems, listLocal(type, locale, includeDrafts)));
   },
 
   async getBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false): Promise<ContentItem | null> {
@@ -137,14 +136,12 @@ export const ContentRepository = {
 
     const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
     const statusFilter = includeDrafts ? "" : "&status=eq.published";
-    const getRows = (targetLocale: string) => supabaseRequest<any[]>(
-      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&slug=eq.${encode(slug)}&locale=eq.${encode(targetLocale)}${statusFilter}&limit=1`,
+    const rows = await supabaseRequest<any[]>(
+      `/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&slug=eq.${encode(slug)}&locale=eq.${encode(locale)}${statusFilter}&limit=1`,
       {},
       accessToken,
     );
 
-    let rows = await getRows(locale);
-    if (!rows.length && locale !== "en") rows = await getRows("en");
     return rows[0] ? itemFromDb(rows[0]) : getLocalBySlug(type, slug, locale, includeDrafts);
   },
 

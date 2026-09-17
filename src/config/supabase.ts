@@ -162,10 +162,11 @@ export const SupabaseAuth = {
   },
 
   async resetPassword(email: string) {
-    await supabaseRequest("/auth/v1/recover", {
+    const redirectTo = encodeURIComponent(`${siteUrl}/?auth=login`);
+    await supabaseRequest(`/auth/v1/recover?redirect_to=${redirectTo}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, redirect_to: `${siteUrl}/?auth=login` }),
+      body: JSON.stringify({ email }),
     });
   },
 

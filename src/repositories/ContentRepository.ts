@@ -7,14 +7,26 @@ const LOCAL_CONTENT_KEY = "aptus.cms.content.v1";
 function getLocalContent(): ContentItem[] {
   try {
     const stored = localStorage.getItem(LOCAL_CONTENT_KEY);
-    return stored ? JSON.parse(stored) : CONTENT_SEED;
+    return stored ? JSON.parse(stored) : CONTENT_SEED.map((item) => ({ ...item, media: [...item.media] }));
   } catch {
-    return CONTENT_SEED;
+    return CONTENT_SEED.map((item) => ({ ...item, media: [...item.media] }));
   }
 }
 
 function saveLocalContent(items: ContentItem[]) {
   localStorage.setItem(LOCAL_CONTENT_KEY, JSON.stringify(items));
+}
+
+function listLocal(type: ContentType, locale: string, includeDrafts = false) {
+  const items = getLocalContent().filter((item) => item.type === type && (includeDrafts || item.status === "published"));
+  const exact = items.filter((item) => item.locale === locale);
+  const fallback = items.filter((item) => item.locale === "en");
+  return (exact.length ? exact : fallback).sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
+}
+
+function getLocalBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false) {
+  const candidates = getLocalContent().filter((item) => item.type === type && item.slug === slug && (includeDrafts || item.status === "published"));
+  return candidates.find((item) => item.locale === locale) || candidates.find((item) => item.locale === "en") || null;
 }
 
 function mediaFromDb(row: any): ContentMedia {
@@ -87,12 +99,7 @@ async function readAsDataUrl(file: File): Promise<string> {
 
 export const ContentRepository = {
   async list(type: ContentType, locale: string, includeDrafts = false): Promise<ContentItem[]> {
-    if (!isSupabaseConfigured) {
-      const items = getLocalContent().filter((item) => item.type === type && (includeDrafts || item.status === "published"));
-      const exact = items.filter((item) => item.locale === locale);
-      const fallback = items.filter((item) => item.locale === "en");
-      return (exact.length ? exact : fallback).sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
-    }
+    if (!isSupabaseConfigured) return listLocal(type, locale, includeDrafts);
 
     const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
     const statusFilter = includeDrafts ? "" : "&status=eq.published";
@@ -102,14 +109,12 @@ export const ContentRepository = {
     if (!rows.length && locale !== "en") {
       rows = await supabaseRequest<any[]>(`/rest/v1/content_items?select=*,content_media(*)&type=eq.${encode(type)}&locale=eq.en${statusFilter}&order=published_at.desc.nullslast`, {}, accessToken);
     }
-    return rows.map(itemFromDb);
+
+    return rows.length ? rows.map(itemFromDb) : listLocal(type, locale, includeDrafts);
   },
 
   async getBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false): Promise<ContentItem | null> {
-    if (!isSupabaseConfigured) {
-      const candidates = getLocalContent().filter((item) => item.type === type && item.slug === slug && (includeDrafts || item.status === "published"));
-      return candidates.find((item) => item.locale === locale) || candidates.find((item) => item.locale === "en") || null;
-    }
+    if (!isSupabaseConfigured) return getLocalBySlug(type, slug, locale, includeDrafts);
 
     const accessToken = includeDrafts ? SupabaseAuth.getAccessToken() : undefined;
     const statusFilter = includeDrafts ? "" : "&status=eq.published";
@@ -121,7 +126,7 @@ export const ContentRepository = {
 
     let rows = await getRows(locale);
     if (!rows.length && locale !== "en") rows = await getRows("en");
-    return rows[0] ? itemFromDb(rows[0]) : null;
+    return rows[0] ? itemFromDb(rows[0]) : getLocalBySlug(type, slug, locale, includeDrafts);
   },
 
   async upsert(item: ContentDraft): Promise<ContentItem> {
@@ -164,9 +169,7 @@ export const ContentRepository = {
     const saved = rows[0];
     if (!saved) throw new Error("Supabase did not return the saved content item.");
 
-    await supabaseRequest(`/rest/v1/content_media?content_id=eq.${encode(saved.id)}`, {
-      method: "DELETE",
-    }, accessToken);
+    await supabaseRequest(`/rest/v1/content_media?content_id=eq.${encode(saved.id)}`, { method: "DELETE" }, accessToken);
 
     if (item.media?.length) {
       await supabaseRequest("/rest/v1/content_media", {
@@ -183,9 +186,14 @@ export const ContentRepository = {
       }, accessToken);
     }
 
-    const refreshed = await this.getBySlug(item.type, item.slug, item.locale, true);
-    if (!refreshed) throw new Error("Saved content could not be reloaded.");
-    return refreshed;
+    return itemFromDb({
+      ...saved,
+      content_media: (item.media || []).map((media, index) => ({
+        ...media,
+        media_type: media.mediaType,
+        sort_order: media.sortOrder ?? index,
+      })),
+    });
   },
 
   async remove(id: string) {

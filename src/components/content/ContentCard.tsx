@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router";
 import { ArrowUpRight } from "lucide-react";
 import { ContentItem } from "../../models";
+import { useAppContext } from "../../controllers/AppContext";
+import { contentUi } from "../../config/contentUi";
 
 export function contentHref(item: Pick<ContentItem, "type" | "slug">) {
   if (item.type === "product") return `/products/${item.slug}`;
@@ -10,8 +12,10 @@ export function contentHref(item: Pick<ContentItem, "type" | "slug">) {
 }
 
 export default function ContentCard({ item }: { item: ContentItem }) {
+  const { locale } = useAppContext();
+  const ui = contentUi(locale);
   const date = item.publishedAt
-    ? new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" }).format(new Date(item.publishedAt))
+    ? new Intl.DateTimeFormat(locale === "fa" ? "fa-IR" : locale === "tr" ? "tr-TR" : "en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(item.publishedAt))
     : null;
 
   return (
@@ -47,8 +51,8 @@ export default function ContentCard({ item }: { item: ContentItem }) {
               {item.abstract}
             </p>
             <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider border border-white/35 px-4 py-2 rounded-full">
-              View details
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              {ui.viewDetails}
+              <ArrowUpRight className="w-3.5 h-3.5 rtl:-scale-x-100" />
             </span>
           </div>
         </div>

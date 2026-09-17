@@ -4,6 +4,9 @@ import Home from "./views/Home";
 import Products from "./views/Products";
 import AdminAnalytics from "./views/AdminAnalytics";
 import AdminContent from "./views/AdminContent";
+import AdminPages from "./views/AdminPages";
+import AdminProfile from "./views/AdminProfile";
+import StaticPage from "./views/StaticPage";
 import { NewsIndex, ProjectsIndex } from "./views/ContentIndex";
 import { NewsDetail, ProductDetail, ProjectDetail } from "./views/ContentPage";
 import { ProtectedLibraryRoute, AdminRoute } from "./components/ProtectedRoutes";
@@ -17,41 +20,44 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
 
-      // CMS-driven product catalogue and product details
       { path: "products", Component: Products },
       { path: "products/:slug", Component: ProductDetail },
 
-      // CMS-driven news. Existing menu URLs remain valid.
       { path: "news", Component: NewsIndex },
       { path: "news/latest", Component: NewsIndex },
       { path: "news/events", Component: NewsIndex },
       { path: "news/exhibitions", Component: NewsIndex },
       { path: "news/:slug", Component: NewsDetail },
 
-      // Work / case studies
       { path: "projects", Component: ProjectsIndex },
       { path: "projects/:slug", Component: ProjectDetail },
       { path: "work", Component: ProjectsIndex },
 
-      // Library (Restricted)
+      { path: "about/location", Component: () => <StaticPage pagePath="about/location" /> },
+      { path: "about/contact", Component: () => <StaticPage pagePath="about/contact" /> },
+      { path: "about/partners", Component: () => <StaticPage pagePath="about/partners" /> },
+      { path: "about/memberships", Component: () => <StaticPage pagePath="about/memberships" /> },
+      { path: "about/affiliations", Component: () => <StaticPage pagePath="about/affiliations" /> },
+
       {
         path: "library",
         Component: ProtectedLibraryRoute,
         children: [
-          { path: "codes", Component: Stub },
-          { path: "books", Component: Stub },
-          { path: "articles", Component: Stub },
-          { path: "glossary", Component: Stub },
+          { path: "codes", Component: () => <StaticPage pagePath="library/codes" /> },
+          { path: "books", Component: () => <StaticPage pagePath="library/books" /> },
+          { path: "articles", Component: () => <StaticPage pagePath="library/articles" /> },
+          { path: "glossary", Component: () => <StaticPage pagePath="library/glossary" /> },
         ],
       },
 
-      // Admin (Restricted)
       {
         path: "admin",
         Component: AdminRoute,
         children: [
           { path: "analytics", Component: AdminAnalytics },
           { path: "content", Component: AdminContent },
+          { path: "pages", Component: AdminPages },
+          { path: "profile", Component: AdminProfile },
         ],
       },
 

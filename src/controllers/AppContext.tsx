@@ -5,17 +5,27 @@ import { ApiService } from "../services/api";
 
 export type Role = "guest" | "member" | "admin" | "manager";
 
+type AppUser = {
+  name: string;
+  phone?: string;
+  uid?: string;
+  photoURL?: string;
+  email?: string;
+  bio?: string;
+};
+
 interface AppContextType {
   locale: Locale;
   setLocale: (lang: Locale) => void;
   t: (category: keyof typeof translations.en, key: string) => string;
   role: Role;
   setRole: (role: Role) => void;
-  user: { name: string; phone?: string; uid?: string; photoURL?: string; email?: string } | null;
+  user: AppUser | null;
   login: () => void;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
   signUpWithEmail: (name: string, email: string, pass: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
   logout: () => void;
 }
 
@@ -24,7 +34,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<Locale>("fa");
   const [role, setRole] = useState<Role>("guest");
-  const [user, setUser] = useState<{ name: string; phone?: string; uid?: string; photoURL?: string; email?: string } | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
 
   useEffect(() => {
     const savedLocale = localStorage.getItem("locale") as Locale;
@@ -41,11 +51,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const applyAuthenticatedUser = async (authUser: SupabaseUser) => {
     let userRole: Role = "member";
     let profileName = String(authUser.user_metadata?.name || authUser.email || "User");
+    let phone = "";
+    let photoURL = "";
+    let bio = "";
 
     try {
       const profile = await ApiService.getUserProfile(authUser.id);
       if (profile?.role) userRole = profile.role as Role;
       if (profile?.name) profileName = profile.name;
+      phone = profile?.phone || "";
+      photoURL = profile?.photoURL || "";
+      bio = profile?.bio || "";
     } catch (error) {
       console.error("Error fetching Supabase profile", error);
     }
@@ -54,6 +70,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       name: profileName,
       uid: authUser.id,
       email: authUser.email,
+      phone,
+      photoURL,
+      bio,
     });
     setRole(userRole);
   };
@@ -82,13 +101,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const signUpWithEmail = async (name: string, email: string, pass: string) => {
     const result = await SupabaseAuth.signUp(name, email, pass);
-    if (result.session && result.user) {
-      await applyAuthenticatedUser(result.user);
-    }
+    if (result.session && result.user) await applyAuthenticatedUser(result.user);
   };
 
   const resetPassword = async (email: string) => {
     await SupabaseAuth.resetPassword(email);
+  };
+
+  const refreshUserProfile = async () => {
+    if (!user?.uid) return;
+    const profile = await ApiService.getUserProfile(user.uid);
+    if (!profile) return;
+    setUser((current) => current ? {
+      ...current,
+      name: profile.name || current.name,
+      phone: profile.phone || "",
+      photoURL: profile.photoURL || "",
+      bio: profile.bio || "",
+    } : current);
+    if (profile.role) setRole(profile.role as Role);
   };
 
   const logout = async () => {
@@ -103,7 +134,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, login, loginWithEmail, signUpWithEmail, resetPassword, logout }}>
+    <AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, login, loginWithEmail, signUpWithEmail, resetPassword, refreshUserProfile, logout }}>
       {children}
     </AppContext.Provider>
   );

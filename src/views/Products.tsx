@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ContentCard from "../components/content/ContentCard";
 import { useAppContext } from "../controllers/AppContext";
+import { contentUi } from "../config/contentUi";
 import { ContentItem } from "../models";
 import { ContentRepository } from "../repositories/ContentRepository";
 
+const DESIGN_SLUGS = new Set(["single-storey-design", "double-storey-design", "multi-storey-design", "facades"]);
+
 export default function Products() {
   const { t, locale } = useAppContext();
+  const ui = contentUi(locale);
   const [products, setProducts] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,8 +23,8 @@ export default function Products() {
     return () => { active = false; };
   }, [locale]);
 
-  const designs = products.filter((item) => item.category === "Designs");
-  const elements = products.filter((item) => item.category !== "Designs");
+  const designs = products.filter((item) => DESIGN_SLUGS.has(item.slug));
+  const elements = products.filter((item) => !DESIGN_SLUGS.has(item.slug));
 
   return (
     <div className="min-h-screen bg-white pt-28 pb-24">
@@ -38,7 +42,7 @@ export default function Products() {
         </div>
 
         {loading ? (
-          <div className="py-24 text-center text-[#777]">Loading products…</div>
+          <div className="py-24 text-center text-[#777]">{ui.loadingProducts}</div>
         ) : (
           <>
             {designs.length > 0 && (
@@ -63,7 +67,7 @@ export default function Products() {
                   {elements.map((item) => <ContentCard key={item.id} item={item} />)}
                 </div>
               ) : (
-                <div className="py-16 text-center border-y border-[#e5e5e0] text-[#777]">No published products yet.</div>
+                <div className="py-16 text-center border-y border-[#e5e5e0] text-[#777]">{ui.noProducts}</div>
               )}
             </section>
           </>

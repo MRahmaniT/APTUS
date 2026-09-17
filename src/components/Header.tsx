@@ -73,18 +73,13 @@ export default function Header() {
   return (
     <div className="fixed top-4 left-0 right-0 w-full flex justify-center z-50 px-4 md:px-8">
       <header className="bg-white/80 backdrop-blur-md backdrop-saturate-[1.8] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/60 flex items-center justify-between px-4 py-5 w-full max-w-8xl mx-auto">
-        
-        {/* Left: Logo */}
         <div className="flex items-center shrink-0">
           <NavLink to="/" className="flex items-center gap-2 px-2 hover:opacity-70 transition-opacity">
-            {/* You can upload your own logo.png to public/images/ and it will be loaded here. 
-                If it's not found, we fallback to the default icon & text. */}
             <img 
               src="/images/logo.png" 
               alt="Aptus Logo" 
               className="h-10 w-auto object-contain"
               onError={(e) => {
-                // Fallback if image doesn't exist
                 e.currentTarget.style.display = 'none';
                 if (e.currentTarget.nextElementSibling) {
                   (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
@@ -98,9 +93,7 @@ export default function Header() {
           </NavLink>
         </div>
 
-        {/* Center: Desktop Navigation */}
         <nav className="hidden lg:flex items-center justify-center gap-1" aria-label="Main navigation">
-          {/* Home Link */}
           <NavLink to="/" className={({isActive}) => `flex items-center text-sm font-medium transition-all py-1.5 px-4 rounded-full ${isActive ? 'text-white bg-[#1a1a1a] not-italic' : 'text-gray-900 hover:text-black hover:bg-white/50 italic'}`}>{t("nav", "home")}</NavLink>
           {navItems.map((nav) => {
             const isCurrentActive = isNavActive(nav);
@@ -132,8 +125,6 @@ export default function Header() {
                   <span className="whitespace-nowrap">{nav.label}</span>
                   <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isHovered ? 'rotate-180 opacity-100' : (isCurrentActive ? 'opacity-100' : 'opacity-50')}`} />
                 </button>
-                
-                {/* Dropdown menu */}
                 <div className={`absolute top-full mt-2 ${locale === 'fa' ? 'right-0' : 'left-0'} w-56 bg-white/90 backdrop-blur-3xl backdrop-saturate-[1.8] border border-white/50 rounded-2xl shadow-xl py-2 overflow-hidden transition-all duration-200 ${isHovered ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}>
                   {nav.items?.map((item) => (
                     <NavLink
@@ -151,16 +142,13 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Right: Auth & Lang */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Compact Lang Switcher */}
           <div className="hidden sm:flex items-center border border-gray-200 bg-gray-50 rounded-full p-0.5">
             <button onClick={() => handleLanguageChange("fa")} className={`px-2.5 py-1 text-xs rounded-full transition-colors ${locale === "fa" ? "bg-white shadow-sm font-bold text-black" : "text-gray-500 hover:text-gray-900"}`}>فا</button>
             <button onClick={() => handleLanguageChange("en")} className={`px-2.5 py-1 text-xs rounded-full transition-colors ${locale === "en" ? "bg-white shadow-sm font-bold text-black" : "text-gray-500 hover:text-gray-900"}`}>EN</button>
             <button onClick={() => handleLanguageChange("tr")} className={`px-2.5 py-1 text-xs rounded-full transition-colors ${locale === "tr" ? "bg-white shadow-sm font-bold text-black" : "text-gray-500 hover:text-gray-900"}`}>TR</button>
           </div>
 
-          {/* Auth Button */}
           {user ? (
             <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full pl-3 pr-1 py-1">
               <span className="text-xs font-medium text-gray-700 max-w-[100px] truncate">{user.name}</span>
@@ -178,11 +166,10 @@ export default function Header() {
               className="hidden sm:flex items-center gap-2 bg-[#1a1a1a] text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-black transition-colors"
             >
               <UserCircle2 className="w-4 h-4" />
-              Sign in
+              {t("auth", "login")}
             </button>
           )}
 
-          {/* Mobile Menu Toggle */}
           <button 
             className="lg:hidden p-2 text-gray-600 hover:text-black bg-gray-50 rounded-full"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -192,7 +179,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="absolute top-[110%] left-4 right-4 bg-white/70 backdrop-blur-2xl backdrop-saturate-[1.8] border border-white/50 shadow-2xl rounded-2xl max-h-[calc(100vh-6rem)] overflow-y-auto">
           <div className="p-4 space-y-4">
@@ -257,7 +243,7 @@ export default function Header() {
                   className="w-full flex justify-center items-center gap-2 bg-[#1a1a1a] text-white px-4 py-3 rounded-xl text-sm font-medium"
                 >
                   <UserCircle2 className="w-5 h-5" />
-                  Sign in
+                  {t("auth", "login")}
                 </button>
               )}
             </div>

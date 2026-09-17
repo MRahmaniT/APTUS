@@ -14,7 +14,7 @@ const inputClass = "w-full rounded-xl border border-[#ddd] bg-white px-4 py-3 te
 
 export default function AdminPages() {
   const [locale, setLocale] = useState<Locale>("en");
-  const [path, setPath] = useState(PAGE_DEFINITIONS[0].path);
+  const [path, setPath] = useState<string>(PAGE_DEFINITIONS[0].path);
   const [page, setPage] = useState<EditablePage | null>(getSeedPage(PAGE_DEFINITIONS[0].path, "en"));
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -24,7 +24,7 @@ export default function AdminPages() {
   const direction = locale === "fa" ? "rtl" : "ltr";
   const selectedLabel = useMemo(() => PAGE_DEFINITIONS.find((entry) => entry.path === path)?.navKey || path, [path]);
 
-  const load = async (nextPath = path, nextLocale = locale) => {
+  const load = async (nextPath: string = path, nextLocale: Locale = locale) => {
     setLoading(true);
     setMessage("");
     setError("");

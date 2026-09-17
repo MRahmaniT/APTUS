@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Locale, translations } from "../config/translations";
-import { SupabaseAuth, SupabaseUser, isSupabaseConfigured } from "../config/supabase";
+import { ServerAuth, ServerUser, isServerDatabaseEnabled } from "../config/apiClient";
 import { ApiService } from "../services/api";
 
 export type Role = "guest" | "member" | "admin" | "manager";
@@ -21,7 +21,6 @@ interface AppContextType {
   role: Role;
   setRole: (role: Role) => void;
   user: AppUser | null;
-  login: () => void;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
   signUpWithEmail: (name: string, email: string, pass: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -48,22 +47,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("locale", locale);
   }, [locale]);
 
-  const applyAuthenticatedUser = async (authUser: SupabaseUser) => {
-    let userRole: Role = "member";
-    let profileName = String(authUser.user_metadata?.name || authUser.email || "User");
-    let phone = "";
-    let photoURL = "";
-    let bio = "";
+  const applyAuthenticatedUser = async (authUser: ServerUser) => {
+    let userRole: Role = (authUser.role as Role) || "member";
+    let profileName = String(authUser.name || authUser.email || "User");
+    let phone = authUser.phone || "";
+    let photoURL = authUser.photoURL || "";
+    let bio = authUser.bio || "";
 
     try {
-      const profile = await ApiService.getUserProfile(authUser.id);
+      const profile = authUser.id ? await ApiService.getUserProfile(authUser.id) : null;
       if (profile?.role) userRole = profile.role as Role;
       if (profile?.name) profileName = profile.name;
-      phone = profile?.phone || "";
-      photoURL = profile?.photoURL || "";
-      bio = profile?.bio || "";
+      phone = profile?.phone || phone;
+      photoURL = profile?.photoURL || photoURL;
+      bio = profile?.bio || bio;
     } catch (error) {
-      console.error("Error fetching Supabase profile", error);
+      console.error("Error fetching local server profile", error);
     }
 
     setUser({
@@ -79,33 +78,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    if (!isSupabaseConfigured) return;
+    if (!isServerDatabaseEnabled) return;
 
-    SupabaseAuth.restoreSession()
+    ServerAuth.restoreSession()
       .then((result) => {
         if (active && result?.user) return applyAuthenticatedUser(result.user);
       })
-      .catch((error) => console.error("Failed to restore Supabase session", error));
+      .catch((error) => console.error("Failed to restore server session", error));
 
     return () => { active = false; };
   }, []);
 
-  const login = () => {
-    SupabaseAuth.signInWithGoogle();
-  };
-
   const loginWithEmail = async (email: string, pass: string) => {
-    const result = await SupabaseAuth.signInWithPassword(email, pass);
+    const result = await ServerAuth.signInWithPassword(email, pass);
     await applyAuthenticatedUser(result.user);
   };
 
   const signUpWithEmail = async (name: string, email: string, pass: string) => {
-    const result = await SupabaseAuth.signUp(name, email, pass);
-    if (result.session && result.user) await applyAuthenticatedUser(result.user);
+    const result = await ServerAuth.signUp(name, email, pass);
+    await applyAuthenticatedUser(result.user);
   };
 
   const resetPassword = async (email: string) => {
-    await SupabaseAuth.resetPassword(email);
+    await ServerAuth.resetPassword(email);
   };
 
   const refreshUserProfile = async () => {
@@ -123,7 +118,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await SupabaseAuth.signOut();
+    await ServerAuth.signOut();
     setUser(null);
     setRole("guest");
   };
@@ -134,7 +129,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, login, loginWithEmail, signUpWithEmail, resetPassword, refreshUserProfile, logout }}>
+    <AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, loginWithEmail, signUpWithEmail, resetPassword, refreshUserProfile, logout }}>
       {children}
     </AppContext.Provider>
   );

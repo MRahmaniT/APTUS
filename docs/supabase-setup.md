@@ -2,21 +2,28 @@
 
 The frontend is migrated away from Firebase/Firestore. The old remote Firebase project is **not** deleted by this code change, so it remains available if you later discover data that needs to be exported.
 
+The active Supabase project is:
+
+- Project: `APTUS`
+- Project ref: `bfnjicttfkxuvtcjdqdm`
+- Region: `eu-central-1`
+- Project URL: `https://bfnjicttfkxuvtcjdqdm.supabase.co`
+
 From the previous code, Firestore was only used for:
 
 - `users` — role/profile records
 - `cms` — shared page content such as the home hero title/subtitle
 - `analytics` — daily view counts
 
-## 1. Create the Supabase project
+## 1. Frontend environment
 
-Create a Supabase project for APTUS. The browser application uses the Project URL and the publishable/anon key; never put a service-role key in Vite environment variables.
+The browser application uses the Project URL and the publishable key; never put a service-role key in Vite environment variables.
 
 Copy `.env.example` to `.env.local` and set:
 
 ```env
-VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_OR_ANON_KEY
+VITE_SUPABASE_URL=https://bfnjicttfkxuvtcjdqdm.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 VITE_SITE_URL=http://localhost:5173
 ```
 

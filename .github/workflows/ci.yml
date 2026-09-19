@@ -6,6 +6,7 @@ on:
       - new
       - 'development/**'
       - 'release/**'
+      - 'demo/**'
   pull_request:
 
 jobs:
@@ -53,6 +54,9 @@ jobs:
 
       - name: Build web
         run: npm run build
+
+      - name: Build offline demo web
+        run: npm run build -- --mode demo
 
       - name: Check API syntax
         run: npm run check --prefix server

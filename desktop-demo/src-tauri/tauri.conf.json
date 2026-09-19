@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "identifier": "az.aptus.demo",
   "build": {
-    "beforeDevCommand": "npm --prefix ../.. run dev -- --mode demo",
-    "devUrl": "http://localhost:5173",
-    "beforeBuildCommand": "npm --prefix ../.. run build -- --mode demo",
     "frontendDist": "../../dist"
   },
   "app": {

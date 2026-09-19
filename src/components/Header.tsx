@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router";
-import { Building2, ChevronDown, UserCircle2, Globe, LogOut, Menu, X, ShieldAlert } from "lucide-react";
+import { Building2, ChevronDown, UserCircle2, LogOut, Menu, X, ShieldAlert, Monitor } from "lucide-react";
 import { useAppContext } from "../controllers/AppContext";
 import { Locale } from "../config/translations";
+import { isDesktopDemo } from "../config/apiClient";
 
 export default function Header() {
   const { locale, setLocale, t, user, role, logout } = useAppContext();
@@ -149,7 +150,12 @@ export default function Header() {
             <button onClick={() => handleLanguageChange("tr")} className={`px-2.5 py-1 text-xs rounded-full transition-colors ${locale === "tr" ? "bg-white shadow-sm font-bold text-black" : "text-gray-500 hover:text-gray-900"}`}>TR</button>
           </div>
 
-          {user ? (
+          {isDesktopDemo ? (
+            <div className="hidden sm:flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-full px-3 py-1.5">
+              <Monitor className="w-4 h-4" />
+              <span className="text-xs font-semibold tracking-wide">Offline Demo</span>
+            </div>
+          ) : user ? (
             <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full pl-3 pr-1 py-1">
               <span className="text-xs font-medium text-gray-700 max-w-[100px] truncate">{user.name}</span>
               <button 
@@ -227,7 +233,12 @@ export default function Header() {
             ))}
 
             <div className="pt-2 border-t border-gray-100">
-              {user ? (
+              {isDesktopDemo ? (
+                <div className="flex items-center justify-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3">
+                  <Monitor className="w-5 h-5" />
+                  <span className="text-sm font-semibold">Offline Desktop Demo</span>
+                </div>
+              ) : user ? (
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">{user.name}</div>

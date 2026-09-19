@@ -37,6 +37,9 @@ jobs:
       - name: Typecheck frontend
         run: npm run typecheck
 
+      - name: Build offline demo frontend
+        run: npm run build -- --mode demo
+
       - name: Build Windows desktop demo
         uses: tauri-apps/tauri-action@v1
         with:

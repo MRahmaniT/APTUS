@@ -19,6 +19,7 @@ const dataMode = import.meta.env.VITE_DATA_MODE || "server";
 const SESSION_KEY = "aptus.server.session";
 
 export const isServerDatabaseEnabled = dataMode !== "local";
+export const isDesktopDemo = import.meta.env.VITE_DEMO_APP === "true";
 
 function readStoredSession(): ServerSession | null {
   try {

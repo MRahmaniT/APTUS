@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Locale, translations } from "../config/translations";
-import { ServerAuth, ServerUser, isServerDatabaseEnabled } from "../config/apiClient";
+import { ServerAuth, ServerUser, isDesktopDemo, isServerDatabaseEnabled } from "../config/apiClient";
 import { ApiService } from "../services/api";
 
 export type Role = "guest" | "member" | "admin" | "manager";
@@ -30,10 +30,17 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const DEMO_USER: AppUser = {
+  name: "APTUS Demo",
+  uid: "demo-manager",
+  email: "demo@aptus.local",
+  bio: "Offline desktop demonstration account",
+};
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("fa");
-  const [role, setRole] = useState<Role>("guest");
-  const [user, setUser] = useState<AppUser | null>(null);
+  const [locale, setLocale] = useState<Locale>(isDesktopDemo ? "en" : "fa");
+  const [role, setRole] = useState<Role>(isDesktopDemo ? "manager" : "guest");
+  const [user, setUser] = useState<AppUser | null>(isDesktopDemo ? DEMO_USER : null);
 
   useEffect(() => {
     const savedLocale = localStorage.getItem("locale") as Locale;
@@ -78,6 +85,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    if (isDesktopDemo) return;
     if (!isServerDatabaseEnabled) return;
 
     ServerAuth.restoreSession()
@@ -90,20 +98,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithEmail = async (email: string, pass: string) => {
+    if (isDesktopDemo) {
+      setUser(DEMO_USER);
+      setRole("manager");
+      return;
+    }
     const result = await ServerAuth.signInWithPassword(email, pass);
     await applyAuthenticatedUser(result.user);
   };
 
   const signUpWithEmail = async (name: string, email: string, pass: string) => {
+    if (isDesktopDemo) {
+      setUser({ ...DEMO_USER, name: name || DEMO_USER.name, email: email || DEMO_USER.email });
+      setRole("manager");
+      return;
+    }
     const result = await ServerAuth.signUp(name, email, pass);
     await applyAuthenticatedUser(result.user);
   };
 
   const resetPassword = async (email: string) => {
+    if (isDesktopDemo) return;
     await ServerAuth.resetPassword(email);
   };
 
   const refreshUserProfile = async () => {
+    if (isDesktopDemo) return;
     if (!user?.uid) return;
     const profile = await ApiService.getUserProfile(user.uid);
     if (!profile) return;
@@ -118,6 +138,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    if (isDesktopDemo) {
+      setUser(DEMO_USER);
+      setRole("manager");
+      return;
+    }
     await ServerAuth.signOut();
     setUser(null);
     setRole("guest");

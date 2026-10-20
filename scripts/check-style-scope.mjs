@@ -16,7 +16,7 @@ const presentation = [
   ...classOnly, "src/index.css", "src/styles/catalog-theme.css",
   "public/fonts/IRANSans-web.woff", ".gitattributes",
   ".github/workflows/ci.yml", "scripts/check-style-scope.mjs",
-  "scripts/browser-smoke.mjs", "docs/catalog-visual-style.md",
+  "scripts/browser-smoke.mjs", "scripts/catalog-visual-qa.mjs", "docs/catalog-visual-style.md",
 ];
 const git = (...args) => execFileSync("git", args, { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
 const changed = git("diff", "--name-only", baseline, "HEAD").trim().split("\n").filter(Boolean);

@@ -47,13 +47,19 @@ try {
           await page.locator('.model-frame .pin[data-part="column"]').click();
           assert.equal(await page.locator('.part-selector button[data-part="column"]').getAttribute("aria-pressed"),"true");
           const panels=page.locator(".aptus-applications .ag-panel");
+          await page.mouse.move(0,0);
           await page.keyboard.press("Tab");
           await panels.nth(0).focus();
           await page.waitForFunction(()=>document.querySelector(".aptus-applications .ag-panel")?.getAttribute("aria-current")==="true");
+          try {
           await page.waitForFunction(()=>{
             const p=[...document.querySelectorAll(".aptus-applications .ag-panel")];
             return parseFloat(getComputedStyle(p[0]).flexGrow)>2*parseFloat(getComputedStyle(p[1]).flexGrow);
           });
+          } catch(error){
+            console.log("Gallery diagnostic",name,locale,await panels.evaluateAll(elements=>elements.map(el=>({active:el.getAttribute("aria-current"),inline:el.getAttribute("style"),grow:getComputedStyle(el).flexGrow}))));
+            throw error;
+          }
           await panels.nth(0).press("ArrowRight");
           await page.waitForFunction(()=>document.querySelectorAll(".aptus-applications .ag-panel")[1]?.getAttribute("aria-current")==="true");
           if(width>=1024){await panels.nth(4).hover();await page.waitForFunction(()=>document.querySelectorAll(".aptus-applications .ag-panel")[4]?.getAttribute("aria-current")==="true");}

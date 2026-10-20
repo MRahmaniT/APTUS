@@ -28,7 +28,7 @@ html{scroll-padding-top:110px}
  width:calc(100% - 36px);max-width:1560px;min-height:78px;height:auto;margin:0 auto;padding:9px 14px;
  color:#333;background:linear-gradient(115deg,#fffffff2,#e6e6e6c7 52%,#fffffff2);
  border:1px solid #fff;border-radius:999px;box-shadow:0 12px 35px #33333320,inset 0 1px #fff;
- backdrop-filter:blur(28px) saturate(175%)!important;-webkit-backdrop-filter:blur(28px) saturate(175%)!important;
+ backdrop-filter:blur(28px) saturate(175%)!important;
 }
 .aptus-header>div:first-child{padding-inline:8px 13px}
 .aptus-header>div:first-child a{padding:0}
@@ -45,7 +45,7 @@ html{scroll-padding-top:110px}
 .aptus-desktop-nav .group>div{
  top:100%;margin-top:12px;padding:9px;min-width:210px;max-width:285px;max-height:min(60vh,580px);overflow:auto;
  background:#fffffff2;border:1px solid #fff;border-radius:23px;box-shadow:0 20px 45px #33333330;
- backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+ backdrop-filter:blur(24px);
 }
 .aptus-desktop-nav .group>div a{display:block;padding:9px 12px;border:0;border-radius:13px;color:#333;font-size:.78rem;line-height:1.6;font-weight:500}
 .aptus-desktop-nav .group>div a:hover{background:#e6e6e6}
@@ -90,7 +90,7 @@ html[dir=ltr] .aptus-cover::before{background:linear-gradient(90deg,#0c161dbb,#0
 .aptus-applications .ag-panel{
  display:flex;flex-direction:column;min-width:0;min-height:320px;flex:none!important;transform:none!important;border:1px solid #fff;
  border-radius:25px!important;overflow:hidden;background:linear-gradient(145deg,#ffffffed,#ffffffe0);box-shadow:var(--glass-shadow);
- backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;will-change:auto;transition:transform .25s,box-shadow .25s;
+ backdrop-filter:blur(18px)!important;will-change:auto;transition:transform .25s,box-shadow .25s;
 }
 .aptus-applications .ag-panel:hover{box-shadow:0 20px 43px #33333330}
 .aptus-applications .ag-panel__frame{position:relative;inset:auto;display:block;flex:none;width:100%;height:220px;border-radius:0;overflow:hidden}
@@ -120,7 +120,7 @@ html[dir=ltr] .aptus-cover::before{background:linear-gradient(90deg,#0c161dbb,#0
 .aptus-content-card{
  display:flex;flex-direction:column;aspect-ratio:auto;min-width:0;height:100%;overflow:hidden;
  border:1px solid #fff;border-radius:27px;background:linear-gradient(145deg,#ffffffed,#ffffffe0);
- box-shadow:var(--glass-shadow);backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+ box-shadow:var(--glass-shadow);backdrop-filter:blur(18px)!important;
  color:#333;transition:transform .23s,box-shadow .23s,border-color .23s;
 }
 .aptus-content-card:hover{transform:translateY(-6px);box-shadow:0 20px 43px #33333330}
@@ -131,7 +131,7 @@ html[dir=ltr] .aptus-cover::before{background:linear-gradient(90deg,#0c161dbb,#0
 .aptus-content-card>.part-caption{
  position:relative;inset:auto;display:flex;flex-direction:column;flex:1;min-height:300px;margin:0 10px 10px;padding:18px 19px;
  border:1px solid #fff;border-radius:19px;background:#ffffffe0;color:#333;box-shadow:0 -6px 20px #ffffff88;
- backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+ backdrop-filter:blur(18px)!important;
 }
 .part-caption h3{font-size:1.08rem;font-weight:700;line-height:1.65;min-height:3.3em;margin:8px 0 4px;color:#333}
 .part-caption>div:first-child:not([class*="grid-rows"]){font-size:.68rem;line-height:1.7;color:#666;margin-bottom:5px}

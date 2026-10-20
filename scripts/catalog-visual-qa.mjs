@@ -70,6 +70,15 @@ try{
  }
  await writeFile("qa-artifacts/catalog-style-comparison.json",JSON.stringify(comparisons,null,2));
  console.log("Catalog visual comparison:",JSON.stringify(comparisons));
+ if(differences.length){
+  const diagnostic=await browser.newPage();
+  await diagnostic.goto("http://127.0.0.1:3000/",{waitUntil:"networkidle"});
+  console.log("Backdrop CSS diagnostic:",await diagnostic.evaluate(async()=>{
+    const texts=await Promise.all([...document.querySelectorAll('link[rel="stylesheet"]')].map(async link=>await (await fetch(link.href)).text()));
+    return {supports:CSS.supports("backdrop-filter","blur(18px)"),rules:texts.flatMap(css=>(css.match(/[^{}]*aptus-(?:header|content-card|applications)[^{}]*\\{[^}]*\\}/g)||[]).filter(rule=>rule.includes("backdrop")))};
+  }));
+  await diagnostic.close();
+ }
  assert.deepEqual(differences,[],"Shared components must match the actual catalog's computed styles.");
  console.log("PASS: catalog header, cover, typography, application cards, product cards, buttons, system panels and footer match at desktop and mobile sizes.");
 }finally{await browser.close();}

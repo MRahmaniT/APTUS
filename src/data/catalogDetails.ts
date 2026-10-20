@@ -1337,8 +1337,8 @@ export function catalogContent(item: ContentItem): ContentItem {
  let title = item.title, abstract = item.abstract, body = item.body, coverImage = item.coverImage;
  let gallery: string[] = [], specs: Record<string,string> = {}, highlights: string[] = [];
  if(part){
-  title = part.name; abstract = part.description; body = ("paragraphs" in part ? part.paragraphs : [part.description]).join("\n\n");
-  coverImage = part.image; gallery = "gallery" in part ? part.gallery : [part.image];
+  title = part.name; abstract = part.description; body = ("paragraphs" in part ? part.paragraphs ?? [part.description] : [part.description]).join("\n\n");
+  coverImage = part.image; gallery = "gallery" in part ? part.gallery ?? [part.image] : [part.image];
   highlights = part.points;
  } else if(item.slug === "facades") {
   title = d.facades.title; abstract = d.facades.note; body = d.facades.aside || d.facades.note;

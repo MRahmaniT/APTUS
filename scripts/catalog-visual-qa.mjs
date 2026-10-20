@@ -54,6 +54,7 @@ try{
     comparisons.push({viewport:name,component,expected,actual,mismatch});
     for(const key of mismatch) differences.push(name+" "+component+" "+key+": "+actual[key]+" != "+expected[key]);
   }
+  await reference.evaluate(()=>document.querySelector(".qa-card").remove());
   await capture(reference,name+"-catalog-cover",null,name==="desktop");
   await capture(website,name+"-website-cover",null,true);
   if(name==="desktop"){

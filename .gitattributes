@@ -145,5 +145,5 @@
 *.nc                 filter=lfs diff=lfs merge=lfs -text
 *.mat                filter=lfs diff=lfs merge=lfs -text
 
-# Keep the imported catalog self-contained; preserve original asset bytes in Git.
-public/catalog/assets/** -filter -diff -merge -text
+# Bundle the catalog typeface as an ordinary Git file.
+public/fonts/** -filter -diff -merge -text

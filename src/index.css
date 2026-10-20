@@ -1,6 +1,10 @@
 @import "tailwindcss";
-@import "./catalog/styles.css";
-@import "./catalog/glass.css";
-@import "./catalog/brand.css";
-@import "./catalog/redesign.css";
-@import "./website.css";
+@import "./styles/catalog-theme.css";
+
+html,body,#root{min-height:100%;height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#333}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#b8b8b8;border-radius:3px}
+html{scrollbar-width:thin;scrollbar-color:#b8b8b8 transparent}

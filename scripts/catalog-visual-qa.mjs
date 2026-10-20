@@ -26,7 +26,9 @@ const groups=[
 ];
 async function styles(page,selector,keys,pseudo=null){
   return page.locator(selector).first().evaluate((el,{names,pseudo})=>{
-    const css=getComputedStyle(el,pseudo);return Object.fromEntries(names.map(key=>[key,css[key]]));
+    const css=getComputedStyle(el,pseudo);
+    const canonical=value=>String(value).replaceAll("to left","270deg").replaceAll("to right","90deg").replaceAll("to bottom","180deg").replaceAll("to top","0deg");
+    return Object.fromEntries(names.map(key=>[key,canonical(css[key])]));
   },{names:keys,pseudo});
 }
 async function capture(page,name,selector,inline=false){

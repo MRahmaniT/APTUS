@@ -1,63 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
-@import 'tailwindcss';
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-:root {
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-}
-
-html[dir="rtl"] {
-  --font-display: 'Vazirmatn', system-ui, sans-serif;
-  --font-body: 'Vazirmatn', system-ui, sans-serif;
-}
-
-body {
-  font-family: var(--font-body);
-  background: #fafaf8;
-  color: #111;
-}
-
-/* Apple-inspired clear liquid-glass treatment for the existing header shell only. */
-.fixed.top-4 > header {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.24)) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-color: rgba(255, 255, 255, 0.72) !important;
-  box-shadow:
-    0 10px 35px rgba(15, 23, 42, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.20) !important;
-}
-
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .fixed.top-4 > header {
-    background: rgba(255, 255, 255, 0.92) !important;
-  }
-}
-
-/* Scrollbar: hide by default, show on scroll */
-::-webkit-scrollbar {
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
-}
-html {
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
-}
+@import "tailwindcss";
+@import "./catalog/styles.css";
+@import "./catalog/glass.css";
+@import "./catalog/brand.css";
+@import "./catalog/redesign.css";
+@import "./website.css";

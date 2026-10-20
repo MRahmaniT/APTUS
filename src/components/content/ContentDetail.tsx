@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ArrowLeft, ArrowRight, Check, ExternalLink } from "lucide-react";
 import { ContentItem, ContentMedia } from "../../models";
 import { useAppContext } from "../../controllers/AppContext";
+import { catalogTechnicalPdf, catalogDetails } from "../../data/catalogDetails";
 import { contentUi } from "../../config/contentUi";
 
 function backHref(type: ContentItem["type"]) {
@@ -272,6 +273,9 @@ export default function ContentDetail({ item }: { item: ContentItem }) {
         {backLabel}
       </Link>
       <Template item={item} />
+      {item.type === "product" && catalogTechnicalPdf(item.slug, locale) && (
+        <a className="solid-button inline-flex mt-8 px-6 py-3 rounded-full" href={catalogTechnicalPdf(item.slug, locale)!} target="_blank" rel="noopener noreferrer">{catalogDetails(locale).labels.technical}</a>
+      )}
       {item.seo?.description && (
         <a href={item.cta?.url || backHref(item.type)} className="sr-only">
           {item.seo.description} <ExternalLink />

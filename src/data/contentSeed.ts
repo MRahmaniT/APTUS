@@ -1,4 +1,5 @@
 import { ContentItem } from "../models";
+import { catalogContent } from "./catalogDetails";
 
 const now = "2026-09-01T09:00:00.000Z";
 
@@ -31,7 +32,7 @@ const product = (
   media: [{ mediaType: "image", url: coverImage, alt: title, sortOrder: 0 }],
 });
 
-export const CONTENT_SEED: ContentItem[] = [
+const ORIGINAL_CONTENT_SEED: ContentItem[] = [
   product(
     "seed-product-single",
     "single-storey-design",
@@ -279,3 +280,5 @@ export const CONTENT_SEED: ContentItem[] = [
     media: [],
   },
 ];
+
+export const CONTENT_SEED: ContentItem[] = ORIGINAL_CONTENT_SEED.map(catalogContent);

@@ -1,4 +1,5 @@
 import { ContentItem } from "../models";
+import { catalogContent } from "./catalogDetails";
 import { CONTENT_SEED } from "./contentSeed";
 import { CONTENT_TRANSLATIONS } from "./contentTranslations";
 
@@ -22,7 +23,7 @@ export const LOCALIZED_CONTENT_SEED: ContentItem[] = (["fa", "tr"] as const).red
     const translated = CONTENT_TRANSLATIONS[locale][item.slug];
     if (!translated) return;
 
-    all.push({
+    all.push(catalogContent({
       ...item,
       id: `${item.id}-${locale}`,
       locale,
@@ -35,7 +36,7 @@ export const LOCALIZED_CONTENT_SEED: ContentItem[] = (["fa", "tr"] as const).red
       cta: item.cta?.url ? { label: CTA[locale], url: item.cta.url } : {},
       seo: { title: `${translated.title} | APTUS`, description: translated.abstract },
       media: (item.media || []).map((media) => ({ ...media, alt: translated.title })),
-    });
+    }));
   });
   return all;
 }, []);

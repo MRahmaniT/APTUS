@@ -34,10 +34,10 @@ export default function Products() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t("nav", "products")}</h1>
           <p className="text-xl text-gray-600 font-light">
             {locale === "fa"
-              ? "مجموعه کامل محصولات پیش‌ساخته بتنی و طرح‌های سازه‌ای ما."
+              ? "اجزای سیستم سوله بتنی پیش‌ساخته آپتوس، تیپ‌های استاندارد و طرح‌های نماسازی."
               : locale === "tr"
-              ? "Prefabrik beton ürünlerimizin ve yapısal tasarımlarımızın eksiksiz koleksiyonu."
-              : "Our complete range of precast concrete products and structural designs."}
+              ? "APTUS prefabrik beton yapı bileşenleri, standart tipler ve cephe konseptleri."
+              : "APTUS precast shed components, standard types and facade concepts."}
           </p>
         </div>
 

@@ -4,11 +4,13 @@ import Header from "../components/Header";
 import AuthModal from "../components/AuthModal";
 import RoleSwitcher from "../components/RoleSwitcher";
 import { useAppContext } from "../controllers/AppContext";
+import { catalogDetails, catalogPhone, catalogAsset } from "../data/catalogDetails";
 import { contentUi } from "../config/contentUi";
 
 export default function Layout() {
   const { t, role, locale } = useAppContext();
   const ui = contentUi(locale);
+  const d = catalogDetails(locale);
   
   return (
     <div className="aptus-site min-h-full flex flex-col bg-[#fafaf8] text-[#111]">
@@ -23,14 +25,14 @@ export default function Layout() {
       <div className="aptus-footer-shell px-4 md:px-8 pb-4 md:pb-8 w-full mt-auto">
         <footer className="aptus-footer bg-gray-50 text-gray-900 rounded-[2rem] shadow-xl border border-gray-200 overflow-hidden flex flex-col w-full max-w-8xl mx-auto">
           <div className="aptus-footer-hero w-full h-40 md:h-64 overflow-hidden relative bg-[#1a0c00]">
-            <img src="/images/karaj_heatwave_20260908_211222.png" alt="APTUS" className="w-full h-full object-cover opacity-80" style={{ objectPosition: "center 30%" }} />
+            <img src={catalogAsset("blue.png")} alt="APTUS" className="w-full h-full object-cover opacity-80" style={{ objectPosition: "center 30%" }} />
           </div>
           
           <div className="aptus-footer-body px-6 md:px-12 pt-14 pb-8 w-full">
             <div className="grid md:grid-cols-4 gap-10 mb-12">
               <div className="md:col-span-1">
-                <p className="text-2xl font-extrabold italic uppercase">Aptus</p>
-                <p className="mt-3 text-sm text-gray-500 leading-relaxed">{ui.footerDescription}</p>
+                <img src="/images/aptus-brand.svg" alt={d.companyName} className="aptus-footer-brand" />
+                <p className="mt-3 text-sm text-gray-500 leading-relaxed">{d.footer.summary}</p>
               </div>
               
               <div>
@@ -54,8 +56,8 @@ export default function Layout() {
               <div>
                 <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-gray-900 mb-4">{t("nav", "about_contact")}</h4>
                 <address className="not-italic space-y-2.5 text-sm text-gray-500">
-                  <p>sales@aptus.com</p>
-                  <p>+1 (800) 555-0190</p>
+                  <p>{d.address}</p>
+                  <a dir="ltr" href={"tel:" + catalogPhone.replace(/[^+\\d]/g, "")}>{catalogPhone}</a>
                 </address>
                 {(role === "admin" || role === "manager") && (
                   <div className="mt-8 flex flex-col gap-2">
@@ -70,7 +72,7 @@ export default function Layout() {
 
             <div className="pt-6 border-t border-gray-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-500 italic font-medium">{ui.copyright}</p>
-              <p className="aptus-footer-tagline text-sm text-gray-500 italic font-medium">{ui.footerTagline}</p>
+              <p className="aptus-footer-tagline text-sm text-gray-500 italic font-medium">{d.footer.tagline}</p>
             </div>
           </div>
         </footer>

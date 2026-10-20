@@ -52,7 +52,7 @@ jobs:
       - name: Install API dependencies
         run: npm install --prefix server --ignore-scripts
 
-      - name: Verify visual-only scope against original website
+      - name: Verify website structure and original catalog media
         run: node scripts/check-style-scope.mjs
 
       - name: Typecheck web

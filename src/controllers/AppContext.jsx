@@ -98,7 +98,6 @@ export function AppProvider({ children }) {
         setRole("guest");
     };
     const t = (category, key) => {
-        // @ts-ignore dynamic translation lookup is intentionally tolerant of CMS keys
         return translations[locale][category]?.[key] || key;
     };
     return (<AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, loginWithEmail, signUpWithEmail, resetPassword, refreshUserProfile, logout }}>

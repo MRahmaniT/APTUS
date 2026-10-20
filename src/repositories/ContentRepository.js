@@ -11,7 +11,7 @@ function getLocalContent() {
     try {
         const stored = localStorage.getItem(LOCAL_CONTENT_KEY);
         if (!stored) return cloneBaseContent();
-        const custom = JSON.parse(stored).filter(item => !String(item.id).startsWith("seed-"));
+        const custom = JSON.parse(stored).filter(item => (!String(item.id).startsWith("seed-") || Boolean(item.updatedAt)));
         const keys = new Set(custom.map(item => [item.type,item.slug,item.locale].join(":")));
         return [...custom,...cloneBaseContent().filter(item => !keys.has([item.type,item.slug,item.locale].join(":")))];
     }

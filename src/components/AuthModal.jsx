@@ -81,21 +81,21 @@ export default function AuthModal() {
 
           <form onSubmit={handleSubmit} className="space-y-4 mb-6">
             {mode === "signup" && (<div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{copy.fullName}</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" required/>
+                <label htmlFor="auth-name" className="block text-sm font-medium text-gray-700 mb-1">{copy.fullName}</label>
+                <input id="auth-name" autoComplete="name" type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" required/>
               </div>)}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{copy.email}</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" dir="ltr" required/>
+              <label htmlFor="auth-email" className="block text-sm font-medium text-gray-700 mb-1">{copy.email}</label>
+              <input id="auth-email" autoComplete="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" dir="ltr" required/>
             </div>
 
             {mode !== "forgot" && (<div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700">{copy.password}</label>
+                  <label htmlFor="auth-password" className="block text-sm font-medium text-gray-700">{copy.password}</label>
                   {mode === "login" && (<button type="button" onClick={() => { setMode("forgot"); setError(""); setSuccess(""); }} className="text-xs text-blue-600 hover:underline">{copy.forgot}</button>)}
                 </div>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" dir="ltr" required minLength={8}/>
+                <input id="auth-password" autoComplete={mode==="signup"?"new-password":"current-password"} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" dir="ltr" required minLength={8}/>
               </div>)}
 
             {error && <p className="text-sm text-red-500">{error}</p>}

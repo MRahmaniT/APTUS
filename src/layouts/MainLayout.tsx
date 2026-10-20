@@ -57,7 +57,7 @@ export default function Layout() {
                 <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-gray-900 mb-4">{t("nav", "about_contact")}</h4>
                 <address className="not-italic space-y-2.5 text-sm text-gray-500">
                   <p>{d.address}</p>
-                  <a dir="ltr" href={"tel:" + catalogPhone.replace(/[^+\\d]/g, "")}>{catalogPhone}</a>
+                  <a dir="ltr" href={"tel:" + catalogPhone.replace(/[^+\d]/g, "")}>{catalogPhone}</a>
                 </address>
                 {(role === "admin" || role === "manager") && (
                   <div className="mt-8 flex flex-col gap-2">

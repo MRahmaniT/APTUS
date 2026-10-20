@@ -303,11 +303,11 @@ html[dir=ltr] .aptus-cover::before{background:linear-gradient(90deg,#0c161dbb,#0
 /* Catalog editorial imagery: render remains legible without cropping the structure. */
 .aptus-cover{background:#e6e6e6}
 .aptus-cover-image{object-fit:contain;object-position:center right;background:#e6e6e6}
-.aptus-cover::after{background:linear-gradient(90deg,#333b 0%,#3338 38%,transparent 80%)}
-html[dir=rtl] .aptus-cover::after{background:linear-gradient(270deg,#333b 0%,#3338 38%,transparent 80%)}
+.aptus-cover::before{background:linear-gradient(90deg,#333b 0%,#3338 38%,transparent 80%)}
+html[dir=rtl] .aptus-cover::before{background:linear-gradient(270deg,#333b 0%,#3338 38%,transparent 80%)}
 .aptus-system-picture>img{object-fit:contain;background:#fff}
 .aptus-footer-brand{width:min(100%,250px);height:auto;max-height:85px;object-fit:contain;object-position:left center}
 .aptus-footer address{overflow-wrap:anywhere}
 .aptus-home .aptus-content-card>img{object-fit:contain;background:#f7f7f7}
 .aptus-detail img[src*="/catalog-assets/parts/"],.aptus-detail img[src*="/catalog-assets/part-gallery/"],.aptus-detail img[src*="system-3d-view"],.aptus-detail img[src*="semi-assembly"],.aptus-detail img[src*="/render.png"]{object-fit:contain;background:#fff}
-@media(max-width:580px){.aptus-cover-image{object-position:center bottom}.aptus-cover::after{background:linear-gradient(180deg,#333b,#3336 65%,transparent)}}
+@media(max-width:580px){.aptus-cover-image{object-position:center bottom}.aptus-cover::before{background:linear-gradient(180deg,#333b,#3336 65%,transparent)}}

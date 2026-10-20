@@ -35,7 +35,7 @@ export default function ContentCard({ item }: { item: ContentItem }) {
 
       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/65 group-hover:backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]" />
 
-      <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+      <div className="part-caption absolute inset-0 p-6 flex flex-col justify-end text-white">
         <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.15em] text-white/75 mb-3">
           <span>{item.category || item.type}</span>
           {date && <span>{date}</span>}

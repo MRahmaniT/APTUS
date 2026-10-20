@@ -1,22 +1,27 @@
-# Catalog visual style, original website
+# Catalog layout applied to the original website
 
-The website baseline is commit `4440f6197fdb3a84cc4eee8cbe8fa9b055322191` on `new`.
-The catalog is a visual reference only. The original website's sections, order, navigation,
-text, images, product data, languages, URLs, accounts, CMS and PostgreSQL API are preserved.
+Reference: APTUS-Catalog `75c645424c5ac5dba0d27c15e889d07a1aeebf91`.
+Website content baseline: `4440f6197fdb3a84cc4eee8cbe8fa9b055322191`.
 
-The theme in `src/styles/catalog-theme.css` applies the catalog's gray/orange palette,
-local IRANSans font, translucent rounded header, pill buttons, rounded image/text cards,
-panels, forms and footer to the existing website components. Components only add CSS classes.
-The website retains its React/TypeScript implementation.
+The existing website keeps its three homepage sections, five application links, six home products,
+product/design pages, news, projects, about pages, library, translations, CMS and PostgreSQL API.
+All original text and media remain. The cover repeats the first existing gallery photo as a
+decorative background. The shared header brand now uses the catalog's actual vector mark,
+including its embedded logo fonts, instead of the old unrelated icon.
 
-Run `npm ci`, `node scripts/check-style-scope.mjs`, `npm run typecheck` and `npm run build`.
-The scope check compares every changed path against the original website and compares the
-five components as TypeScript syntax trees after removing CSS class attributes.
+The theme implements the catalog's finished layouts and shared component dimensions:
+- Floating capsule header, navigation pills and glass dropdowns.
+- Continuous photographic cover, white title and orange vertical rule.
+- Five image/caption application cards, preserving all original gallery links.
+- Full-width introduction panel, orange statistics and three-column product grid.
+- Inset image/caption cards with the catalog's borders, shadows, spacing and footer action.
+- AIPS image/text panel pair, index/detail reading grids and specification cards.
+- Photo-backed footer banner with all existing website footer links and contact material.
 
-Web CI also runs the original API/CMS smoke check and browser checks against the built site:
-three viewport sizes, Persian/English/Turkish, nine original public routes, original homepage
-sections and images, mobile navigation, member signup/login and protected library access.
-Screenshots are attached to each workflow run as `website-visual-qa`.
+`scripts/check-style-scope.mjs` checks every changed path against the original site. It compares
+component syntax with classes removed and explicitly normalizes only the approved decorative
+cover wrapper and shared brand asset. Source data, API, routes and account/CMS logic stay exact.
 
-Original website images use Git LFS: run `git lfs pull` if your checkout contains pointer files.
-The catalog font is bundled directly and does not require an external font service.
+Web CI runs typecheck/build, the original database/API integration test, 81 route/language/viewport
+checks, and a rendered comparison with a pinned checkout of the actual catalog. Screenshots and
+computed style comparisons are attached as `website-visual-qa`.

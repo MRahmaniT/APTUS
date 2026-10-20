@@ -20,13 +20,13 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <div className="px-4 md:px-8 pb-4 md:pb-8 w-full mt-auto">
+      <div className="aptus-footer-shell px-4 md:px-8 pb-4 md:pb-8 w-full mt-auto">
         <footer className="aptus-footer bg-gray-50 text-gray-900 rounded-[2rem] shadow-xl border border-gray-200 overflow-hidden flex flex-col w-full max-w-8xl mx-auto">
-          <div className="w-full h-40 md:h-64 overflow-hidden relative bg-[#1a0c00]">
+          <div className="aptus-footer-hero w-full h-40 md:h-64 overflow-hidden relative bg-[#1a0c00]">
             <img src="/images/karaj_heatwave_20260908_211222.png" alt="APTUS" className="w-full h-full object-cover opacity-80" style={{ objectPosition: "center 30%" }} />
           </div>
           
-          <div className="px-6 md:px-12 pt-14 pb-8 w-full">
+          <div className="aptus-footer-body px-6 md:px-12 pt-14 pb-8 w-full">
             <div className="grid md:grid-cols-4 gap-10 mb-12">
               <div className="md:col-span-1">
                 <p className="text-2xl font-extrabold italic uppercase">Aptus</p>
@@ -70,7 +70,7 @@ export default function Layout() {
 
             <div className="pt-6 border-t border-gray-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-500 italic font-medium">{ui.copyright}</p>
-              <p className="text-sm text-gray-500 italic font-medium">{ui.footerTagline}</p>
+              <p className="aptus-footer-tagline text-sm text-gray-500 italic font-medium">{ui.footerTagline}</p>
             </div>
           </div>
         </footer>

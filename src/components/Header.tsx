@@ -72,11 +72,11 @@ export default function Header() {
 
   return (
     <div className="aptus-header-shell fixed top-4 left-0 right-0 w-full flex justify-center z-50 px-4 md:px-8">
-      <header className="aptus-header bg-white/80 backdrop-blur-md backdrop-saturate-[1.8] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/60 flex items-center justify-between px-4 py-5 w-full max-w-8xl mx-auto">
+      <header className="aptus-header site-header bg-white/80 backdrop-blur-md backdrop-saturate-[1.8] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/60 flex items-center justify-between px-4 py-5 w-full max-w-8xl mx-auto">
         <div className="flex items-center shrink-0">
           <NavLink to="/" className="flex items-center gap-2 px-2 hover:opacity-70 transition-opacity">
             <img 
-              src="/images/logo.png" 
+              src="/images/aptus-brand.svg" 
               alt="Aptus Logo" 
               className="h-10 w-auto object-contain"
               onError={(e) => {
@@ -93,7 +93,7 @@ export default function Header() {
           </NavLink>
         </div>
 
-        <nav className="aptus-desktop-nav hidden lg:flex items-center justify-center gap-1" aria-label="Main navigation">
+        <nav className="aptus-desktop-nav primary-nav hidden lg:flex items-center justify-center gap-1" aria-label="Main navigation">
           <NavLink to="/" className={({isActive}) => `flex items-center text-sm font-medium transition-all py-1.5 px-4 rounded-full ${isActive ? 'text-white bg-[#1a1a1a] not-italic' : 'text-gray-900 hover:text-black hover:bg-white/50 italic'}`}>{t("nav", "home")}</NavLink>
           {navItems.map((nav) => {
             const isCurrentActive = isNavActive(nav);

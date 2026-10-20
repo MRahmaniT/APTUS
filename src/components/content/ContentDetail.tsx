@@ -55,7 +55,7 @@ function CTA({ item }: { item: ContentItem }) {
   return (
     <Link
       to={item.cta.url}
-      className="inline-flex items-center gap-2 rounded-full bg-[#111] text-white px-6 py-3 text-sm font-medium hover:bg-[#333] transition-colors"
+      className="solid-button inline-flex items-center gap-2 rounded-full bg-[#111] text-white px-6 py-3 text-sm font-medium hover:bg-[#333] transition-colors"
     >
       {item.cta.label}
       <ArrowRight className="w-4 h-4 rtl:rotate-180" />
@@ -104,7 +104,7 @@ function Highlights({ item }: { item: ContentItem }) {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {item.highlights.map((highlight) => (
-        <div key={highlight} className="flex items-start gap-3 rounded-xl border border-[#e3e3de] bg-white p-4">
+        <div key={highlight} className="aptus-highlight flex items-start gap-3 rounded-xl border border-[#e3e3de] bg-white p-4">
           <span className="mt-0.5 w-6 h-6 rounded-full bg-[#111] text-white flex items-center justify-center shrink-0">
             <Check className="w-3.5 h-3.5" />
           </span>
@@ -119,7 +119,7 @@ function Specs({ item }: { item: ContentItem }) {
   const entries = Object.entries(item.specs || {});
   if (!entries.length) return null;
   return (
-    <dl className="divide-y divide-[#e2e2dd] border-y border-[#e2e2dd]">
+    <dl className="aptus-specs divide-y divide-[#e2e2dd] border-y border-[#e2e2dd]">
       {entries.map(([label, value]) => (
         <div key={label} className="grid grid-cols-[minmax(110px,0.7fr)_1.3fr] gap-4 py-4 text-sm">
           <dt className="text-[#888]">{label}</dt>
@@ -133,7 +133,7 @@ function Specs({ item }: { item: ContentItem }) {
 function ShowcaseTemplate({ item }: { item: ContentItem }) {
   return (
     <div className="space-y-12">
-      <header className="max-w-4xl">
+      <header className="aptus-detail-heading max-w-4xl">
         <Meta item={item} />
         <h1 className="mt-5 text-5xl md:text-7xl font-semibold leading-[0.98] tracking-tight">{item.title}</h1>
         <p className="mt-6 text-xl md:text-2xl font-light leading-relaxed text-[#666] max-w-3xl">{item.abstract}</p>
@@ -153,7 +153,7 @@ function ShowcaseTemplate({ item }: { item: ContentItem }) {
 function EditorialTemplate({ item }: { item: ContentItem }) {
   return (
     <article className="max-w-5xl mx-auto">
-      <header className="max-w-3xl mx-auto text-center mb-10">
+      <header className="aptus-detail-heading max-w-3xl mx-auto text-center mb-10">
         <Meta item={item} />
         <h1 className="mt-5 text-4xl md:text-6xl font-semibold leading-tight">{item.title}</h1>
         <p className="mt-6 text-xl font-light leading-relaxed text-[#666]">{item.abstract}</p>
@@ -204,7 +204,7 @@ function TechnicalTemplate({ item }: { item: ContentItem }) {
 function CaseStudyTemplate({ item }: { item: ContentItem }) {
   return (
     <div className="space-y-12">
-      <header className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-end">
+      <header className="aptus-detail-heading grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-end">
         <div>
           <Meta item={item} />
           <h1 className="mt-5 text-5xl md:text-7xl font-semibold leading-[1]">{item.title}</h1>
@@ -227,7 +227,7 @@ function GalleryTemplate({ item }: { item: ContentItem }) {
   const media = normalizeMedia(item);
   return (
     <div className="space-y-12">
-      <header className="max-w-4xl">
+      <header className="aptus-detail-heading max-w-4xl">
         <Meta item={item} />
         <h1 className="mt-5 text-5xl md:text-7xl font-semibold leading-[1]">{item.title}</h1>
         <p className="mt-6 text-xl text-[#666] font-light leading-relaxed max-w-3xl">{item.abstract}</p>
@@ -266,7 +266,7 @@ export default function ContentDetail({ item }: { item: ContentItem }) {
   const backLabel = item.type === "product" ? ui.backProducts : item.type === "news" ? ui.backNews : ui.backWork;
 
   return (
-    <article className="max-w-7xl mx-auto px-2 md:px-6 py-8 md:py-14">
+    <article className="aptus-detail section-inner max-w-7xl mx-auto px-2 md:px-6 py-8 md:py-14">
       <Link to={backHref(item.type)} className="inline-flex items-center gap-2 text-sm text-[#666] hover:text-black mb-10">
         <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
         {backLabel}

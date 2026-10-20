@@ -128,8 +128,10 @@ export default function Home() {
   return (
     <div className="aptus-home">
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 pt-16 pb-10">
-        <div className="mb-8">
+      <section className="aptus-hero-section">
+        <div className="aptus-cover">
+          <img className="aptus-cover-image" src={GALLERY_ITEMS[0].image} alt="" aria-hidden="true" />
+          <div className="aptus-cover-copy mb-8">
           <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#999] mb-3">
             {isFa ? "سیستم‌های بتن پیش‌ساخته" : isTr ? "Prefabrik Beton Sistemleri" : "Precast Concrete Systems"}
           </p>
@@ -158,7 +160,10 @@ export default function Home() {
           </p>
         </div>
 
+        </div>
+
         <AccordionGallery
+          className="aptus-applications"
           items={GALLERY_ITEMS}
           defaultIndex={2}
           expandRatio={0.52}
@@ -175,10 +180,10 @@ export default function Home() {
       </section>
 
       {/* Explanation + 9-cell grid */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-16 border-t border-[#e5e5e0]">
-        <div className="grid lg:grid-cols-[1fr_1.4fr] gap-14 items-start">
+      <section className="aptus-products-section page-section">
+        <div className="aptus-products-layout section-inner grid lg:grid-cols-[1fr_1.4fr] gap-14 items-start">
           {/* Left: explanation */}
-          <div className="lg:sticky lg:top-24">
+          <div className="aptus-intro-copy lg:sticky lg:top-24">
             <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#999] mb-4">
               {isFa ? "آنچه ما می‌سازیم" : isTr ? "Ne İnşa Ediyoruz" : "What We Build"}
             </p>
@@ -195,7 +200,7 @@ export default function Home() {
               )}
             </h2>
 
-            <p className="text-justify text-[15px] text-[#444] leading-relaxed mb-4">
+            <p className="aptus-intro-paragraph text-justify text-[15px] text-[#444] leading-relaxed mb-4">
               {isFa 
                 ? "Aptus متخصص در قطعات بتنی پیش‌ساخته در کارخانه - دیوارها، دال‌ها، ستون‌ها، تیرها و واحدهای ماژولار کامل - است که آماده مونتاژ در محل تحویل داده می‌شوند. این امر زمان ساخت را به شدت کاهش داده و کیفیت ثابت را تضمین می‌کند."
                 : isTr 
@@ -203,7 +208,7 @@ export default function Home() {
                 : "Aptus specializes in off-site manufactured precast concrete components — walls, slabs, columns, beams, and full modular units — that are delivered ready to assemble on site. This dramatically reduces construction time and guarantees consistent quality."}
             </p>
 
-            <p className="text-justify text-[15px] text-[#444] leading-relaxed mb-4">
+            <p className="aptus-intro-paragraph text-justify text-[15px] text-[#444] leading-relaxed mb-4">
               {isFa 
                 ? "خانه‌های پیش‌ساخته ما برای کارایی حرارتی، مقاومت لرزه‌ای و طول عمر بالا مهندسی شده‌اند. هر پنل قبل از ارسال به محل پروژه، در یک محیط کنترل‌شده تحت پروتکل‌های سختگیرانه تضمین کیفیت ریخته‌گری می‌شود."
                 : isTr 
@@ -211,7 +216,7 @@ export default function Home() {
                 : "Our precast houses are engineered for thermal efficiency, seismic resistance, and longevity. Each panel is cast in a climate-controlled facility under rigorous QA protocols before shipping to the project site."}
             </p>
 
-            <p className="text-justify text-[15px] text-[#444] leading-relaxed mb-8">
+            <p className="aptus-intro-paragraph text-justify text-[15px] text-[#444] leading-relaxed mb-8">
               {isFa 
                 ? "چه در حال ساخت یک خانه ویلایی تک‌خانواره باشید، چه یک مجتمع مسکونی چند طبقه یا یک تاسیسات تجاری، ما راه‌حل‌های کلید در دست پیش‌ساخته را از کمک در طراحی تا پشتیبانی نصب ارائه می‌دهیم."
                 : isTr 
@@ -219,7 +224,7 @@ export default function Home() {
                 : "Whether you are building a single-family home, a multi-storey residential complex, or a commercial facility, we supply turnkey precast solutions from design assistance through installation support."}
             </p>
 
-            <div className="grid grid-cols-2 gap-6 border-t border-[#e5e5e0] pt-8">
+            <div className="aptus-stat-strip grid grid-cols-2 gap-6 border-t border-[#e5e5e0] pt-8">
               {[
                 { value: "30+", label: isFa ? "سال تجربه" : isTr ? "Yıllık Deneyim" : "Years of expertise" },
                 { value: "1,200+", label: isFa ? "پروژه موفق" : isTr ? "Tamamlanan Proje" : "Projects completed" },
@@ -240,7 +245,7 @@ export default function Home() {
 
             <a
               href="/projects"
-              className="inline-flex items-center gap-2 mt-10 px-6 py-3 bg-[#111] text-white text-sm font-medium rounded-full hover:bg-[#333] transition-colors"
+              className="solid-button inline-flex items-center gap-2 mt-10 px-6 py-3 bg-[#111] text-white text-sm font-medium rounded-full hover:bg-[#333] transition-colors"
             >
               {isFa ? "مشاهده تمام پروژه‌ها" : isTr ? "Tüm Projeleri Görüntüle" : "View all projects"}
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -250,7 +255,7 @@ export default function Home() {
           </div>
 
           {/* Right: Products grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="aptus-product-grid grid grid-cols-2 md:grid-cols-3 gap-4">
             {PRODUCTS_GRID.map(({ src, alt, title, description, link }) => (
               <a
                 href={link}
@@ -267,7 +272,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/60 group-hover:backdrop-blur-sm transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]" />
                 
                 {/* Content Overlay */}
-                <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+                <div className="part-caption absolute inset-0 p-6 flex flex-col justify-end text-white">
                   {/* Title (Always visible, shifts up on hover) */}
                   <h3 className="text-xl font-bold mb-0 group-hover:mb-3 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
                     {title}
@@ -296,11 +301,11 @@ export default function Home() {
       </section>
 
       {/* AIPS Building System Section */}
-      <section className="bg-[#111] text-white py-24 rounded-[2rem] max-w-7x1 mx-auto overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="aptus-system-section page-section bg-[#111] text-white py-24 rounded-[2rem] max-w-7x1 mx-auto overflow-hidden">
+        <div className="section-inner max-w-7xl mx-auto px-6 md:px-10">
+          <div className="aptus-system-layout system-grid grid lg:grid-cols-2 gap-16 items-center">
             {/* Left text */}
-            <div>
+            <div className="aptus-system-copy system-copy">
               <p className="text-xs font-semibold tracking-[0.2em] text-[#e5c87a] mb-4 uppercase">
                 {isFa ? "سیستم ساختمانی AIPS" : isTr ? "AIPS Yapı Sistemi" : "AIPS Building System"}
               </p>
@@ -351,14 +356,14 @@ export default function Home() {
               
               <a
                 href="/aips"
-                className="inline-flex items-center gap-2 mt-12 px-8 py-3.5 bg-white text-black text-sm font-semibold rounded-full hover:bg-gray-200 transition-colors"
+                className="solid-button inline-flex items-center gap-2 mt-12 px-8 py-3.5 bg-white text-black text-sm font-semibold rounded-full hover:bg-gray-200 transition-colors"
               >
                 {isFa ? "کشف سیستم AIPS" : isTr ? "AIPS Sistemini Keşfedin" : "Discover the AIPS System"}
               </a>
             </div>
 
             {/* Right Image */}
-            <div className="relative aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden shadow-2xl">
+            <div className="aptus-system-picture system-picture relative aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1000&h=1000&fit=crop&auto=format"
                 alt="AIPS Structural Engineering Diagram"

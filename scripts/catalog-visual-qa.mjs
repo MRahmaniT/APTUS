@@ -10,6 +10,8 @@ const groups=[
  ["header",".site-header",".aptus-header",["borderRadius","backgroundImage","boxShadow","backdropFilter","minHeight","paddingTop","paddingRight"]],
  ["cover",".cover-section",".catalog-home .cover-section",["borderRadius","minHeight","boxShadow"]],
  ["cover-copy",".cover-copy",".catalog-home .cover-copy",["width","paddingTop","paddingBottom","paddingLeft","paddingRight"]],
+ ["cover-vignette",".cover-hero",".catalog-home .cover-hero",["backgroundImage","filter","backdropFilter","inset"],"::before"],
+ ["cover-image-effects",".cover-visual",".catalog-home .cover-visual",["backgroundImage","filter","backdropFilter","maskImage","display"],"::after"],
  ["cover-title",".cover-hero h1",".catalog-home .cover-hero h1",["fontSize","fontWeight","lineHeight","color","textShadow","letterSpacing"]],
  ["cover-emphasis",".cover-hero h1 em",".catalog-home .cover-hero h1 em",["fontSize","fontWeight","lineHeight","color"]],
  ["cover-english",".cover-en--side",".catalog-home .cover-en--side",["fontSize","fontWeight","lineHeight","color","textShadow"]],
@@ -22,10 +24,10 @@ const groups=[
  ["parts-dock",".part-dock",".catalog-home .part-dock",["borderRadius","backgroundColor","paddingTop","gap"]],
  ["footer",".site-footer",".aptus-footer",["borderRadius","backgroundColor","boxShadow"]],
 ];
-async function styles(page,selector,keys){
-  return page.locator(selector).first().evaluate((el,names)=>{
-    const css=getComputedStyle(el);return Object.fromEntries(names.map(key=>[key,css[key]]));
-  },keys);
+async function styles(page,selector,keys,pseudo=null){
+  return page.locator(selector).first().evaluate((el,{names,pseudo})=>{
+    const css=getComputedStyle(el,pseudo);return Object.fromEntries(names.map(key=>[key,css[key]]));
+  },{names:keys,pseudo});
 }
 async function capture(page,name,selector,inline=false){
   if(selector) await page.locator(selector).first().evaluate(el=>window.scrollTo({top:scrollY+el.getBoundingClientRect().top-116,behavior:"instant"}));
@@ -52,9 +54,9 @@ try{
     el.innerHTML='<div class="part-image"></div><div class="part-caption"><h3>APTUS</h3><p class="preview-excerpt">APTUS</p><a class="card-more">APTUS</a></div>';
     document.body.append(el);
   });
-  for(const [component,refSelector,siteSelector,keys]of groups){
-    const expected=await styles(reference,refSelector,keys);
-    const actual=await styles(website,siteSelector,keys);
+  for(const [component,refSelector,siteSelector,keys,pseudo]of groups){
+    const expected=await styles(reference,refSelector,keys,pseudo);
+    const actual=await styles(website,siteSelector,keys,pseudo);
     const mismatch=keys.filter(key=>expected[key]!==actual[key]);
     comparisons.push({viewport:name,component,expected,actual,mismatch});
     for(const key of mismatch) differences.push(name+" "+component+" "+key+": "+actual[key]+" != "+expected[key]);

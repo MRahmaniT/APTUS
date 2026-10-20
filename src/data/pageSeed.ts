@@ -1,3 +1,4 @@
+import { catalogDetails, catalogPhone, catalogAsset } from "./catalogDetails";
 import { Locale } from "../config/translations";
 
 export interface EditablePage {
@@ -73,6 +74,12 @@ const descriptions: Record<Locale, { about: string; library: string }> = {
 };
 
 function seedPage(path: string, locale: Locale): EditablePage {
+  const d = catalogDetails(locale);
+  if (path === "about/contact" || path === "about/location") {
+    return {path, locale, title: titles[locale][path], abstract:d.about,
+      body:[d.companyName,d.address,d.labels.phone + ": " + catalogPhone].join("\n\n"),
+      heroImage:catalogAsset(path === "about/location" ? "map.png" : "blue.png")};
+  }
   const section = path.startsWith("library/") ? "library" : "about";
   return {
     path,

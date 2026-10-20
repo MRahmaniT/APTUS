@@ -147,3 +147,6 @@
 
 # Bundle the catalog typeface as an ordinary Git file.
 public/fonts/** -filter -diff -merge -text
+
+# Catalog assets ship as real files with a normal Git pull.
+/public/catalog-assets/** -filter -diff -merge

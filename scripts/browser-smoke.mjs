@@ -7,7 +7,7 @@ await mkdir("qa-artifacts", { recursive: true });
 const browser = await chromium.launch();
 const errors = [];
 const routes = ["/", "/products", "/products/columns", "/products/double-storey-design",
-  "/products/multi-storey-design", "/news", "/projects", "/about/contact", "/about/location"];
+  "/products/multi-storey-design", "/products/wall-panels", "/products/slabs", "/products/beams", "/products/facades", "/products/modular", "/products/tie-beams", "/products/foundations", "/products/architectural-panels", "/products/corner-elements", "/news", "/projects", "/about/contact", "/about/location"];
 try {
   for (const [name, width, height] of [["desktop",1440,1000],["tablet",820,1180],["mobile",390,844]]) {
     for (const locale of ["fa", "en", "tr"]) {
@@ -29,8 +29,8 @@ try {
           assert.equal(await page.locator(".accordion-gallery .ag-panel").count(), 5);
           assert.equal(await page.locator(".aptus-home .aptus-content-card").count(), 6);
           assert.ok((await page.locator("h1").innerText()).includes(
-            locale === "fa" ? "ساخت آینده" : locale === "en" ? "Building the future" : "Geleceği"));
-          assert.equal(await page.locator(".accordion-gallery img[src='/images/i.avif']").count(), 1);
+            locale === "fa" ? "سوله بتنی" : locale === "en" ? "industrial sheds" : "beton"));
+          assert.equal(await page.locator(".accordion-gallery img[src='/catalog-assets/applications/industry.jpg']").count(), 1);
           const theme = await page.locator(".aptus-header").evaluate(el => ({
             radius: getComputedStyle(el).borderRadius,
             orange: getComputedStyle(el).getPropertyValue("--aptus-orange").trim(),
@@ -42,7 +42,7 @@ try {
           await page.evaluate(() => document.fonts.ready);
           if (locale === "fa") assert.ok(await page.evaluate(() => document.fonts.check('16px "APTUS Sans"')));
           // Local website media must contain image bytes rather than Git LFS pointer text.
-          for (const path of ["/images/i.avif", "/images/aptus-brand.svg", "/images/mu.jpg"]) {
+          for (const path of ["/catalog-assets/cover-render3.png", "/images/aptus-brand.svg", "/catalog-assets/applications/industry.jpg"]) {
             const response = await context.request.get(base + path);
             assert.equal(response.status(), 200);
             assert.ok((await response.body()).length > 1024, path + " must be a real image");
@@ -58,6 +58,18 @@ try {
             await page.waitForURL("**/products");
             assert.equal(await menu.count(), 0);
           }
+        }
+        const images = await page.locator('main img[src^="/catalog-assets/"]').evaluateAll(async elements => {
+          return Promise.all(elements.map(async el => {
+            el.loading = "eager";
+            try { await el.decode(); } catch {}
+            return {src:el.getAttribute("src"),loaded:el.naturalWidth>0};
+          }));
+        });
+        for(const image of images) assert.ok(image.loaded, name+" "+locale+" "+route+" "+image.src);
+        if (route === "/products/columns") {
+          assert.ok((await page.locator("main").innerText()).includes(locale==="fa"?"ستون":locale==="en"?"column":"kolon"));
+          assert.equal(await page.locator('a[href="/catalog-assets/technical/column.pdf"]').count(),1);
         }
         if (route === "/products") {
           for (const slug of ["columns", "double-storey-design", "multi-storey-design"]) {
@@ -101,7 +113,7 @@ try {
   await page.getByTitle("Logout", { exact:true }).waitFor();
   await context.close();
   assert.deepEqual(errors, [], "Browser runtime errors");
-  console.log("PASS: 81 public route/viewport/language checks, original sections, media, mobile menus, account and library.");
+  console.log("PASS: public routes in three viewports and languages; catalog content, real images, technical PDFs, original sections, mobile menus, account and protected library.");
 } finally {
   await browser.close();
 }

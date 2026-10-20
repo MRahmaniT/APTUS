@@ -13,7 +13,10 @@ function cloneBaseContent() {
 function getLocalContent(): ContentItem[] {
   try {
     const stored = localStorage.getItem(LOCAL_CONTENT_KEY);
-    return stored ? JSON.parse(stored) : cloneBaseContent();
+    if (!stored) return cloneBaseContent();
+    const items: ContentItem[] = JSON.parse(stored);
+    return items.map(item => item.id.startsWith("seed-") && !item.updatedAt
+      ? BASE_CONTENT.find(seed => seed.id === item.id) || item : item);
   } catch {
     return cloneBaseContent();
   }

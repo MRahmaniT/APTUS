@@ -1,6 +1,6 @@
 /* Catalog presentation adapted to the existing website.
    Reference: APTUS-Catalog 75c6454, styles.css + glass.css + brand.css + redesign.css.
-   Website copy, images, sections, routes and data remain the website's own. */
+   Catalog names, copy and assets are mapped into the existing website sections. */
 @font-face{font-family:"APTUS Sans";src:url("/fonts/IRANSans-web.woff") format("woff");font-style:normal;font-weight:400 700;font-display:swap}
 :root{--font-display:"APTUS Sans",Tahoma,Arial,sans-serif;--font-body:"APTUS Sans",Tahoma,Arial,sans-serif}
 html[lang=en],html[lang=tr]{--font-body:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;--font-display:var(--font-body)}
@@ -299,3 +299,15 @@ html[dir=ltr] .aptus-cover::before{background:linear-gradient(90deg,#0c161dbb,#0
 @media(prefers-reduced-motion:reduce){.aptus-site *, .aptus-site *::before,.aptus-site *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aptus-header,.aptus-mobile-menu{background:#fff}}
 @media print{.aptus-header-shell{display:none}.aptus-main{padding-top:0}.aptus-content-card{break-inside:avoid}}
+
+/* Catalog editorial imagery: render remains legible without cropping the structure. */
+.aptus-cover{background:#e6e6e6}
+.aptus-cover-image{object-fit:cover;object-position:center;background:#e6e6e6}
+.aptus-cover::before{background:linear-gradient(90deg,#333b 0%,#3338 38%,transparent 80%)}
+html[dir=rtl] .aptus-cover::before{background:linear-gradient(270deg,#333b 0%,#3338 38%,transparent 80%)}
+.aptus-system-picture>img{object-fit:cover;background:#fff}
+.aptus-footer-brand{width:min(100%,250px);height:auto;max-height:85px;object-fit:contain;object-position:left center}
+.aptus-footer address{overflow-wrap:anywhere}
+.aptus-home .aptus-content-card>img{object-fit:contain;background:#f7f7f7}
+.aptus-detail img[src*="/catalog-assets/parts/"],.aptus-detail img[src*="/catalog-assets/part-gallery/"],.aptus-detail img[src*="system-3d-view"],.aptus-detail img[src*="semi-assembly"],.aptus-detail img[src*="/render.png"]{object-fit:contain;background:#fff}
+@media(max-width:580px){.aptus-cover-image{object-position:center bottom}.aptus-cover::before{background:linear-gradient(180deg,#333b,#3336 65%,transparent)}}

@@ -32,7 +32,7 @@ export default function Layout() {
             <div className="grid md:grid-cols-4 gap-10 mb-12">
               <div className="md:col-span-1">
                 <img src="/images/aptus-brand.svg" alt={d.companyName} className="aptus-footer-brand" />
-                <p className="mt-3 text-sm text-gray-500 leading-relaxed">{d.footer.summary}</p>
+                <p className="mt-3 text-sm text-gray-500 leading-relaxed">{d.about}</p>
               </div>
               
               <div>

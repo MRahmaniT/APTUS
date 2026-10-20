@@ -27,9 +27,9 @@ export default function Products() {
   const elements = products.filter((item) => !DESIGN_SLUGS.has(item.slug));
 
   return (
-    <div className="min-h-screen bg-white pt-28 pb-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-20">
-        <div className="max-w-3xl">
+    <div className="aptus-listing page-section min-h-screen bg-white pt-28 pb-24">
+      <div className="section-inner max-w-7xl mx-auto px-6 lg:px-8 space-y-20">
+        <div className="aptus-page-heading max-w-3xl">
           <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#999] mb-4">APTUS</p>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t("nav", "products")}</h1>
           <p className="text-xl text-gray-600 font-light">
@@ -51,7 +51,7 @@ export default function Products() {
                   <h2 className="text-2xl font-bold text-gray-900">{t("nav", "designs")}</h2>
                   <div className="h-px bg-gray-200 flex-1" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="aptus-listing-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {designs.map((item) => <ContentCard key={item.id} item={item} />)}
                 </div>
               </section>
@@ -63,7 +63,7 @@ export default function Products() {
                 <div className="h-px bg-gray-200 flex-1" />
               </div>
               {elements.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="aptus-listing-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                   {elements.map((item) => <ContentCard key={item.id} item={item} />)}
                 </div>
               ) : (

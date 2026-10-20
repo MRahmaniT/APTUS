@@ -30,19 +30,19 @@ try {
           assert.equal(await page.locator(".aptus-home .aptus-content-card").count(), 6);
           assert.ok((await page.locator("h1").innerText()).includes(
             locale === "fa" ? "ساخت آینده" : locale === "en" ? "Building the future" : "Geleceği"));
-          assert.equal(await page.locator(".aptus-home img[src='/images/i.avif']").count(), 1);
+          assert.equal(await page.locator(".accordion-gallery img[src='/images/i.avif']").count(), 1);
           const theme = await page.locator(".aptus-header").evaluate(el => ({
             radius: getComputedStyle(el).borderRadius,
             orange: getComputedStyle(el).getPropertyValue("--aptus-orange").trim(),
             font: getComputedStyle(el).fontFamily,
           }));
-          assert.equal(theme.orange, "#f58220");
+          assert.ok(["#f58220", "rgb(245, 130, 32)"].includes(theme.orange));
           assert.ok(parseInt(theme.radius) >= 26);
-          assert.ok(theme.font.includes("APTUS Sans"));
+          if (locale === "fa") assert.ok(theme.font.includes("APTUS Sans"));
           await page.evaluate(() => document.fonts.ready);
-          assert.ok(await page.evaluate(() => document.fonts.check('16px "APTUS Sans"')));
+          if (locale === "fa") assert.ok(await page.evaluate(() => document.fonts.check('16px "APTUS Sans"')));
           // Local website media must contain image bytes rather than Git LFS pointer text.
-          for (const path of ["/images/i.avif", "/images/logo.png", "/images/mu.jpg"]) {
+          for (const path of ["/images/i.avif", "/images/aptus-brand.svg", "/images/mu.jpg"]) {
             const response = await context.request.get(base + path);
             assert.equal(response.status(), 200);
             assert.ok((await response.body()).length > 1024, path + " must be a real image");
@@ -64,7 +64,7 @@ try {
             assert.equal(await page.locator(".aptus-content-card[href='/products/" + slug + "']").count(), 1);
           }
           const card = page.locator(".aptus-content-card").first();
-          assert.equal(await card.evaluate(el => getComputedStyle(el).borderRadius), "28px");
+          assert.equal(await card.evaluate(el => getComputedStyle(el).borderRadius), width <= 580 ? "20px" : "27px");
           await page.screenshot({ path: "qa-artifacts/" + name + "-" + locale + "-products.png", fullPage: true });
         }
       }

@@ -41,9 +41,9 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
   const copy = COPY[type][locale];
 
   return (
-    <div className="min-h-screen pt-16 pb-24">
-      <section className="max-w-7xl mx-auto px-2 md:px-6">
-        <div className="max-w-3xl mb-12">
+    <div className="aptus-listing page-section min-h-screen pt-16 pb-24">
+      <section className="section-inner max-w-7xl mx-auto px-2 md:px-6">
+        <div className="aptus-page-heading max-w-3xl mb-12">
           <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#999] mb-4">{copy.eyebrow}</p>
           <h1 className="text-5xl md:text-6xl font-semibold leading-[1.04] text-[#111] mb-5">{copy.title}</h1>
           <p className="text-lg text-[#666] font-light leading-relaxed">{copy.intro}</p>
@@ -61,7 +61,7 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
         {loading ? (
           <div className="py-24 text-center text-[#777]">{ui.loading}</div>
         ) : visible.length ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="aptus-editorial-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {visible.map((item) => <ContentCard key={item.id} item={item} />)}
           </div>
         ) : (

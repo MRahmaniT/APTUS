@@ -1,0 +1,105 @@
+/* Visual adaptation of the completed APTUS catalog.
+   All website sections, media, copy, routes and behavior come from the original site. */
+@font-face{font-family:"APTUS Sans";src:url("/fonts/IRANSans-web.woff") format("woff");font-style:normal;font-weight:400 700;font-display:swap}
+:root{--font-display:"APTUS Sans",Tahoma,Arial,sans-serif;--font-body:"APTUS Sans",Tahoma,Arial,sans-serif}
+.aptus-site{
+ --aptus-orange:#f58220;--aptus-ink:#333333;--aptus-gray:#58595b;--aptus-muted:#666666;--aptus-line:#e6e6e6;
+ --aptus-shadow:0 18px 45px #33333313;--font-display:"APTUS Sans",Tahoma,Arial,sans-serif;--font-body:"APTUS Sans",Tahoma,Arial,sans-serif;
+ font-family:var(--font-body);color:var(--aptus-ink);background:radial-gradient(circle at 100% 8%,#e6e6e688,transparent 28%),radial-gradient(circle at 0 54%,#e6e6e666,transparent 30%),#fff;
+}
+.aptus-site h1,.aptus-site h2,.aptus-site h3,.aptus-site h4{font-family:var(--font-display);font-style:normal;letter-spacing:-.025em}
+.aptus-site p{line-height:1.95}
+.aptus-site :is(button,input,textarea,select){font-family:inherit}
+.aptus-site :is(a,button,input,textarea,select):focus-visible{outline:3px solid var(--aptus-orange);outline-offset:3px}
+.aptus-site ::selection{background:#f5822033}
+
+/* Keep the website's own navigation and controls; apply the catalog's glass shell and pills. */
+.aptus-site .aptus-header{
+ background:linear-gradient(115deg,#fffffff2,#e6e6e6c7 52%,#fffffff2);
+ border:1px solid #fff;border-radius:32px;box-shadow:0 12px 35px #33333320,inset 0 1px #fff;
+ backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding-block:14px;color:#333;
+}
+.aptus-header img{border-radius:0}
+.aptus-header .aptus-desktop-nav{gap:2px}
+.aptus-desktop-nav>a,.aptus-desktop-nav .group>button{
+ color:#333;background:transparent;font-style:normal;font-size:.78rem;font-weight:700;padding:9px 13px;border-radius:999px;min-height:40px;
+}
+.aptus-desktop-nav>a:hover,.aptus-desktop-nav .group>button:hover{background:#fff;color:#333}
+.aptus-desktop-nav>a[aria-current="page"],.aptus-desktop-nav .group>button[class*="bg-[#1a1a1a]"]{
+ background:#333;color:#fff;box-shadow:inset 0 -3px #f58220,0 6px 16px #33333326;
+}
+.aptus-desktop-nav .group>div{
+ background:#fffffff2;border:1px solid #fff;border-radius:23px;box-shadow:0 20px 45px #33333330;
+ backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:9px;
+}
+.aptus-desktop-nav .group>div a{border-radius:13px;font-size:.8rem;color:#58595b;padding:10px 12px}
+.aptus-desktop-nav .group>div a:hover{background:#e6e6e6;color:#333}
+.aptus-desktop-nav .group>div a[aria-current="page"]{background:#f5822020;color:#333}
+.aptus-header button[class*="bg-[#1a1a1a]"]{background:#f58220;color:#333;border:1px solid #f5822040;border-radius:999px;box-shadow:0 8px 22px #f5822026}
+.aptus-header>div:last-child>div{border-color:#e6e6e6;background:#ffffffda}
+.aptus-header>div:last-child>div button{border-radius:999px}
+.aptus-header>div:last-child>div button[class*="bg-white"]{box-shadow:inset 0 -2px #f58220,0 3px 10px #33333317}
+.aptus-menu-toggle{border:1px solid #e6e6e6;border-radius:999px;background:#fff;color:#333;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+.aptus-mobile-menu{border:1px solid #fff;border-radius:26px;background:#fffffff2;box-shadow:0 20px 45px #33333330;backdrop-filter:blur(24px)}
+.aptus-mobile-menu a{border-radius:14px;color:#58595b}
+.aptus-mobile-menu a[aria-current="page"]{color:#333;background:#f5822020}
+.aptus-mobile-menu button[class*="bg-[#1a1a1a]"]{background:#f58220;color:#333;border-radius:999px}
+
+/* Apply catalog card geometry to the existing cards, keeping every title, image and destination. */
+.aptus-content-card{
+ display:flex;flex-direction:column;aspect-ratio:auto;min-width:0;height:100%;border-radius:28px;overflow:hidden;
+ border:1px solid #e6e6e6;background:linear-gradient(145deg,#ffffffed,#ffffffe0);
+ box-shadow:var(--aptus-shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#333;
+ transition:transform .25s,box-shadow .25s;
+}
+.aptus-content-card:hover{transform:translateY(-4px);box-shadow:0 22px 46px #33333322}
+.aptus-content-card>img,.aptus-content-card>div:first-child{position:relative;display:block;flex:0 0 auto;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+.aptus-content-card>div[class*="absolute"]:not(:last-child){display:none}
+.aptus-content-card>div:last-child{position:relative;inset:auto;padding:24px;display:flex;flex:1;flex-direction:column;justify-content:flex-start;color:#333;background:#fff}
+.aptus-content-card h3{color:#333;font-size:1.12rem;font-weight:700;line-height:1.65;margin:10px 0 12px}
+.aptus-content-card>div:last-child>div:first-child:not([class*="grid-rows"]){color:#666;font-size:.65rem;letter-spacing:.06em}
+.aptus-content-card>div:last-child>div[class*="grid-rows"]{display:block;grid-template-rows:1fr}
+.aptus-content-card>div:last-child>div[class*="grid-rows"]>div{opacity:1;overflow:visible}
+.aptus-content-card p{font-size:.82rem;color:#666;line-height:1.9;margin:0 0 20px}
+.aptus-content-card span[class*="inline-flex"]{color:#333;background:#fff;border:1px solid #e6e6e6;border-radius:999px;padding:10px 16px;font-size:.68rem}
+
+/* The original homepage keeps its hero, accordion gallery, product grid and AIPS section. */
+.aptus-home h1{line-height:1.4;font-weight:700}
+.aptus-home h2{line-height:1.5}
+.aptus-home .accordion-gallery{--ag-radius:28px!important;--ag-accent:#f58220!important}
+ .aptus-home .ag-panel{border-radius:28px!important;border:1px solid #ffffffb3;box-shadow:var(--aptus-shadow)}
+.aptus-home>section:nth-child(2){border-color:#e6e6e6}
+.aptus-home>section:nth-child(2) [class*="border-t"]{border-color:#e6e6e6}
+.aptus-home>section:nth-child(2) [class*="border-t"]>div>p:first-child{color:#f58220}
+.aptus-home>section:nth-child(2)>div>div:first-child>a{
+ background:#f58220;color:#333;box-shadow:0 8px 22px #f5822026;border-radius:999px;
+}
+.aptus-home>section:last-child{background:linear-gradient(145deg,#333,#58595b);border:1px solid #e6e6e6;border-radius:32px;box-shadow:var(--aptus-shadow)}
+.aptus-home>section:last-child [class*="text-[#e5c87a]"]{color:#f58220}
+.aptus-home>section:last-child [class*="bg-[#e5c87a]"]{background:#f58220}
+.aptus-home>section:last-child a{background:#f58220;color:#333;border-radius:999px}
+.aptus-home>section:last-child [class*="rounded"]{border-radius:26px}
+
+/* Reuse catalog surfaces for the existing footer, forms, editors and dialogs. */
+.aptus-footer{background:linear-gradient(135deg,#ffffffed,#e6e6e6cc);color:#333;border:1px solid #fff;border-radius:32px;box-shadow:var(--aptus-shadow)}
+.aptus-footer h4{color:#333}.aptus-footer p,.aptus-footer address{color:#666}
+.aptus-footer a{color:#58595b}.aptus-footer a:hover{color:#333;text-decoration:underline;text-decoration-color:#f58220;text-underline-offset:5px}
+.aptus-footer [class*="border-t"]{border-color:#e6e6e6}
+.aptus-main{min-width:0}
+.aptus-main :is(input,textarea,select),.aptus-auth-modal :is(input,textarea,select){border:1px solid #d3d3d3;border-radius:14px;background:#fff;color:#333}
+.aptus-main :is(input,textarea,select):focus,.aptus-auth-modal :is(input,textarea,select):focus{outline:2px solid #f58220;outline-offset:2px}
+.aptus-main button[class*="bg-black"],.aptus-main a[class*="bg-black"],.aptus-auth-modal button[type="submit"]{background:#f58220;color:#333;border-radius:999px;min-height:44px}
+.aptus-main [class*="rounded-2xl"],.aptus-main [class*="rounded-xl"]{border-radius:28px}
+.aptus-auth-modal>div{border:1px solid #fff;border-radius:30px;box-shadow:0 24px 60px #33333330;background:#fffffff5}
+.aptus-auth-modal h2{line-height:1.65}.aptus-auth-modal .text-blue-600,.aptus-site .text-purple-600{color:#58595b}
+.aptus-site button.bg-purple-600{background:#f58220;color:#333}
+@media(min-width:1024px){.aptus-menu-toggle{display:none}}
+@media(max-width:1023px){.aptus-header{gap:8px}.aptus-header-shell .aptus-header{padding-block:12px}}
+@media(max-width:600px){
+ .aptus-header-shell .aptus-header{border-radius:26px;padding-inline:12px}
+ .aptus-content-card>div:last-child{padding:17px}.aptus-content-card h3{font-size:1rem}
+ .aptus-content-card p{font-size:.76rem}.aptus-content-card span[class*="inline-flex"]{font-size:.6rem;padding:8px 10px}
+ .aptus-home>section:last-child{border-radius:28px}
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.aptus-header,.aptus-mobile-menu{background:#fff}}
+@media(prefers-reduced-motion:reduce){.aptus-site *, .aptus-site *::before, .aptus-site *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}

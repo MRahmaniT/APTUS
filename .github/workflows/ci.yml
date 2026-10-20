@@ -30,6 +30,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
 
       - name: Check launcher syntax
         run: |
@@ -49,8 +52,11 @@ jobs:
       - name: Install API dependencies
         run: npm install --prefix server --ignore-scripts
 
-      - name: Check JavaScript and catalog integration
-        run: npm run check
+      - name: Verify visual-only scope against original website
+        run: node scripts/check-style-scope.mjs
+
+      - name: Typecheck web
+        run: npm run typecheck
 
       - name: Build web
         run: npm run build
@@ -76,21 +82,19 @@ jobs:
         run: npm run smoke --prefix server
         env:
           API_BASE: http://127.0.0.1:3000/api
-          SMOKE_EMAIL: ci-manager@aptus.local
 
-      - name: Install browser QA runtime
+      - name: Install browser QA
         run: |
-          npm install --no-save playwright
+          npm install --no-save --package-lock=false playwright@1.56.1
           npx playwright install --with-deps chromium
 
-      - name: Verify catalog, responsive layout, authentication and CMS screens
-        run: npm run test:browser
-        env:
-          BROWSER_BASE: http://127.0.0.1:3000
+      - name: Verify original website and catalog styling in browser
+        run: node scripts/browser-smoke.mjs
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload visual QA screenshots
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: aptus-catalog-browser-screenshots
-          path: qa-artifacts
+          name: website-visual-qa
+          path: qa-artifacts/
           if-no-files-found: ignore

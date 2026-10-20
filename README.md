@@ -4,7 +4,7 @@ APTUS is a multilingual React/Vite website with a self-hosted content platform f
 
 ## Stack
 
-- JavaScript/JSX + React/Vite frontend, using the APTUS catalog design and bundled content
+- React + Vite frontend
 - Node.js 22 + Express API
 - PostgreSQL 18 database
 - Local server storage for uploaded images/videos
@@ -68,8 +68,4 @@ Vite proxies `/api` and `/uploads` to the local API on port 3000.
 
 ## Verification
 
-GitHub Actions verifies the JavaScript/catalog checks, production build, API syntax, starts a PostgreSQL 18 service, applies the real SQL migration, starts the API, and checks `/api/health` against the database.
-
-## Catalog redesign
-
-See [catalog redesign](docs/catalog-redesign.md) for the pinned source, shared content, preserved CMS features and validation. Run `npm run check` to verify JavaScript source and copied catalog assets. The finished branch is `main2`.
+GitHub Actions verifies the frontend typecheck/build, API syntax, starts a PostgreSQL 18 service, applies the real SQL migration, starts the API, and checks `/api/health` against the database.

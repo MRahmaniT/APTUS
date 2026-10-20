@@ -19,7 +19,7 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const email = process.env.SMOKE_EMAIL || `ci-${Date.now()}@aptus.local`;
+const email = `ci-${Date.now()}@aptus.local`;
 const password = "Aptus-CI-Password-123!";
 
 const signup = await request("/auth/signup", {

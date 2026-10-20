@@ -15,7 +15,7 @@ export default function CatalogParts(){
   <div className="explore-hero">
    <div className="explore-bar"><div className="explore-title"><h2>{ui.explore.title}</h2></div><p>{ui.explore.diagramTitle}</p></div>
    <div className="model-stage"><div className="model-frame" id="model-frame" style={{"--ar":ratio} as CSSProperties}>
-    <img id="model-img" src={catalogAsset("semi-assembly.png")} alt={ui.explore.diagramAlt} onLoad={e=>setRatio(e.currentTarget.naturalWidth/e.currentTarget.naturalHeight)}/>
+    <img id="model-img" src={catalogAsset("semi-assembly.png")} alt={ui.explore.diagramAlt} onLoad={e=>setRatio(Number((e.currentTarget.naturalWidth/e.currentTarget.naturalHeight).toFixed(4)))}/>
     <svg className="leader-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{d.parts.map(p=>p.pin && p.anchor && <line key={p.id} data-pin-of={p.id} className={active===p.id?"is-active":""} x1={p.pin[0]} y1={p.pin[1]} x2={p.anchor[0]} y2={p.anchor[1]}/>)}</svg>
     {d.parts.map(p=>p.pin && p.anchor && <i key={p.id} className={"pin-dot"+(active===p.id?" is-active":"")} data-pin-of={p.id} style={{left:p.anchor[0]+"%",top:p.anchor[1]+"%"}} aria-hidden="true"/>)}
     {d.parts.map(p=>p.pin && <button key={p.id} type="button" className={"pin"+(active===p.id?" is-active":"")} data-part={p.id} style={{left:p.pin[0]+"%",top:p.pin[1]+"%"}} aria-label={ui.explore.select.replace("{name}",p.name)} aria-pressed={active===p.id} onClick={()=>setActive(p.id)}><span>{number(p.number)}</span></button>)}

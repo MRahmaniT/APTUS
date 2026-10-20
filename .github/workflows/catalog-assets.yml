@@ -1,0 +1,25 @@
+name: Materialize catalog assets
+on:
+  push:
+    branches: [development/catalog-redesign]
+    paths: ['.github/workflows/catalog-assets.yml']
+permissions:
+  contents: write
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/catalog-redesign
+          fetch-depth: 0
+      - name: Restore pinned catalog asset bytes
+        run: |
+          curl --fail --location https://codeload.github.com/MRahmaniT/APTUS-Catalog/tar.gz/75c645424c5ac5dba0d27c15e889d07a1aeebf91 -o /tmp/aptus-catalog.tgz
+          tar -xzf /tmp/aptus-catalog.tgz -C /tmp
+          cp -R /tmp/APTUS-Catalog-75c645424c5ac5dba0d27c15e889d07a1aeebf91/dist/assets/. public/catalog/assets/
+          git add public/catalog/assets
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Store original catalog asset bytes without LFS pointers"
+          git push origin HEAD:development/catalog-redesign

@@ -7,20 +7,29 @@ const browser = await chromium.launch();
 const comparisons=[];
 const differences=[];
 const groups=[
-  ["header",".site-header",".aptus-header",["borderRadius","backgroundImage","boxShadow","backdropFilter","minHeight","paddingTop","paddingRight"]],
-  ["cover",".cover-section",".aptus-cover",["borderRadius","minHeight","boxShadow"]],
-  ["cover-title",".cover-hero h1",".aptus-cover-copy h1",["fontSize","fontWeight","lineHeight","color","textShadow"]],
-  ["application-card",".application-card",".aptus-applications .ag-panel",["borderRadius","backgroundImage","boxShadow","backdropFilter","minHeight"]],
-  ["product-card",".qa-card",".aptus-content-card",["borderRadius","backgroundImage","boxShadow","backdropFilter"]],
-  ["card-caption",".qa-card .part-caption",".aptus-content-card .part-caption",["borderRadius","backgroundColor","paddingTop","paddingRight","minHeight"]],
-  ["system-copy",".system-copy",".aptus-system-copy",["borderRadius","backgroundImage","boxShadow","paddingTop"]],
-  ["primary-button",".section-action .solid-button",".aptus-intro-copy .solid-button",["borderRadius","backgroundColor","boxShadow","paddingTop","paddingRight","fontSize","fontWeight"]],
-  ["footer",".site-footer",".aptus-footer",["borderRadius","backgroundColor","boxShadow"]],
+ ["header",".site-header",".aptus-header",["borderRadius","backgroundImage","boxShadow","backdropFilter","minHeight","paddingTop","paddingRight"]],
+ ["cover",".cover-section",".catalog-home .cover-section",["borderRadius","minHeight","boxShadow"]],
+ ["cover-copy",".cover-copy",".catalog-home .cover-copy",["width","paddingTop","paddingBottom","paddingLeft","paddingRight"]],
+ ["cover-vignette",".cover-hero",".catalog-home .cover-hero",["backgroundImage","filter","backdropFilter","inset"],"::before"],
+ ["cover-image-effects",".cover-visual",".catalog-home .cover-visual",["backgroundImage","filter","backdropFilter","maskImage","display"],"::after"],
+ ["cover-title",".cover-hero h1",".catalog-home .cover-hero h1",["fontSize","fontWeight","lineHeight","color","textShadow","letterSpacing"]],
+ ["cover-emphasis",".cover-hero h1 em",".catalog-home .cover-hero h1 em",["fontSize","fontWeight","lineHeight","color"]],
+ ["cover-english",".cover-en--side",".catalog-home .cover-en--side",["fontSize","fontWeight","lineHeight","color","textShadow"]],
+ ["system-grid",".system-grid",".catalog-home .system-grid",["gridTemplateColumns","gap","alignItems"]],
+ ["system-copy",".system-copy",".catalog-home .system-copy",["borderRadius","backgroundImage","boxShadow","paddingTop","paddingRight"]],
+ ["system-picture",".system-picture",".catalog-home .system-picture",["borderRadius","minHeight","paddingTop","gap"]],
+ ["system-cad",".system-cad",".catalog-home .system-cad",["aspectRatio","backgroundColor"]],
+ ["parts-frame",".model-frame",".catalog-home .model-frame",["aspectRatio","width"]],
+ ["parts-pin",".pin",".catalog-home .pin",["borderRadius","backgroundColor","width","height"]],
+ ["parts-dock",".part-dock",".catalog-home .part-dock",["borderRadius","backgroundColor","paddingTop","gap"]],
+ ["footer",".site-footer",".aptus-footer",["borderRadius","backgroundColor","boxShadow"]],
 ];
-async function styles(page,selector,keys){
-  return page.locator(selector).first().evaluate((el,names)=>{
-    const css=getComputedStyle(el);return Object.fromEntries(names.map(key=>[key,css[key]]));
-  },keys);
+async function styles(page,selector,keys,pseudo=null){
+  return page.locator(selector).first().evaluate((el,{names,pseudo})=>{
+    const css=getComputedStyle(el,pseudo);
+    const canonical=value=>String(value).replaceAll("to left","270deg").replaceAll("to right","90deg").replaceAll("to bottom","180deg").replaceAll("to top","0deg");
+    return Object.fromEntries(names.map(key=>[key,canonical(css[key])]));
+  },{names:keys,pseudo});
 }
 async function capture(page,name,selector,inline=false){
   if(selector) await page.locator(selector).first().evaluate(el=>window.scrollTo({top:scrollY+el.getBoundingClientRect().top-116,behavior:"instant"}));
@@ -47,9 +56,9 @@ try{
     el.innerHTML='<div class="part-image"></div><div class="part-caption"><h3>APTUS</h3><p class="preview-excerpt">APTUS</p><a class="card-more">APTUS</a></div>';
     document.body.append(el);
   });
-  for(const [component,refSelector,siteSelector,keys]of groups){
-    const expected=await styles(reference,refSelector,keys);
-    const actual=await styles(website,siteSelector,keys);
+  for(const [component,refSelector,siteSelector,keys,pseudo]of groups){
+    const expected=await styles(reference,refSelector,keys,pseudo);
+    const actual=await styles(website,siteSelector,keys,pseudo);
     const mismatch=keys.filter(key=>expected[key]!==actual[key]);
     comparisons.push({viewport:name,component,expected,actual,mismatch});
     for(const key of mismatch) differences.push(name+" "+component+" "+key+": "+actual[key]+" != "+expected[key]);
@@ -57,13 +66,15 @@ try{
   await reference.evaluate(()=>document.querySelector(".qa-card").remove());
   await capture(reference,name+"-catalog-cover",null,name==="desktop");
   await capture(website,name+"-website-cover",null,true);
+  assert.equal(await website.locator(".cover-hero h1").innerHTML(),await reference.locator(".cover-hero h1").innerHTML(),"Catalog title text and emphasis");
+  assert.deepEqual(await website.locator(".system-copy p").allTextContents(),await reference.locator(".system-copy p").allTextContents(),"Catalog AIPS paragraphs");
   if(name==="desktop"){
     await capture(reference,"catalog-applications",".applications-grid",true);
     await capture(website,"website-applications",".aptus-applications",true);
-    await capture(website,"website-introduction",".aptus-intro-copy",true);
-    await capture(website,"website-product-grid",".aptus-product-grid",true);
+    await capture(website,"website-introduction",".catalog-home .about-section",true);
+    await capture(website,"website-product-grid",".catalog-home .explore-dock",true);
     await capture(reference,"catalog-system",".system-grid");
-    await capture(website,"website-system",".aptus-system-layout",true);
+    await capture(website,"website-system",".catalog-home .system-grid",true);
     await capture(website,"website-footer",".aptus-footer",true);
   }
   await context.close();
@@ -80,5 +91,5 @@ try{
   await diagnostic.close();
  }
  assert.deepEqual(differences,[],"Shared components must match the actual catalog's computed styles.");
- console.log("PASS: catalog header, cover, typography, application cards, product cards, buttons, system panels and footer match at desktop and mobile sizes.");
+ console.log("PASS: catalog cover text, emphasis, effects, component diagram and AIPS introduction match at desktop and mobile sizes; website navigation retained.");
 }finally{await browser.close();}

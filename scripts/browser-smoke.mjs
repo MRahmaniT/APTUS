@@ -21,13 +21,49 @@ try {
         await page.locator("main").waitFor();
         assert.equal(await page.locator("html").getAttribute("dir"), locale === "fa" ? "rtl" : "ltr");
         assert.ok((await page.locator("main").innerText()).trim().length > 30, name + locale + route);
-        assert.equal(await page.locator(".catalog-surface, #model-frame").count(), 0);
+        assert.equal(await page.locator("#model-frame").count(), route === "/" ? 1 : 0);
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
         assert.ok(overflow <= 4, name + " " + locale + " " + route + ": overflow " + overflow);
         if (route === "/") {
-          assert.equal(await page.locator(".aptus-home > section").count(), 3);
+          assert.equal(await page.locator(".catalog-home > section").count(), 4);
           assert.equal(await page.locator(".accordion-gallery .ag-panel").count(), 5);
-          assert.equal(await page.locator(".aptus-home .aptus-content-card").count(), 6);
+          assert.equal(await page.locator(".part-selector button").count(), 9);
+          assert.equal(await page.locator(".model-frame .pin").count(), 8);
+          const components = ["column","longitudinal-beam","girder","purlin","self-standing-wall","tie-beam","foundation","wall-base","corner-wall"];
+          for(const id of components){
+            const control=page.locator('.part-selector button[data-part="'+id+'"]');
+            await control.click();
+            await page.waitForFunction(selected=>document.querySelector('.part-selector button[data-part="'+selected+'"]')?.getAttribute("aria-pressed")==="true",id);
+            assert.equal(await page.locator(".part-selector button[aria-pressed=true]").count(),1);
+            assert.equal(await page.locator("#part-preview h3").innerText(),(await control.innerText()).replace(/^[0-9]+ */,""));
+            assert.ok((await page.locator("#part-preview a").getAttribute("href")).startsWith("/products/"));
+            if(id!=="corner-wall")assert.equal(await page.locator('.leader-lines line[data-pin-of="'+id+'"].is-active').count(),1);
+          }
+          for(const pin of await page.locator(".model-frame .pin").all()){
+            const id=await pin.getAttribute("data-part");
+            await pin.click();
+            assert.equal(await page.locator('.part-selector button[data-part="'+id+'"]').getAttribute("aria-pressed"),"true");
+          }
+          await page.locator('.model-frame .pin[data-part="column"]').click();
+          assert.equal(await page.locator('.part-selector button[data-part="column"]').getAttribute("aria-pressed"),"true");
+          const panels=page.locator(".aptus-applications .ag-panel");
+          await page.mouse.move(0,0);
+          await page.keyboard.press("Tab");
+          await panels.nth(0).focus();
+          await page.waitForFunction(()=>document.querySelector(".aptus-applications .ag-panel")?.getAttribute("aria-current")==="true");
+          try {
+          await page.waitForFunction(()=>{
+            const p=[...document.querySelectorAll(".aptus-applications .ag-panel")];
+            return parseFloat(getComputedStyle(p[0]).flexGrow)>2*parseFloat(getComputedStyle(p[1]).flexGrow);
+          });
+          } catch(error){
+            console.log("Gallery diagnostic",name,locale,await panels.evaluateAll(elements=>elements.map(el=>({active:el.getAttribute("aria-current"),inline:el.getAttribute("style"),grow:getComputedStyle(el).flexGrow}))));
+            throw error;
+          }
+          await panels.nth(0).press("ArrowRight");
+          await page.waitForFunction(()=>document.querySelectorAll(".aptus-applications .ag-panel")[1]?.getAttribute("aria-current")==="true");
+          if(width>=1024){await panels.nth(4).hover();await page.waitForFunction(()=>document.querySelectorAll(".aptus-applications .ag-panel")[4]?.getAttribute("aria-current")==="true");}
+          await page.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
           assert.ok((await page.locator("h1").innerText()).includes(
             locale === "fa" ? "سوله بتنی" : locale === "en" ? "industrial sheds" : "beton"));
           assert.equal(await page.locator(".accordion-gallery img[src='/catalog-assets/applications/industry.jpg']").count(), 1);
@@ -112,6 +148,19 @@ try {
   await modal.waitFor({ state:"hidden" });
   await page.getByTitle("Logout", { exact:true }).waitFor();
   await context.close();
+  for(const reducedMotion of ["no-preference","reduce"]){
+    const touch=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion});
+    await touch.addInitScript(()=>localStorage.setItem("locale","en"));
+    const mobile=await touch.newPage();
+    await mobile.goto(base+"/",{waitUntil:"networkidle"});
+    const slides=mobile.locator(".aptus-applications .ag-panel");
+    await slides.nth(0).tap();
+    await mobile.waitForFunction(()=>document.querySelector(".aptus-applications .ag-panel").getAttribute("aria-current")==="true");
+    assert.equal(new URL(mobile.url()).pathname,"/","First touch selects an inactive slide");
+    await mobile.locator('.part-selector button[data-part="girder"]').tap();
+    assert.equal(await mobile.locator(".dock-body").evaluate(el=>getComputedStyle(el).animationName),reducedMotion==="reduce"?"none":"aptus-part-enter");
+    await touch.close();
+  }
   assert.deepEqual(errors, [], "Browser runtime errors");
   console.log("PASS: public routes in three viewports and languages; catalog content, real images, technical PDFs, original sections, mobile menus, account and protected library.");
 } finally {

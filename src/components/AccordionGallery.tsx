@@ -104,7 +104,7 @@ const AccordionGallery = ({
   const firstRunRef = useRef(true);
   const mediaSizeRef = useRef(320);
 
-  const vertical = orientation === "vertical";
+
   const count = items.length;
 
   const [active, setActive] = useState(() =>
@@ -114,6 +114,7 @@ const AccordionGallery = ({
   );
 
   const [isMobile, setIsMobile] = useState(false);
+  const vertical = orientation === "vertical" || isMobile;
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 520px)");
@@ -412,7 +413,7 @@ const AccordionGallery = ({
     i: number,
     e: MouseEvent<HTMLElement>
   ) => {
-    if (trigger === "click" && i !== active) {
+    if ((trigger === "click" || isMobile || window.matchMedia("(hover: none)").matches) && i !== active) {
       e.preventDefault();
       setActive(i);
     }
@@ -431,7 +432,7 @@ const AccordionGallery = ({
       e.preventDefault();
 
       setActive(
-        (i + 1) % count
+        (active + 1) % count
       );
     } else if (
       e.key === "ArrowLeft" ||
@@ -440,7 +441,7 @@ const AccordionGallery = ({
       e.preventDefault();
 
       setActive(
-        (i - 1 + count) % count
+        (active - 1 + count) % count
       );
     }
   };
@@ -509,9 +510,9 @@ const AccordionGallery = ({
             onMouseEnter={() =>
               handleEnter(i)
             }
-            onFocus={() =>
-              setActive(i)
-            }
+            onFocus={(e) => {
+              if (e.currentTarget.matches(":focus-visible")) setActive(i);
+            }}
             onKeyDown={(e) =>
               handleKeyDown(i, e)
             }

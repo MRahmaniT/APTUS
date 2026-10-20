@@ -1,0 +1,384 @@
+// Interface text from the pinned catalog; formatting is part of its cover design.
+export const catalogPresentation = {
+  "fa": {
+    "nav": [
+      "درباره آپتوس",
+      "معرفی سیستم",
+      "تیپ‌بندی‌ها",
+      "اجزا",
+      "نمای تعاملی",
+      "مزایا",
+      "ارتباط"
+    ],
+    "menu": "فهرست",
+    "openMenu": "باز کردن فهرست",
+    "closeMenu": "بستن فهرست",
+    "language": "انتخاب زبان",
+    "headerCta": "مشاهده تیپ‌ها",
+    "homeLabel": "آپتوس ایران، ابتدای کاتالوگ",
+    "cover": {
+      "kicker": "کاتالوگ دیجیتال سامانه صنعتی",
+      "title": "سیستم سوله بتنی<br><em>پیش‌ساخته</em><br>احداث سریع آپتوس",
+      "sub": "سیستمی برای تولید، حمل و نصب قطعات سازه‌ای با مدول‌بندی مشخص",
+      "enter": "ورود به کاتالوگ",
+      "visual": "نمای شماتیک سازه",
+      "visualAlt": "رندر قاب‌بندی سوله بتنی پیش‌ساخته آپتوس",
+      "single": "سامانه سوله تک‌دهانه",
+      "module": "مدول پایه"
+    },
+    "about": {
+      "title": "درباره آپتوس",
+      "quote": "از طراحی قطعه تا نصب سازه، یک روند هماهنگ.",
+      "extra": "تمرکز این کاتالوگ بر سوله بتنی پیش‌ساخته سریع‌الاحداث آپتوس است؛ سامانه‌ای که برای کاهش وابستگی به عملیات تر کارگاهی و هماهنگی بیشتر اجزای سازه توسعه یافته است.",
+      "link": "آشنایی با سامانه",
+      "legal": "شرکت ساختمانی، تولیدی و پژوهشی",
+      "location": "ایران"
+    },
+    "system": {
+      "title": "معرفی سیستم سوله بتنی پیش‌ساخته احداث سریع آپتوس",
+      "imageAlt": "نمای سه‌بعدی فنی از اسکلت و اجزای سازه سوله",
+      "p1": "سوله بتنی پیش‌ساخته، رویکردی نوین در ساخت سازه‌های مختلف است که با بهره‌گیری از ظرفیت‌های بتن، از جمله صرفه اقتصادی، دوام در شرایط آب‌و‌هوایی مختلف، مقاومت در برابر حریق و صرفه‌جویی در مصرف انرژی در کنار ویژگی‌های منحصر به‌فرد فناوری پیش‌ساخته‌سازی مدولار، زمینه‌ای مناسب برای توسعه سازه‌های صنعتی فراهم می‌کند. بر همین اساس، شرکت آپتوس ایران ضمن مطالعه و بررسی عملکرد سازه‌های صنعتی بتنی پیش‌ساخته با مشخصات هندسی و فنی متنوع در کشورهای مختلف و با توجه نیاز مبرم کشور به ساخت سوله‌های صنعتی با سرعت بالا و کیفیت استاندارد اقدام به توسعه این سیستم منطبق بر آخرین ویرایش آیین‌نامه 2800 و مباحث مقررات ملی ساختمان نموده است.",
+      "p2": "این سیستم با رویکردی مهندسی‌شده و با هدف بهبود فرآیند تولید، حمل و نصب سوله‌های بتنی پیش‌ساخته مدولار طراحی شده است. در این سیستم، اجزای اصلی سازه شامل فوندانسیون، دیوار خودایستا، ستون، شاهتیر و تیرهای طولی و پرلین بتنی پیش‌ساخته در شرایط کنترل‌شده کارخانه‌ای تولید شده و پس از انتقال به محل پروژه بدون نیاز به بتن‌ریزی درجا و مطابق با فرآیند اجرایی پیش‌بینی شده، مونتاژ و نصب می‌شوند.",
+      "stats": [
+        "تیپ ارتفاعی",
+        "تیپ دهانه",
+        "متر / مدول پایه"
+      ]
+    },
+    "types": {
+      "title": "تیپ‌بندی‌ها",
+      "intro": "سه مدول ارتفاعی 3H / 4H / 5H در کنار شش مدول دهانه 5M–10M، مجموعاً ۱۸ ترکیب استاندارد را شکل می‌دهند. <br> در این نام‌گذاری H = M = 2.4 m است.",
+      "scroll": "جدول در نمایشگر کوچک قابل پیمایش افقی است ←",
+      "region": "جدول ۱۸ تیپ دهانه و ارتفاع، قابل پیمایش افقی",
+      "underRoof": "ارتفاع تا زیر سقف",
+      "clearSpan": "دهانه خالص",
+      "meter": "متر",
+      "view": "مشاهده جزئیات",
+      "cell": "تیپ {type}، دهانه {span} متر، ارتفاع {height} متر",
+      "notes": [
+        "فاصله پشت تا پشت ستون‌ها، ۱٫۲ متر بیش از دهانه خالص هر تیپ است.",
+        "تیپ‌های 11M و 12M در جدول فایل مبنا «در دست مطالعه» آمده‌اند و در ترکیب‌های استاندارد اینجا قرار نگرفته‌اند.",
+        "انتخاب پوشش و جرثقیل سقفی بر اساس سفارش و طراحی نهایی پروژه انجام می‌شود."
+      ]
+    },
+    "parts": {
+      "title": "اجزای سیستم سوله بتنی پیش‌ساخته احداث سریع آپتوس",
+      "imageAlt": "تصویر سه‌بعدی {name}"
+    },
+    "explore": {
+      "title": "نمای تعاملی اجزا",
+      "diagramTitle": "نمای سه‌بعدی سازه و دیوارهای پیرامونی",
+      "diagramAlt": "شماتیک شماره‌گذاری‌شده هشت جزء سازه پیش‌ساخته آپتوس",
+      "diagramHelp": "نقاط روی تصویر برای نمایش قطعات قابل انتخاب هستند.",
+      "selectGroup": "فهرست اجزای قابل انتخاب",
+      "select": "نمایش {name}",
+      "imageAlt": "پیش‌نمایش {name}",
+      "more": "اطلاعات بیشتر"
+    },
+    "benefits": {
+      "title": "مزایای سیستم سوله بتنی پیش‌ساخته احداث سریع آپتوس",
+      "headline": "مزیت‌های اجرایی و عملکردی",
+      "source": "برگرفته از کاتالوگ فنی آپتوس"
+    },
+    "contact": {
+      "title": "ارتباط و مدارک",
+      "intro": "برای دریافت جزئیات اجرایی و بررسی تیپ متناسب با پروژه، از راه‌های ارتباطی رسمی شرکت استفاده کنید.",
+      "location": "موقعیت",
+      "addressMissing": "نشانی دقیق هنوز ارائه نشده است.",
+      "phone": "تماس",
+      "phoneMissing": "در انتظار شماره رسمی",
+      "documents": "گواهی‌نامه‌ها و مدارک",
+      "documentsMissing": "مدرک تأییدشده‌ای در فایل‌های ارائه‌شده نبود.",
+      "documentsNext": "پس از دریافت تصاویر یا فایل گواهی‌نامه‌ها، این بخش تکمیل می‌شود."
+    },
+    "detail": {
+      "catalog": "کاتالوگ",
+      "typeTitle": "تیپ {type}",
+      "typeDescription": "سوله بتنی پیش‌ساخته تک‌دهانه آپتوس با ارتفاع {height} متر تا زیر سقف و دهانه خالص {span} متر.",
+      "backTypes": "بازگشت به جدول تیپ‌ها",
+      "frame": "نمای شماتیک قاب عرضی",
+      "frameAlt": "نمای شماتیک قاب تیپ {type}",
+      "drawingNote": "نمای شماتیک است؛ نقشه‌های اجرایی و جزئیات اتصال تابع طراحی نهایی پروژه‌اند.",
+      "dimensions": "ابعاد این تیپ",
+      "outside": "فاصله پشت تا پشت ستون",
+      "module": "مدول پایه",
+      "notes": "درباره این ترکیب",
+      "p1": "این تیپ یکی از ترکیب‌های استاندارد جدول سوله تک‌دهانه است. دهانه {spanCode} و ارتفاع {heightCode} بر اساس مدول ۲٫۴ متری تعریف شده‌اند.",
+      "p2": "مطابق کاتالوگ مبنا، پوشش سقف و دیوار بنا به سفارش می‌تواند ساندویچ‌پنل یا پانل مسلح AAC باشد. امکان پیش‌بینی جرثقیل سقفی تا ۱۰ تن نیز به طراحی پروژه و سفارش وابسته است.",
+      "otherTypes": "تیپ‌های دیگر",
+      "previous": "تیپ قبلی",
+      "next": "تیپ بعدی",
+      "backExplore": "بازگشت به نمای تعاملی",
+      "partOf": "جزء {number} از ۸",
+      "partRole": "نقش این قطعه در سازه",
+      "technical": "یادداشت فنی",
+      "technicalNote": "ابعاد، شکل نهایی و جزئیات اتصال قطعه مطابق نقشه‌های مصوب هر پروژه مشخص می‌شوند.",
+      "placement": "جایگاه این قطعه را در مجموعه سازه ببینید."
+    },
+    "footer": {
+      "tagline": "ما کیفیت می‌سازیم...",
+      "explore": "کاوش در کاتالوگ",
+      "components": "اجزای پیش‌ساخته",
+      "contact": "ارتباط با ما",
+      "back": "بازگشت به صفحۀ اصلی",
+      "rights": "تمامی حقوق محفوظ است.",
+      "missing": "اطلاعات تماس رسمی در انتظار تکمیل است."
+    }
+  },
+  "en": {
+    "nav": [
+      "About APTUS",
+      "The system",
+      "Types & dimensions",
+      "Components",
+      "Interactive view",
+      "Advantages",
+      "Contact"
+    ],
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Choose language",
+    "headerCta": "Explore types",
+    "homeLabel": "APTUS Iran, catalog home",
+    "cover": {
+      "kicker": "Digital industrial systems catalog",
+      "title": "Modular<br><em>precast concrete</em><br>industrial sheds",
+      "sub": "A coordinated system for producing, transporting and assembling structural components.",
+      "enter": "Explore the catalog",
+      "visual": "Structural concept render",
+      "visualAlt": "Render of the APTUS precast industrial shed frame",
+      "single": "Single-span shed system",
+      "module": "Base module"
+    },
+    "about": {
+      "title": "About APTUS",
+      "quote": "One coordinated process, from component design to assembly.",
+      "abstract": "APTUS Iran focuses on industrial production of precast concrete components and the development of a modular system for industrial sheds. Design, factory production, transport and on-site assembly are coordinated as one process to support controlled quality and reduce site work.",
+      "extra": "This catalog presents the APTUS modular precast concrete shed system, developed to coordinate structural elements and reduce wet construction work on site.",
+      "link": "Discover the system",
+      "legal": "Construction, manufacturing and research company",
+      "location": "Iran"
+    },
+    "system": {
+      "title": "The system",
+      "imageAlt": "Technical 3D view of the shed frame and structural components",
+      "caption": "Technical frame view / supplied visual archive",
+      "p1": "The catalog defines three height types and six span types. For orders above 50,000 m², changes to the span and height may be considered according to project requirements.",
+      "p2": "Roof and wall finishes can be ordered as sandwich panels or reinforced AAC panels. The types can also be designed with or without provision for an overhead crane of up to 10 tonnes.",
+      "stats": [
+        "height types",
+        "span types",
+        "m / base module"
+      ]
+    },
+    "types": {
+      "title": "Types & dimensions",
+      "intro": "Three heights (3H / 4H / 5H) and six spans (5M–10M) form 18 standard combinations. In this system, H = M = 2.4 m.",
+      "scroll": "Scroll sideways to view the full table →",
+      "region": "Scrollable table of 18 height and span combinations",
+      "underRoof": "Height below roof",
+      "clearSpan": "Clear span",
+      "meter": "m",
+      "view": "View details",
+      "cell": "Type {type}, {span} m span and {height} m height",
+      "notes": [
+        "The outside-to-outside column width is 1.2 m greater than the clear span.",
+        "The source table marks 11M and 12M as under study; they are not listed as standard combinations here.",
+        "Roof and wall finishes and crane provision depend on the order and final project design."
+      ]
+    },
+    "parts": {
+      "title": "System components",
+      "imageAlt": "3D illustration of {name}"
+    },
+    "explore": {
+      "title": "Interactive assembly",
+      "diagramTitle": "3D frame and perimeter walls",
+      "diagramAlt": "Numbered assembly diagram of eight APTUS precast components",
+      "diagramHelp": "Select a point on the image to inspect a component.",
+      "selectGroup": "Selectable components",
+      "select": "Show {name}",
+      "imageAlt": "Preview of {name}",
+      "more": "More information"
+    },
+    "benefits": {
+      "title": "Advantages",
+      "headline": "Construction and performance benefits",
+      "source": "From the APTUS technical catalog"
+    },
+    "contact": {
+      "title": "Contact & documents",
+      "intro": "Use the company's official contact details to discuss technical information and a suitable type for your project.",
+      "location": "Location",
+      "addressMissing": "The full address has not been supplied yet.",
+      "phone": "Call",
+      "phoneMissing": "Official number pending",
+      "documents": "Certificates & documents",
+      "documentsMissing": "No verified certificate was included in the supplied files.",
+      "documentsNext": "This section will be completed when official documents are provided."
+    },
+    "detail": {
+      "catalog": "Catalog",
+      "typeTitle": "Type {type}",
+      "typeDescription": "APTUS single-span precast concrete shed with {height} m under-roof height and {span} m clear span.",
+      "backTypes": "Back to type table",
+      "frame": "Schematic transverse frame",
+      "frameAlt": "Schematic frame for type {type}",
+      "drawingNote": "Schematic view. Construction drawings and connections are determined by final project design.",
+      "dimensions": "Type dimensions",
+      "outside": "Outside-to-outside columns",
+      "module": "Base module",
+      "notes": "About this combination",
+      "p1": "This is one standard combination from the single-span shed table. The {spanCode} span and {heightCode} height follow the 2.4 m module.",
+      "p2": "As described in the source catalog, roof and wall finishes may be sandwich panels or reinforced AAC panels by order. Crane provision up to 10 tonnes depends on project design and order.",
+      "otherTypes": "Other types",
+      "previous": "Previous type",
+      "next": "Next type",
+      "backExplore": "Back to interactive view",
+      "partOf": "Component {number} of 8",
+      "partRole": "Role in the structure",
+      "technical": "Technical note",
+      "technicalNote": "Final dimensions, geometry and connection details follow the approved drawings for each project.",
+      "placement": "See where this component sits in the complete assembly."
+    },
+    "footer": {
+      "tagline": "We Create Quality",
+      "summary": "A modular precast concrete shed system for coordinated industrial construction.",
+      "explore": "Explore the catalog",
+      "components": "Precast components",
+      "contact": "Get in touch",
+      "back": "Back to top",
+      "rights": "All rights reserved.",
+      "missing": "Official contact details are pending."
+    }
+  },
+  "tr": {
+    "nav": [
+      "APTUS hakkında",
+      "Sistem",
+      "Tipler ve ölçüler",
+      "Bileşenler",
+      "Etkileşimli görünüm",
+      "Avantajlar",
+      "İletişim"
+    ],
+    "menu": "Menü",
+    "openMenu": "Menüyü aç",
+    "closeMenu": "Menüyü kapat",
+    "language": "Dil seçimi",
+    "headerCta": "Tipleri incele",
+    "homeLabel": "APTUS İran, katalog ana sayfası",
+    "cover": {
+      "kicker": "Dijital endüstriyel sistem kataloğu",
+      "title": "Modüler<br><em>prefabrik beton</em><br>endüstriyel yapılar",
+      "sub": "Yapısal elemanların üretimi, taşınması ve montajı için koordineli bir sistem.",
+      "enter": "Kataloğu incele",
+      "visual": "Yapısal konsept görseli",
+      "visualAlt": "APTUS prefabrik endüstriyel yapı iskeletinin görseli",
+      "single": "Tek açıklıklı yapı sistemi",
+      "module": "Temel modül"
+    },
+    "about": {
+      "title": "APTUS hakkında",
+      "quote": "Eleman tasarımından montaja kadar tek bir koordineli süreç.",
+      "abstract": "APTUS İran, prefabrik beton elemanların endüstriyel üretimine ve endüstriyel yapılar için modüler bir sistem geliştirmeye odaklanır. Tasarım, fabrika üretimi, taşıma ve saha montajı; kontrollü kaliteyi desteklemek ve şantiye işlerini azaltmak için birlikte ele alınır.",
+      "extra": "Bu katalog, yapısal elemanları koordine etmek ve sahadaki ıslak imalatı azaltmak amacıyla geliştirilen APTUS modüler prefabrik beton yapı sistemini tanıtır.",
+      "link": "Sistemi keşfet",
+      "legal": "İnşaat, üretim ve araştırma şirketi",
+      "location": "İran"
+    },
+    "system": {
+      "title": "Sistem",
+      "imageAlt": "Yapı iskeleti ve bileşenlerinin teknik üç boyutlu görünümü",
+      "caption": "Teknik iskelet görünümü / sağlanan görsel arşiv",
+      "p1": "Katalogda üç yükseklik tipi ve altı açıklık tipi tanımlanır. 50.000 m² üzerindeki siparişlerde, proje gereksinimlerine göre açıklık ve yükseklikte değişiklik değerlendirilebilir.",
+      "p2": "Çatı ve duvar kaplaması siparişe göre sandviç panel veya donatılı AAC panel olabilir. Tipler, 10 tona kadar tavan vinci için hazırlıklı ya da vinçsiz tasarlanabilir.",
+      "stats": [
+        "yükseklik tipi",
+        "açıklık tipi",
+        "m / temel modül"
+      ]
+    },
+    "types": {
+      "title": "Tipler ve ölçüler",
+      "intro": "Üç yükseklik (3H / 4H / 5H) ve altı açıklık (5M–10M), 18 standart kombinasyon oluşturur. Bu sistemde H = M = 2,4 m.",
+      "scroll": "Tablonun tamamı için yana kaydırın →",
+      "region": "18 yükseklik ve açıklık kombinasyonundan oluşan kaydırılabilir tablo",
+      "underRoof": "Çatı altı yüksekliği",
+      "clearSpan": "Net açıklık",
+      "meter": "m",
+      "view": "Detayları gör",
+      "cell": "{type} tipi, {span} m açıklık ve {height} m yükseklik",
+      "notes": [
+        "Kolonların dıştan dışa genişliği net açıklıktan 1,2 m fazladır.",
+        "Kaynak tabloda 11M ve 12M araştırma aşamasında gösterilir; burada standart kombinasyon olarak listelenmez.",
+        "Çatı ve duvar kaplaması ile vinç hazırlığı, siparişe ve nihai proje tasarımına bağlıdır."
+      ]
+    },
+    "parts": {
+      "title": "Sistem bileşenleri",
+      "imageAlt": "{name} bileşeninin üç boyutlu görseli"
+    },
+    "explore": {
+      "title": "Etkileşimli montaj",
+      "diagramTitle": "Üç boyutlu iskelet ve çevre duvarları",
+      "diagramAlt": "APTUS sisteminin sekiz prefabrik elemanını gösteren numaralı montaj şeması",
+      "diagramHelp": "Bir bileşeni incelemek için görseldeki noktayı seçin.",
+      "selectGroup": "Seçilebilir bileşenler",
+      "select": "{name} göster",
+      "imageAlt": "{name} önizlemesi",
+      "more": "Daha fazla bilgi"
+    },
+    "benefits": {
+      "title": "Avantajlar",
+      "headline": "Uygulama ve performans avantajları",
+      "source": "APTUS teknik kataloğundan"
+    },
+    "contact": {
+      "title": "İletişim ve belgeler",
+      "intro": "Teknik bilgiler ve projenize uygun tip için şirketin resmî iletişim kanallarını kullanın.",
+      "location": "Konum",
+      "addressMissing": "Açık adres henüz paylaşılmadı.",
+      "phone": "Telefon",
+      "phoneMissing": "Resmî numara bekleniyor",
+      "documents": "Sertifikalar ve belgeler",
+      "documentsMissing": "Sağlanan dosyalarda doğrulanmış sertifika bulunmuyor.",
+      "documentsNext": "Resmî belgeler sağlandığında bu bölüm tamamlanacaktır."
+    },
+    "detail": {
+      "catalog": "Katalog",
+      "typeTitle": "{type} tipi",
+      "typeDescription": "Çatı altı yüksekliği {height} m ve net açıklığı {span} m olan APTUS tek açıklıklı prefabrik beton yapı.",
+      "backTypes": "Tip tablosuna dön",
+      "frame": "Şematik enine çerçeve",
+      "frameAlt": "{type} tipi için şematik çerçeve",
+      "drawingNote": "Şematik görünüm. Uygulama çizimleri ve bağlantılar projenin nihai tasarımına göre belirlenir.",
+      "dimensions": "Tip ölçüleri",
+      "outside": "Kolonlar dıştan dışa",
+      "module": "Temel modül",
+      "notes": "Bu kombinasyon hakkında",
+      "p1": "Bu tip, tek açıklıklı yapı tablosundaki standart kombinasyonlardan biridir. {spanCode} açıklığı ve {heightCode} yüksekliği 2,4 m modülüne dayanır.",
+      "p2": "Kaynak kataloğa göre çatı ve duvar kaplaması sipariş üzerine sandviç panel veya donatılı AAC panel olabilir. 10 tona kadar vinç hazırlığı proje tasarımına ve siparişe bağlıdır.",
+      "otherTypes": "Diğer tipler",
+      "previous": "Önceki tip",
+      "next": "Sonraki tip",
+      "backExplore": "Etkileşimli görünüme dön",
+      "partOf": "8 bileşenden {number}.",
+      "partRole": "Yapıdaki görevi",
+      "technical": "Teknik not",
+      "technicalNote": "Nihai ölçüler, geometri ve bağlantı ayrıntıları her projenin onaylı çizimlerine göre belirlenir.",
+      "placement": "Bu bileşenin montajdaki yerini görün."
+    },
+    "footer": {
+      "tagline": "Kalite Üretiyoruz",
+      "summary": "Koordineli endüstriyel yapım için modüler prefabrik beton yapı sistemi.",
+      "explore": "Kataloğu keşfet",
+      "components": "Prefabrik bileşenler",
+      "contact": "İletişime geç",
+      "back": "Başa dön",
+      "rights": "Tüm hakları saklıdır.",
+      "missing": "Resmî iletişim bilgileri bekleniyor."
+    }
+  }
+};

@@ -39,6 +39,11 @@ try {
             assert.ok((await page.locator("#part-preview a").getAttribute("href")).startsWith("/products/"));
             if(id!=="corner-wall")assert.equal(await page.locator('.leader-lines line[data-pin-of="'+id+'"].is-active').count(),1);
           }
+          for(const pin of await page.locator(".model-frame .pin").all()){
+            const id=await pin.getAttribute("data-part");
+            await pin.click();
+            assert.equal(await page.locator('.part-selector button[data-part="'+id+'"]').getAttribute("aria-pressed"),"true");
+          }
           await page.locator('.model-frame .pin[data-part="column"]').click();
           assert.equal(await page.locator('.part-selector button[data-part="column"]').getAttribute("aria-pressed"),"true");
           const panels=page.locator(".aptus-applications .ag-panel");
@@ -137,6 +142,19 @@ try {
   await modal.waitFor({ state:"hidden" });
   await page.getByTitle("Logout", { exact:true }).waitFor();
   await context.close();
+  for(const reducedMotion of ["no-preference","reduce"]){
+    const touch=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion});
+    await touch.addInitScript(()=>localStorage.setItem("locale","en"));
+    const mobile=await touch.newPage();
+    await mobile.goto(base+"/",{waitUntil:"networkidle"});
+    const slides=mobile.locator(".aptus-applications .ag-panel");
+    await slides.nth(0).tap();
+    await mobile.waitForFunction(()=>document.querySelector(".aptus-applications .ag-panel").getAttribute("aria-current")==="true");
+    assert.equal(new URL(mobile.url()).pathname,"/","First touch selects an inactive slide");
+    await mobile.locator('.part-selector button[data-part="girder"]').tap();
+    assert.equal(await mobile.locator(".dock-body").evaluate(el=>getComputedStyle(el).animationName),reducedMotion==="reduce"?"none":"aptus-part-enter");
+    await touch.close();
+  }
   assert.deepEqual(errors, [], "Browser runtime errors");
   console.log("PASS: public routes in three viewports and languages; catalog content, real images, technical PDFs, original sections, mobile menus, account and protected library.");
 } finally {

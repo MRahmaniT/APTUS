@@ -404,7 +404,7 @@ const AccordionGallery = ({
   }, []);
 
   const handleEnter = (i: number) => {
-    if (trigger === "hover") {
+    if (trigger === "hover" && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
       setActive(i);
     }
   };

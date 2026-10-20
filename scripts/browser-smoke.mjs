@@ -59,11 +59,14 @@ try {
             assert.equal(await menu.count(), 0);
           }
         }
-        for(const image of await page.locator('main img[src^="/catalog-assets/"]').all()) {
-          await image.scrollIntoViewIfNeeded();
-          await image.evaluate(el => el.complete ? Promise.resolve() : new Promise((resolve,reject)=>{el.onload=resolve;el.onerror=reject;}));
-          assert.ok(await image.evaluate(el=>el.naturalWidth>0), await image.getAttribute("src"));
-        }
+        const images = await page.locator('main img[src^="/catalog-assets/"]').evaluateAll(async elements => {
+          return Promise.all(elements.map(async el => {
+            el.loading = "eager";
+            try { await el.decode(); } catch {}
+            return {src:el.getAttribute("src"),loaded:el.naturalWidth>0};
+          }));
+        });
+        for(const image of images) assert.ok(image.loaded, name+" "+locale+" "+route+" "+image.src);
         if (route === "/products/columns") {
           assert.ok((await page.locator("main").innerText()).includes(locale==="fa"?"ستون":locale==="en"?"column":"kolon"));
           assert.equal(await page.locator('a[href="/catalog-assets/technical/column.pdf"]').count(),1);

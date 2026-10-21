@@ -19,6 +19,7 @@ const groups=[
  ["about-title",".about-section h2",".catalog-home .about-section h2",["fontSize","fontWeight","lineHeight"]],
  ["about-intro-title",".about-intro-text h3",".catalog-home .about-intro-text h3",["fontSize","fontWeight","lineHeight"]],
  ["about-badge",".about-badge",".catalog-home .about-badge",["width","height","backgroundImage","borderRadius"]],
+ ["about-badge-plus",".about-badge sup",".catalog-home .about-badge sup",["fontSize","lineHeight","position","top","verticalAlign"]],
  ["mission-grid",".mission-grid",".catalog-home .mission-grid",["gridTemplateColumns","gap"]],
  ["mission-card",".mission-card",".catalog-home .mission-card",["paddingTop","borderRadius","boxShadow","backgroundColor"]],
  ["mission-heading",".mission-card h4",".catalog-home .mission-card h4",["fontSize","fontWeight","lineHeight"]],

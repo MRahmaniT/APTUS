@@ -1451,3 +1451,5 @@ html[dir=rtl] .catalog-home .cover-en--inflow{align-self:flex-end}
 .catalog-home #about :is(h2,h3,h4){font-weight:700}
 
 .catalog-home #about .mission-card h4{line-height:1.9}
+
+.catalog-home #about .about-badge sup{position:static;top:auto;line-height:inherit}

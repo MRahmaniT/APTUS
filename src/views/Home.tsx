@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AccordionGallery from "../components/AccordionGallery";
+import CatalogAbout from "../components/CatalogAbout";
 import CatalogParts from "../components/CatalogParts";
 import { useAppContext } from "../controllers/AppContext";
 import { ApiService } from "../services/api";
@@ -32,11 +33,8 @@ export default function Home() {
    <div className="cover-visual"><div className="visual-stage"><img src={catalogAsset("cover-render3.png")} alt={ui.cover.visualAlt}/></div></div>
   </section>
   <AccordionGallery className="aptus-applications" items={gallery} defaultIndex={2} expandRatio={0.52} trigger="hover" duration={0.5} height={500} gap={8} radius={16} grayscale={true} showLabels={true} accentColor="#f58220" overlayColor="#333333"/>
-  <section id="about" className="page-section about-section">
-   <div className="section-inner">
-    <div className="section-head"><div><span className="eyebrow"/><h2>{ui.about.title}</h2></div></div>
-    <div className="about-grid"><div className="about-quote"><span className="large-quote" aria-hidden="true">“</span><p>{ui.about.quote}</p></div><div className="about-copy"><p>{d.about}</p><a className="solid-button" href="/about/contact">{d.more}<span aria-hidden="true">→</span></a></div></div>
-   </div>
+  <section id="about" className={"page-section about-section"+(locale==="fa"?" about-rich":"")}>
+   <CatalogAbout/>
   </section>
   <CatalogParts/>
   <section id="system" className="page-section system-section">

@@ -15,6 +15,17 @@ const groups=[
  ["cover-title",".cover-hero h1",".catalog-home .cover-hero h1",["fontSize","fontWeight","lineHeight","color","textShadow","letterSpacing"]],
  ["cover-emphasis",".cover-hero h1 em",".catalog-home .cover-hero h1 em",["fontSize","fontWeight","lineHeight","color"]],
  ["cover-english",".cover-en--side",".catalog-home .cover-en--side",["fontSize","fontWeight","lineHeight","color","textShadow"]],
+ ["about-intro",".about-intro",".catalog-home .about-intro",["gridTemplateColumns","gap","paddingTop","borderRadius","backgroundImage"]],
+ ["about-title",".about-section h2",".catalog-home .about-section h2",["fontSize","fontWeight","lineHeight"]],
+ ["about-intro-title",".about-intro-text h3",".catalog-home .about-intro-text h3",["fontSize","fontWeight","lineHeight"]],
+ ["about-badge",".about-badge",".catalog-home .about-badge",["width","height","backgroundImage","borderRadius"]],
+ ["about-badge-plus",".about-badge sup",".catalog-home .about-badge sup",["fontSize","lineHeight","position","top","verticalAlign"]],
+ ["mission-grid",".mission-grid",".catalog-home .mission-grid",["gridTemplateColumns","gap"]],
+ ["mission-card",".mission-card",".catalog-home .mission-card",["paddingTop","borderRadius","boxShadow","backgroundColor"]],
+ ["mission-heading",".mission-card h4",".catalog-home .mission-card h4",["fontSize","fontWeight","lineHeight"]],
+ ["about-philosophy",".about-philosophy",".catalog-home .about-philosophy",["gridTemplateColumns","gap"]],
+ ["about-slogan",".about-slogan",".catalog-home .about-slogan",["paddingTop","borderRadius","backgroundImage"]],
+ ["about-goals",".goal-list",".catalog-home .goal-list",["borderRadius","paddingTop","paddingRight"]],
  ["system-grid",".system-grid",".catalog-home .system-grid",["gridTemplateColumns","gap","alignItems"]],
  ["system-copy",".system-copy",".catalog-home .system-copy",["borderRadius","backgroundImage","boxShadow","paddingTop","paddingRight"]],
  ["system-picture",".system-picture",".catalog-home .system-picture",["borderRadius","minHeight","paddingTop","gap"]],
@@ -68,6 +79,10 @@ try{
   await capture(website,name+"-website-cover",null,true);
   assert.equal(await website.locator(".cover-hero h1").innerHTML(),await reference.locator(".cover-hero h1").innerHTML(),"Catalog title text and emphasis");
   assert.deepEqual(await website.locator(".system-copy p").allTextContents(),await reference.locator(".system-copy p").allTextContents(),"Catalog AIPS paragraphs");
+  const aboutText="#about .about-intro-text h3, #about .about-intro-text p, #about .mission-card h4, #about .mission-card p, #about .about-slogan strong, #about .about-slogan p, #about .goal-list li span";
+  assert.deepEqual(await website.locator(aboutText).allTextContents(),await reference.locator(aboutText).allTextContents(),"Catalog About content");
+  await capture(reference,name+"-catalog-about","#about",true);
+  await capture(website,name+"-website-about","#about",true);
   if(name==="desktop"){
     await capture(reference,"catalog-applications",".applications-grid",true);
     await capture(website,"website-applications",".aptus-applications",true);

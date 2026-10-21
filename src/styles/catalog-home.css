@@ -1446,3 +1446,10 @@ html[dir=rtl] .catalog-home .cover-en--inflow{align-self:flex-end}
 .catalog-home .dock-body{animation:aptus-part-enter .32s ease-out}
 @keyframes aptus-part-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.catalog-home .dock-body{animation:none}.catalog-home .pin,.catalog-home .leader-lines line{transition:none}}
+
+/* Preserve the catalog heading weights across the website reset stylesheet. */
+.catalog-home #about :is(h2,h3,h4){font-weight:700}
+
+.catalog-home #about .mission-card h4{line-height:1.9}
+
+.catalog-home #about .about-badge sup{position:static;top:auto;line-height:inherit}

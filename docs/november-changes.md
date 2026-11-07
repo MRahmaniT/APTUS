@@ -25,6 +25,8 @@ OTP_SMS_WEBHOOK_URL=https://your-sms-adapter.example/send
 OTP_SMS_WEBHOOK_TOKEN=<adapter credential>
 ```
 
+For local development, put these values in the ignored `.env.dev` file. For Docker/production, use the ignored `.env.server` file; Docker Compose forwards these values into the API container. Restart the stack after changing them.
+
 The adapter receives JSON `{channel,to,code,expiresInSeconds}` and must send the message before responding successfully. Credentials stay on the server. Codes are HMAC-protected, expire after five minutes, permit five attempts, and are consumed atomically. Resends have a one-minute cooldown and a limit of three per destination per ten minutes. The public API never returns or logs a code. A verified code creates an ordinary member account, never an administrator. Phone identities are established by verification rather than by trusting editable profile phone fields.
 
 When an adapter is not configured, code delivery returns a clear unavailable response. Password login remains available for existing members and editors. No provider credentials are included in this repository, and real email/SMS delivery has not been exercised by automated tests.

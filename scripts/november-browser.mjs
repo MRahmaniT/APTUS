@@ -13,7 +13,7 @@ try{
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=4,name+" "+path+" overflow");
    if(path==="/"){
     assert.equal(await page.locator(".aptus-applications .ag-panel").count(),5);assert.equal(await page.locator(".part-selector button").count(),9);
-    for(const control of await page.locator(".part-selector button").all()){await control.click();const dialog=page.locator(".part-dialog");await dialog.waitFor({state:"visible"});assert.ok((await dialog.innerText()).length>80);assert.equal(await dialog.locator("a[href^='/products/']").count(),1);await page.keyboard.press("Escape");await dialog.waitFor({state:"detached"});}
+    for(const control of await page.locator(".part-selector button").all()){await control.click();const dialog=page.locator(".part-dialog");await dialog.waitFor({state:"visible"});assert.ok((await dialog.innerText()).length>80);if(await control.getAttribute("data-part")==="column")await dialog.screenshot({path:"qa-artifacts/"+name+"-component-dialog.png"});assert.equal(await dialog.locator("a[href^='/products/']").count(),1);await page.keyboard.press("Escape");await dialog.waitFor({state:"detached"});}
     for(const pin of await page.locator(".model-frame .pin").all()){await pin.click();await page.locator(".part-dialog").waitFor();await page.keyboard.press("Escape");}
     const slides=page.locator(".design-project-slides");const first=await slides.locator("h3").innerText();await slides.getByRole("button",{name:"اسلاید بعدی",exact:true}).click();assert.notEqual(await slides.locator("h3").innerText(),first);
     assert.equal(await page.locator(".news-slides").count(),1);
@@ -31,6 +31,7 @@ try{
   await context.close();
  }
  const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});const page=await context.newPage();page.on("pageerror",e=>errors.push(e.message));await page.goto(base+"/library/articles/ci-article?auth=login",{waitUntil:"networkidle"});const modal=page.locator(".aptus-auth-modal");
+ await modal.screenshot({path:"qa-artifacts/mobile-code-login.png"});
  const email="browser-"+Date.now()+"@aptus.test";await modal.getByLabel("شماره همراه یا ایمیل",{exact:true}).fill(email);await modal.getByRole("button",{name:"ارسال کد",exact:true}).click();await modal.getByLabel("کد تأیید",{exact:true}).waitFor();
  const delivered=await context.request.get("http://127.0.0.1:3002/messages?to="+encodeURIComponent(email));const code=(await delivered.json()).code;await modal.getByLabel("کد تأیید",{exact:true}).fill(code);await modal.getByRole("button",{name:"تأیید و ورود",exact:true}).click();await modal.waitFor({state:"detached"});await page.getByText("PRIVATE_ARTICLE_BODY",{exact:true}).waitFor();
  await page.goto(base+"/library/codes",{waitUntil:"networkidle"});assert.equal(await page.locator("main h1").count(),1);await context.close();assert.deepEqual(errors,[]);

@@ -433,8 +433,8 @@ const details = {
       "products": "اجزای بتنی پیش‌ساخته",
       "system": "سیستم سوله بتنی پیش‌ساخته احداث سریع آپتوس",
       "design": "سوله تک‌دهانه",
-      "double": "مطالعه سوله دو دهانه",
-      "multi": "مطالعه سوله چند دهانه",
+      "double": "سوله دودهانه متقارن",
+      "multi": "سوله دودهانه نامتقارن",
       "projectDesign": "طراحی متناسب با پروژه",
       "note": "تیپ‌های استاندارد این کاتالوگ مربوط به سوله تک‌دهانه هستند؛ سایر آرایش‌ها نیازمند طراحی اختصاصی پروژه‌اند.",
       "base": "مدول پایه",
@@ -1360,3 +1360,4 @@ export function catalogTechnicalPdf(slug: string, locale: Locale) {
  const p = catalogDetails(locale).parts.find(p=>p.id === componentRoutes[slug]);
  return p && "technicalPdf" in p ? p.technicalPdf : null;
 }
+

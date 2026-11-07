@@ -3,6 +3,8 @@ import { Locale, translations } from "../config/translations";
 import { ServerAuth, ServerUser, isServerDatabaseEnabled } from "../config/apiClient";
 import { ApiService } from "../services/api";
 
+import { ACTIVE_LOCALE, LANGUAGE_SWITCH_ENABLED } from "../config/site";
+
 export type Role = "guest" | "member" | "admin" | "manager";
 
 type AppUser = {
@@ -23,6 +25,7 @@ interface AppContextType {
   user: AppUser | null;
   loginWithEmail: (email: string, pass: string) => Promise<void>;
   signUpWithEmail: (name: string, email: string, pass: string) => Promise<void>;
+  loginWithCode:(challengeId:string,code:string,name:string)=>Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   refreshUserProfile: () => Promise<void>;
   logout: () => void;
@@ -31,13 +34,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("fa");
+  const [locale, updateLocale] = useState<Locale>("fa");
   const [role, setRole] = useState<Role>("guest");
   const [user, setUser] = useState<AppUser | null>(null);
 
   useEffect(() => {
     const savedLocale = localStorage.getItem("locale") as Locale;
-    if (savedLocale && ["fa", "en", "tr"].includes(savedLocale)) setLocale(savedLocale);
+    if (LANGUAGE_SWITCH_ENABLED && savedLocale && ["fa", "en", "tr"].includes(savedLocale)) updateLocale(savedLocale);
+    else updateLocale(ACTIVE_LOCALE);
   }, []);
 
   useEffect(() => {
@@ -99,6 +103,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await applyAuthenticatedUser(result.user);
   };
 
+  const setLocale=(lang:Locale)=>{if(LANGUAGE_SWITCH_ENABLED)updateLocale(lang);};
+  const loginWithCode=async(challengeId:string,code:string,name:string)=>{const result=await ServerAuth.verifyCode(challengeId,code,name);await applyAuthenticatedUser(result.user);};
+
   const resetPassword = async (email: string) => {
     await ServerAuth.resetPassword(email);
   };
@@ -129,7 +136,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, loginWithEmail, signUpWithEmail, resetPassword, refreshUserProfile, logout }}>
+    <AppContext.Provider value={{ locale, setLocale, t, role, setRole, user, loginWithEmail, signUpWithEmail, loginWithCode, resetPassword, refreshUserProfile, logout }}>
       {children}
     </AppContext.Provider>
   );
@@ -140,3 +147,4 @@ export function useAppContext() {
   if (!context) throw new Error("useAppContext must be used within AppProvider");
   return context;
 }
+

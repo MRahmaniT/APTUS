@@ -1,7 +1,7 @@
 export const translations = {
   fa: {
     nav: {
-      home: "صفحه اصلی",
+      home: "خانه",
       home_advantages: "مزایا",
       home_portfolio: "نمونه کارها",
       home_why: "چرا از بتن پیش ساخته استفاده نماییم",
@@ -13,7 +13,7 @@ export const translations = {
       app_manufacturing: "سوله بتنی تولیدی",
       app_sports: "سوله بتنی ورزشی",
       app_educational: "سوله بتنی آموزشی",
-      designs: "طرح‌ها",
+      designs: "تیپ‌بندی",
       design_single: "سوله‌های تک دهانه",
       design_double: "سوله‌های دو دهانه",
       design_multi: "سوله‌های چند دهانه",
@@ -201,3 +201,4 @@ export const translations = {
 
 export type Locale = "fa" | "en" | "tr";
 export type TranslationKey = keyof typeof translations.en;
+

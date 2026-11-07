@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import HomeUpdates from "../components/HomeUpdates";
 import AccordionGallery from "../components/AccordionGallery";
 import CatalogAbout from "../components/CatalogAbout";
 import CatalogParts from "../components/CatalogParts";
@@ -32,6 +33,8 @@ export default function Home() {
    {locale==="fa"&&<EnglishBrand className="cover-en--side"/>}
    <div className="cover-visual"><div className="visual-stage"><img src={catalogAsset("cover-render3.png")} alt={ui.cover.visualAlt}/></div></div>
   </section>
+  <HomeUpdates kind="projects"/>
+  <div className="section-inner applications-heading"><h2>کاربری‌ها</h2><p>کاربری موردنظر را انتخاب کنید.</p></div>
   <AccordionGallery className="aptus-applications" items={gallery} defaultIndex={2} expandRatio={0.52} trigger="hover" duration={0.5} height={500} gap={8} radius={16} grayscale={true} showLabels={true} accentColor="#f58220" overlayColor="#333333"/>
   <section id="about" className={"page-section about-section"+(locale==="fa"?" about-rich":"")}>
    <CatalogAbout/>
@@ -46,5 +49,8 @@ export default function Home() {
     </div>
    </div>
   </section>
+  <div className="section-inner catalog-download"><a className="solid-button" href="/catalog-assets/aptus-catalog.pdf" download>دانلود کاتالوگ آپتوس ↓</a></div>
+  <HomeUpdates kind="news"/>
  </div></div>;
 }
+

@@ -59,12 +59,14 @@ adminRouter.patch("/profiles/:id/role", optionalUser, requireEditor, async (req,
   res.json(publicUser(result.rows[0]));
 });
 
-adminRouter.get("/settings", async (req, res) => {
+adminRouter.get("/settings", optionalUser, async (req, res) => {
   const key = String(req.query.key || "");
   if (!key) return res.status(400).json({ message: "Setting key is required." });
   const result = await query("select value from site_settings where key = $1 limit 1", [key]);
   if (!result.rows[0]) return res.status(404).json({ message: "Setting not found." });
-  res.json(result.rows[0].value);
+  const value=result.rows[0].value;
+  if(/^page:(fa|en|tr):library\/articles$/.test(key)&&!req.user)return res.json({...value,body:""});
+  res.json(value);
 });
 
 adminRouter.put("/settings", optionalUser, requireEditor, async (req, res) => {
@@ -84,7 +86,8 @@ adminRouter.put("/settings", optionalUser, requireEditor, async (req, res) => {
 
 adminRouter.post("/analytics/view", async (req, res) => {
   const day = String(req.body?.date || new Date().toISOString().slice(0, 10));
-  const path = String(req.body?.path || "/").slice(0, 500) || "/";
+  const path = String(req.body?.path || "/").split("?")[0].slice(0,500);
+  if(!path.startsWith("/")||path.startsWith("//")||/[\r\n]/.test(path))return res.status(400).json({message:"Invalid page path."});
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return res.status(400).json({ message: "Invalid analytics date." });
   await query(
     `insert into analytics_daily(day, path, views)
@@ -95,6 +98,16 @@ adminRouter.post("/analytics/view", async (req, res) => {
   res.status(204).end();
 });
 
+adminRouter.get("/analytics/summary",async(req,res)=>{
+  const period=req.query.period==="year"?"year":"month";
+  const date=String(req.query.date||new Date().toISOString().slice(0,7));
+  if(!(period==="year"?/^(20[2-9]\d|2100)$/:/^(20[2-9]\d|2100)-(0[1-9]|1[0-2])$/).test(date))return res.status(400).json({message:"Invalid period."});
+  const start=period==="year"?date+"-01-01":date+"-01";
+  const range=period==="year"?"1 year":"1 month";
+  const rows=(await query("select path,sum(views)::bigint as views from analytics_daily where day >= $1::date and day < $1::date + $2::interval and path like '/%' and path not like '//%' and path not like '/admin%' group by path order by sum(views) desc,path",[start,range])).rows;
+  res.json({period,date,totalViews:rows.reduce((sum,r)=>sum+Number(r.views),0),pages:rows.slice(0,20).map(r=>({path:r.path,views:Number(r.views)}))});
+});
+
 adminRouter.get("/analytics", optionalUser, requireEditor, async (req, res) => {
   const day = String(req.query.date || new Date().toISOString().slice(0, 10));
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return res.status(400).json({ message: "Invalid analytics date." });
@@ -103,3 +116,4 @@ adminRouter.get("/analytics", optionalUser, requireEditor, async (req, res) => {
 });
 
 export { adminRouter };
+

@@ -3,6 +3,8 @@ import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } fr
 import { promisify } from "node:util";
 import { query, withTransaction } from "./db.js";
 
+import { otpChannels, requestOtp, verifyOtp } from "./otp.js";
+
 const scrypt = promisify(scryptCallback);
 const authRouter = Router();
 const sessionDays = Math.max(1, Number(process.env.SESSION_TTL_DAYS || 30));
@@ -14,7 +16,7 @@ function normalizeEmail(value) {
 function publicUser(row) {
   return {
     id: row.id,
-    email: row.email,
+    email: row.email?.endsWith("@identity.aptus.invalid") ? "" : row.email,
     name: row.name,
     role: row.role,
     phone: row.phone || "",
@@ -105,6 +107,16 @@ function authRateLimit(req, res, next) {
   next();
 }
 
+authRouter.get("/otp/channels", (_req,res)=>res.json(otpChannels()));
+authRouter.post("/otp/request",authRateLimit,async(req,res)=>{
+  res.status(202).json(await requestOtp(req.body?.identifier));
+});
+authRouter.post("/otp/verify",authRateLimit,async(req,res)=>{
+  const user=await verifyOtp(req.body?.challengeId,req.body?.code,req.body?.name);
+  if(!user)return res.status(400).json({message:"کد نامعتبر، مصرف‌شده یا منقضی است."});
+  res.json({session:await createSession(user.id),user:publicUser(user)});
+});
+
 authRouter.post("/signup", authRateLimit, async (req, res) => {
   const name = String(req.body?.name || "").trim();
   const email = normalizeEmail(req.body?.email);
@@ -173,3 +185,4 @@ authRouter.post("/password-reset/request", authRateLimit, async (_req, res) => {
 });
 
 export { authRouter, publicUser };
+

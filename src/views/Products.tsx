@@ -7,7 +7,7 @@ import { ContentRepository } from "../repositories/ContentRepository";
 
 const DESIGN_SLUGS = new Set(["single-storey-design", "double-storey-design", "multi-storey-design", "facades"]);
 
-export default function Products() {
+export default function Products({ elementsOnly = false }: { elementsOnly?:boolean }) {
   const { t, locale } = useAppContext();
   const ui = contentUi(locale);
   const [products, setProducts] = useState<ContentItem[]>([]);
@@ -23,7 +23,7 @@ export default function Products() {
     return () => { active = false; };
   }, [locale]);
 
-  const designs = products.filter((item) => DESIGN_SLUGS.has(item.slug));
+  const designs = elementsOnly ? [] : products.filter((item) => DESIGN_SLUGS.has(item.slug));
   const elements = products.filter((item) => !DESIGN_SLUGS.has(item.slug));
 
   return (
@@ -31,7 +31,7 @@ export default function Products() {
       <div className="section-inner max-w-7xl mx-auto px-6 lg:px-8 space-y-20">
         <div className="aptus-page-heading max-w-3xl">
           <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#999] mb-4">APTUS</p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t("nav", "products")}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{elementsOnly ? "اجزا" : t("nav", "products")}</h1>
           <p className="text-xl text-gray-600 font-light">
             {locale === "fa"
               ? "اجزای سیستم سوله بتنی پیش‌ساخته آپتوس، تیپ‌های استاندارد و طرح‌های نماسازی."
@@ -76,3 +76,4 @@ export default function Products() {
     </div>
   );
 }
+

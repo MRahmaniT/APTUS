@@ -80,6 +80,7 @@ function seedPage(path: string, locale: Locale): EditablePage {
       body:[d.companyName,d.address,d.labels.phone + ": " + catalogPhone].join("\n\n"),
       heroImage:catalogAsset(path === "about/location" ? "map.png" : "blue.png")};
   }
+  if(path === "about/partners")return {path,locale,title:titles[locale][path],abstract:d.about,body:d.about+"\n\n"+(locale==="fa"?"همکاران و مشاوران خارجی: برای آگاهی از زمینه‌های همکاری و دریافت اطلاعات رسمی همکاران، با آپتوس تماس بگیرید.":"Contact APTUS for official partner and international consultancy information."),heroImage:""};
   const section = path.startsWith("library/") ? "library" : "about";
   return {
     path,
@@ -98,3 +99,4 @@ export const PAGE_SEED: EditablePage[] = PAGE_DEFINITIONS.flatMap(({ path }) =>
 export function getSeedPage(path: string, locale: Locale) {
   return PAGE_SEED.find((page) => page.path === path && page.locale === locale) || null;
 }
+

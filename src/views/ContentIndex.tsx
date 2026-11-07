@@ -1,3 +1,4 @@
+import { useLocation } from "react-router";
 import React, { useEffect, useMemo, useState } from "react";
 import ContentCard from "../components/content/ContentCard";
 import { useAppContext } from "../controllers/AppContext";
@@ -19,6 +20,7 @@ const COPY: Record<"news" | "project", Record<string, { eyebrow: string; title: 
 };
 
 export default function ContentIndex({ type }: { type: Extract<ContentType, "news" | "project"> }) {
+  const path=useLocation().pathname;
   const { locale } = useAppContext();
   const ui = contentUi(locale);
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -37,7 +39,9 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
   }, [type, locale]);
 
   const categories = useMemo(() => Array.from(new Set(items.map((item) => item.category).filter(Boolean))) as string[], [items]);
-  const visible = category === "all" ? items : items.filter((item) => item.category === category);
+  const isEvent=(item:ContentItem)=>/رویداد|نمایشگاه|event|exhibition/i.test(item.category||"");
+  const scoped=type!=="news"?items:path.endsWith("/events")||path.endsWith("/exhibitions")?items.filter(isEvent):path.endsWith("/latest")?items.filter(i=>!isEvent(i)):items;
+  const visible = category === "all" ? scoped : scoped.filter((item) => item.category === category);
   const copy = COPY[type][locale];
 
   return (
@@ -74,3 +78,4 @@ export default function ContentIndex({ type }: { type: Extract<ContentType, "new
 
 export const NewsIndex = () => <ContentIndex type="news" />;
 export const ProjectsIndex = () => <ContentIndex type="project" />;
+

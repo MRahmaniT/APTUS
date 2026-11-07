@@ -32,7 +32,6 @@ const groups=[
  ["system-cad",".system-cad",".catalog-home .system-cad",["aspectRatio","backgroundColor"]],
  ["parts-frame",".model-frame",".catalog-home .model-frame",["aspectRatio","width"]],
  ["parts-pin",".pin",".catalog-home .pin",["borderRadius","backgroundColor","width","height"]],
- ["parts-dock",".part-dock",".catalog-home .part-dock",["borderRadius","backgroundColor","paddingTop","gap"]],
  ["footer",".site-footer",".aptus-footer",["borderRadius","backgroundColor","boxShadow"]],
 ];
 async function styles(page,selector,keys,pseudo=null){
@@ -87,7 +86,7 @@ try{
     await capture(reference,"catalog-applications",".applications-grid",true);
     await capture(website,"website-applications",".aptus-applications",true);
     await capture(website,"website-introduction",".catalog-home .about-section",true);
-    await capture(website,"website-product-grid",".catalog-home .explore-dock",true);
+    await capture(website,"website-product-grid",".catalog-home .model-frame",true);
     await capture(reference,"catalog-system",".system-grid");
     await capture(website,"website-system",".catalog-home .system-grid",true);
     await capture(website,"website-footer",".aptus-footer",true);
@@ -108,3 +107,4 @@ try{
  assert.deepEqual(differences,[],"Shared components must match the actual catalog's computed styles.");
  console.log("PASS: catalog cover text, emphasis, effects, component diagram and AIPS introduction match at desktop and mobile sizes; website navigation retained.");
 }finally{await browser.close();}
+

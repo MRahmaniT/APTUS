@@ -95,6 +95,15 @@ export const ServerAuth = {
     }
   },
 
+  async requestCode(identifier:string) {
+    return apiRequest<{challengeId:string;expiresIn:number;channel:string;retryAfter:number}>("/auth/otp/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({identifier})});
+  },
+  async verifyCode(challengeId:string,code:string,name:string) {
+    const payload=await apiRequest<{session:ServerSession;user:ServerUser}>("/auth/otp/verify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({challengeId,code,name})});
+    writeSession({...payload.session,user:payload.user});
+    return payload;
+  },
+
   async signInWithPassword(email: string, password: string) {
     const payload = await apiRequest<{ session: ServerSession; user: ServerUser }>("/auth/login", {
       method: "POST",
@@ -134,3 +143,4 @@ export const ServerAuth = {
     }
   },
 };
+

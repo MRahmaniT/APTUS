@@ -20,7 +20,7 @@ function emptyDraft(type: ContentType = "product", locale: Locale = "en"): Conte
     slug: "",
     locale,
     status: "draft",
-    templateKey: type === "news" ? "editorial" : type === "project" ? "case-study" : "showcase",
+    templateKey: (type === "news" || type === "article") ? "editorial" : type === "project" ? "case-study" : "showcase",
     title: "",
     abstract: "",
     body: "",
@@ -81,7 +81,7 @@ export default function AdminContent() {
   const loadItems = async () => {
     setLoading(true);
     try {
-      const requests = (["product", "news", "project"] as ContentType[]).flatMap((type) =>
+      const requests = (["product", "news", "project", "article"] as ContentType[]).flatMap((type) =>
         LOCALES.map(({ key }) => ContentRepository.list(type, key, true)),
       );
       setItems((await Promise.all(requests)).flat());
@@ -233,7 +233,7 @@ export default function AdminContent() {
             </div>
 
             <div className="flex border-b border-[#eee]">
-              {(["product", "news", "project"] as ContentType[]).map((type) => (
+              {(["product", "news", "project", "article"] as ContentType[]).map((type) => (
                 <button
                   key={type}
                   onClick={() => { setActiveType(type); resetEditor(type, activeLocale); }}
@@ -281,7 +281,7 @@ export default function AdminContent() {
                 <section className="grid md:grid-cols-2 gap-5">
                   <Field label="Content type">
                     <select value={draft.type} onChange={(e) => { const type = e.target.value as ContentType; setField("type", type); setActiveType(type); }} className={inputClass}>
-                      <option value="product">Product</option><option value="news">News</option><option value="project">Work / Project</option>
+                      <option value="product">Product</option><option value="news">News</option><option value="article">Article / مقاله</option><option value="project">Work / Project</option>
                     </select>
                   </Field>
                   <Field label="Template">
@@ -352,3 +352,4 @@ export default function AdminContent() {
     </div>
   );
 }
+

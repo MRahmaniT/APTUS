@@ -7,6 +7,7 @@ import { catalogTechnicalPdf, catalogDetails } from "../../data/catalogDetails";
 import { contentUi } from "../../config/contentUi";
 
 function backHref(type: ContentItem["type"]) {
+  if (type === "article") return "/library/articles";
   if (type === "product") return "/products";
   if (type === "news") return "/news/latest";
   return "/projects";
@@ -264,7 +265,7 @@ export default function ContentDetail({ item }: { item: ContentItem }) {
     ? GalleryTemplate
     : ShowcaseTemplate;
 
-  const backLabel = item.type === "product" ? ui.backProducts : item.type === "news" ? ui.backNews : ui.backWork;
+  const backLabel = item.type === "article" ? "بازگشت به مقالات" : item.type === "product" ? ui.backProducts : item.type === "news" ? ui.backNews : ui.backWork;
 
   return (
     <article className="aptus-detail section-inner max-w-7xl mx-auto px-2 md:px-6 py-8 md:py-14">
@@ -284,3 +285,4 @@ export default function ContentDetail({ item }: { item: ContentItem }) {
     </article>
   );
 }
+

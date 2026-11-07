@@ -14,7 +14,7 @@ export interface AnalyticsData {
   totalMembers: number;
 }
 
-export type ContentType = "product" | "news" | "project";
+export type ContentType = "product" | "news" | "project" | "article";
 export type ContentStatus = "draft" | "published";
 export type ContentTemplate = "showcase" | "editorial" | "technical" | "case-study" | "gallery";
 export type MediaType = "image" | "video";
@@ -58,6 +58,7 @@ export interface ContentItem {
   media: ContentMedia[];
   createdAt?: string;
   updatedAt?: string;
+  requiresLogin?: boolean;
 }
 
 export type ContentDraft = Omit<ContentItem, "id" | "createdAt" | "updatedAt"> & {
@@ -75,3 +76,4 @@ export const CONTENT_TEMPLATES: Array<{
   { key: "case-study", name: "Case Study", description: "Project/work layout with highlights, metrics, story, and gallery." },
   { key: "gallery", name: "Gallery", description: "Visual-first image/video grid with a compact supporting story." },
 ];
+

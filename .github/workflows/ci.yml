@@ -69,11 +69,19 @@ jobs:
         env:
           DATABASE_URL: postgresql://aptus:aptus-ci-password@127.0.0.1:5432/aptus
 
+      - name: Start local test-only delivery provider
+        run: node scripts/otp-test-delivery.mjs > /tmp/aptus-otp-provider.log 2>&1 &
+        env:
+          NODE_ENV: test
+
       - name: Start API
         run: node server/src/index.js > /tmp/aptus-api.log 2>&1 &
         env:
           DATABASE_URL: postgresql://aptus:aptus-ci-password@127.0.0.1:5432/aptus
           PORT: 3000
+          NODE_ENV: test
+          OTP_EMAIL_WEBHOOK_URL: http://127.0.0.1:3002/deliver
+          OTP_SMS_WEBHOOK_URL: http://127.0.0.1:3002/deliver
 
       - name: Verify API and database health
         run: curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:3000/api/health
@@ -82,6 +90,11 @@ jobs:
         run: npm run smoke --prefix server
         env:
           API_BASE: http://127.0.0.1:3000/api
+
+      - name: Check verification codes, protected articles and statistics
+        run: node server/src/feature-smoke.js
+        env:
+          DATABASE_URL: postgresql://aptus:aptus-ci-password@127.0.0.1:5432/aptus
 
       - name: Install browser QA
         run: |
@@ -106,7 +119,7 @@ jobs:
         run: node scripts/catalog-visual-qa.mjs
 
       - name: Verify original website and catalog styling in browser
-        run: node scripts/browser-smoke.mjs
+        run: node scripts/november-browser.mjs
 
       - name: Upload visual QA screenshots
         if: always()
@@ -115,3 +128,4 @@ jobs:
           name: website-visual-qa
           path: qa-artifacts/
           if-no-files-found: ignore
+

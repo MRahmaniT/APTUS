@@ -1,5 +1,10 @@
 import { createBrowserRouter } from "react-router";
 import Layout from "./layouts/MainLayout";
+import About from "./views/About";
+import ApplicationPage from "./views/Applications";
+import Types from "./views/Types";
+import Statistics from "./views/Statistics";
+import { ArticlesIndex, ArticleDetail } from "./views/Articles";
 import Home from "./views/Home";
 import Products from "./views/Products";
 import AdminAnalytics from "./views/AdminAnalytics";
@@ -21,6 +26,13 @@ export const router = createBrowserRouter([
       { index: true, Component: Home },
 
       { path: "products", Component: Products },
+      { path: "components", Component: () => <Products elementsOnly /> },
+      { path: "types", Component: Types },
+      { path: "applications/:slug", Component: ApplicationPage },
+      { path: "about", Component: About },
+      { path: "about/statistics", Component: Statistics },
+      { path: "library/articles", Component: ArticlesIndex },
+      { path: "library/articles/:slug", Component: ArticleDetail },
       { path: "products/:slug", Component: ProductDetail },
 
       { path: "news", Component: NewsIndex },
@@ -45,7 +57,6 @@ export const router = createBrowserRouter([
         children: [
           { path: "codes", Component: () => <StaticPage pagePath="library/codes" /> },
           { path: "books", Component: () => <StaticPage pagePath="library/books" /> },
-          { path: "articles", Component: () => <StaticPage pagePath="library/articles" /> },
           { path: "glossary", Component: () => <StaticPage pagePath="library/glossary" /> },
         ],
       },
@@ -65,3 +76,4 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+

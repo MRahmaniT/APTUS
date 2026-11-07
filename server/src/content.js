@@ -3,7 +3,7 @@ import { optionalUser, requireEditor } from "./auth.js";
 import { query, withTransaction } from "./db.js";
 
 const contentRouter = Router();
-const contentTypes = new Set(["product", "news", "project"]);
+const contentTypes = new Set(["product", "news", "project", "article"]);
 const locales = new Set(["en", "fa", "tr"]);
 const statuses = new Set(["draft", "published"]);
 const templates = new Set(["showcase", "editorial", "technical", "case-study", "gallery"]);
@@ -41,6 +41,11 @@ function rowToItem(row, media = []) {
     createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
     updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : undefined,
   };
+}
+
+function readable(item,user) {
+  if(item.type!=="article"||user)return item;
+  return {...item,body:"",media:[],highlights:[],specs:{},cta:{},seo:{title:item.title,description:item.abstract},requiresLogin:true};
 }
 
 async function hydrateRows(rows) {
@@ -135,7 +140,7 @@ contentRouter.get("/", optionalUser, async (req, res) => {
       order by published_at desc nulls last, updated_at desc`,
     params,
   )).rows;
-  res.json(await hydrateRows(rows));
+  res.json((await hydrateRows(rows)).map(item=>readable(item,req.user)));
 });
 
 contentRouter.get("/:type/:slug", optionalUser, async (req, res) => {
@@ -157,7 +162,7 @@ contentRouter.get("/:type/:slug", optionalUser, async (req, res) => {
     [type, slug, locale],
   )).rows;
   if (!rows[0]) return res.status(404).json({ message: "Content not found." });
-  res.json((await hydrateRows(rows))[0]);
+  res.json(readable((await hydrateRows(rows))[0],req.user));
 });
 
 contentRouter.post("/", optionalUser, requireEditor, async (req, res) => {
@@ -211,7 +216,7 @@ contentRouter.put("/:id", optionalUser, requireEditor, async (req, res) => {
     });
     if (!changed) return res.status(404).json({ message: "Content not found." });
     const rows = (await query("select * from content_items where id = $1", [req.params.id])).rows;
-    res.json((await hydrateRows(rows))[0]);
+    res.json(readable((await hydrateRows(rows))[0],req.user));
   } catch (error) {
     if (error?.code === "23505") return res.status(409).json({ message: "That slug already exists for this content type and language." });
     throw error;
@@ -225,3 +230,4 @@ contentRouter.delete("/:id", optionalUser, requireEditor, async (req, res) => {
 });
 
 export { contentRouter };
+

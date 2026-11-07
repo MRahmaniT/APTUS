@@ -1,0 +1,5 @@
+import { useParams } from "react-router";
+import { catalogDetails } from "../data/catalogDetails";
+import { useAppContext } from "../controllers/AppContext";
+const ids:Record<string,string>={industrial:"industry",warehouses:"storage",manufacturing:"production",sports:"sport",educational:"education"};
+export default function ApplicationPage(){const {slug=""}=useParams();const {locale}=useAppContext();const d=catalogDetails(locale);const app=d.applications.find(a=>a.id===ids[slug]);if(!app)return <div className="section-inner page-section">کاربری پیدا نشد.</div>;return <article className="section-inner page-section application-detail"><header className="aptus-page-heading"><p>کاربری‌های سیستم آپتوس</p><h1>{app.title}</h1><p>{d.coverSubtitle}</p></header><img src={app.image} alt={app.title}/><div className="aptus-static-copy"><p>{d.system.p1}</p><p>{d.system.p2}</p><p>این تصویر نمونه‌ای از کاربری است و لزوماً پروژه اجراشده آپتوس را نشان نمی‌دهد. طراحی نهایی متناسب با نیازهای هر پروژه انجام می‌شود.</p><a className="solid-button" href="/about/contact">گفت‌وگو درباره پروژه ←</a></div></article>;}

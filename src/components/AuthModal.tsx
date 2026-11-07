@@ -1,151 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
-import { X, ArrowLeft } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { useAppContext } from "../controllers/AppContext";
-import { authUi } from "../config/authUi";
-
-type AuthMode = "login" | "signup" | "forgot";
-
-export default function AuthModal() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { locale, loginWithEmail, signUpWithEmail, resetPassword } = useAppContext();
-  const copy = authUi(locale);
-
-  const [mode, setMode] = useState<AuthMode>("login");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  const isOpen = searchParams.get("auth") === "login";
-
-  const close = () => {
-    navigate(location.pathname, { replace: true });
-    setTimeout(() => {
-      setMode("login");
-      setError("");
-      setSuccess("");
-      setName("");
-      setEmail("");
-      setPassword("");
-    }, 300);
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      if (mode === "login") {
-        await loginWithEmail(email, password);
-        close();
-      } else if (mode === "signup") {
-        await signUpWithEmail(name, email, password);
-        close();
-      } else {
-        await resetPassword(email);
-        setSuccess(copy.resetSent);
-      }
-    } catch (err: any) {
-      setError(err.message || (mode === "login" ? copy.invalidLogin : copy.genericError));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="aptus-auth-modal fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm text-left rtl:text-right">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden relative" dir={locale === "fa" ? "rtl" : "ltr"}>
-        {mode !== "login" && (
-          <button
-            onClick={() => { setMode("login"); setError(""); setSuccess(""); }}
-            className="absolute top-4 left-4 rtl:left-auto rtl:right-4 p-1 text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-colors z-10"
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-5 h-5 rtl:rotate-180" />
-          </button>
-        )}
-
-        <button
-          onClick={close}
-          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-1 text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-colors z-10"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="p-8 mt-2">
-          <h2 className="text-2xl font-bold mb-2 text-center">
-            {mode === "login" && copy.welcome}
-            {mode === "signup" && copy.createAccount}
-            {mode === "forgot" && copy.resetPassword}
-          </h2>
-          <p className="text-gray-500 mb-6 text-sm text-center">
-            {mode === "login" && copy.loginIntro}
-            {mode === "signup" && copy.signupIntro}
-            {mode === "forgot" && copy.forgotIntro}
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-            {mode === "signup" && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{copy.fullName}</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" required />
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{copy.email}</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" dir="ltr" required />
-            </div>
-
-            {mode !== "forgot" && (
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700">{copy.password}</label>
-                  {mode === "login" && (
-                    <button type="button" onClick={() => { setMode("forgot"); setError(""); setSuccess(""); }} className="text-xs text-blue-600 hover:underline">{copy.forgot}</button>
-                  )}
-                </div>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black outline-none" dir="ltr" required minLength={8} />
-              </div>
-            )}
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            {success && <p className="text-sm text-green-600">{success}</p>}
-
-            <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-medium disabled:opacity-50">
-              {loading && mode === "login" ? copy.signingIn : ""}
-              {loading && mode === "signup" ? copy.creating : ""}
-              {loading && mode === "forgot" ? copy.sending : ""}
-              {!loading && mode === "login" && copy.signIn}
-              {!loading && mode === "signup" && copy.signUp}
-              {!loading && mode === "forgot" && copy.sendReset}
-            </button>
-          </form>
-
-          {mode === "login" && (
-            <div className="text-center text-sm">
-              <span className="text-gray-500">{copy.noAccount} </span>
-              <button type="button" onClick={() => { setMode("signup"); setError(""); }} className="font-medium text-black hover:underline">{copy.signUp}</button>
-            </div>
-          )}
-
-          {mode === "signup" && (
-            <div className="text-center text-sm">
-              <span className="text-gray-500">{copy.hasAccount} </span>
-              <button type="button" onClick={() => { setMode("login"); setError(""); }} className="font-medium text-black hover:underline">{copy.login}</button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+import { ServerAuth } from "../config/apiClient";
+import Modal from "./Modal";
+function AuthForm(){
+ const {loginWithCode,loginWithEmail,signUpWithEmail}=useAppContext(),navigate=useNavigate(),location=useLocation();
+ const [mode,setMode]=useState<"code"|"password"|"signup">("code"),[identifier,setIdentifier]=useState(""),[code,setCode]=useState(""),[name,setName]=useState(""),[password,setPassword]=useState(""),[challenge,setChallenge]=useState(""),[error,setError]=useState(""),[busy,setBusy]=useState(false),[sentAt,setSentAt]=useState(0);
+ const close=()=>{const query=new URLSearchParams(location.search);query.delete("auth");navigate({pathname:location.pathname,search:query.toString()},{replace:true});};
+ const submit=async(e:FormEvent)=>{e.preventDefault();setError("");setBusy(true);try{if(mode==="code"){if(!challenge){const result=await ServerAuth.requestCode(identifier);setChallenge(result.challengeId);setSentAt(Date.now());}else{await loginWithCode(challenge,code,name);close();}}else if(mode==="signup"){await signUpWithEmail(name,identifier,password);close();}else{await loginWithEmail(identifier,password);close();}}catch(error:any){setError(error.message||"ورود انجام نشد.");}finally{setBusy(false);}};
+ return <Modal title={mode==="signup"?"ساخت حساب":"ورود به آپتوس"} className="aptus-auth-modal" onClose={close}><form onSubmit={submit} className="auth-form">
+  {mode==="code"?<><p>{challenge?"کد شش‌رقمی ارسال‌شده را وارد کنید. اعتبار کد پنج دقیقه است.":"شماره همراه یا ایمیل خود را وارد کنید تا کد ورود برای شما ارسال شود."}</p>{!challenge?<label>شماره همراه یا ایمیل<input autoFocus required aria-label="شماره همراه یا ایمیل" dir="ltr" value={identifier} onChange={e=>setIdentifier(e.target.value)} autoComplete="username" maxLength={254}/></label>:<><p dir="ltr">{identifier}</p><label>کد تأیید<input autoFocus required aria-label="کد تأیید" dir="ltr" inputMode="numeric" autoComplete="one-time-code" minLength={6} maxLength={6} value={code} onChange={e=>setCode(e.target.value)}/></label><label>نام شما (برای حساب جدید)<input value={name} onChange={e=>setName(e.target.value)} autoComplete="name" maxLength={120}/></label><button type="button" className="text-button" onClick={()=>{if(Date.now()-sentAt<60000){setError("برای ارسال دوباره کد یک دقیقه صبر کنید.");return;}setChallenge("");setCode("");}}>تغییر شماره یا ارسال دوباره</button></>}</>:<>{mode==="signup"&&<label>نام و نام خانوادگی<input required autoComplete="name" value={name} onChange={e=>setName(e.target.value)}/></label>}<label>ایمیل<input required type="email" dir="ltr" autoComplete="username" value={identifier} onChange={e=>setIdentifier(e.target.value)}/></label><label>رمز عبور<input required type="password" minLength={8} autoComplete={mode==="signup"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)}/></label></>}
+  {error&&<p className="form-error" role="alert">{error}</p>}<button type="submit" className="solid-button" disabled={busy}>{busy?"لطفاً صبر کنید…":mode==="code"?(challenge?"تأیید و ورود":"ارسال کد"):mode==="signup"?"ساخت حساب":"ورود"}</button>
+  <div className="auth-alternatives"><button type="button" onClick={()=>{setMode(mode==="code"?"password":"code");setError("");}}>{mode==="code"?"ورود با رمز عبور":"ورود با کد یک‌بارمصرف"}</button><button type="button" onClick={()=>{setMode(mode==="signup"?"password":"signup");setError("");}}>{mode==="signup"?"حساب دارم":"ثبت‌نام با ایمیل و رمز عبور"}</button></div>
+ </form></Modal>;
 }
+export default function AuthModal(){const location=useLocation();return new URLSearchParams(location.search).has("auth")?<AuthForm/>:null;}
+

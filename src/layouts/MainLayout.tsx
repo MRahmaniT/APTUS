@@ -1,82 +1,13 @@
-import React from "react";
 import { Outlet } from "react-router";
 import Header from "../components/Header";
 import AuthModal from "../components/AuthModal";
 import RoleSwitcher from "../components/RoleSwitcher";
 import { useAppContext } from "../controllers/AppContext";
 import { catalogDetails, catalogPhone, catalogAsset } from "../data/catalogDetails";
-import { contentUi } from "../config/contentUi";
+import "../styles/site-updates.css";
+export default function Layout(){const {locale,role}=useAppContext();const d=catalogDetails(locale);const mapUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(d.address);return <div className="aptus-site min-h-full flex flex-col"><Header/><AuthModal/><RoleSwitcher/><main className="aptus-main flex-1"><Outlet/></main><div className="aptus-footer-shell"><footer className="aptus-footer"><div className="aptus-footer-hero"><img src={catalogAsset("blue.png")} alt=""/><p className="aptus-footer-tagline">{d.footer.tagline}</p></div><div className="aptus-footer-body"><div className="footer-content-grid">
+ <div className="footer-contact"><h4>تماس با ما</h4><address><p>{d.address}</p><a dir="ltr" href={"tel:"+catalogPhone.replace(/[^+0-9]/g,"")}>{catalogPhone}</a></address><a className="footer-map" href={mapUrl} target="_blank" rel="noopener noreferrer"><img src={catalogAsset("map.png")} alt="نقشه موقعیت آپتوس ایران" loading="lazy"/><span>مشاهده نقشه و مسیریابی ↗</span></a></div>
+ <div className="footer-links"><h4>دسترسی سریع</h4><a href="/types">تیپ‌بندی</a><a href="/components">اجزا</a><a href="/projects">پروژه‌ها</a><a href="/library/articles">مقالات</a><a href="/about/contact">تماس با ما</a>{["admin","manager"].includes(role)&&<><a href="/admin/content">مدیریت محتوا</a><a href="/admin/pages">ویرایش صفحات</a><a href="/admin/analytics">مدیریت سایت</a></>}</div>
+ <div className="footer-about"><a href="/about"><img src="/images/aptus-brand.svg" alt="آپتوس ایران" className="aptus-footer-brand"/></a><h4><a href="/about">درباره آپتوس</a></h4><p>{d.about}</p><a href="/about">آشنایی بیشتر با آپتوس ←</a></div>
+ </div><div className="footer-copyright">© {new Date().getFullYear()} آپتوس ایران. تمامی حقوق محفوظ است.</div></div></footer></div></div>;}
 
-export default function Layout() {
-  const { t, role, locale } = useAppContext();
-  const ui = contentUi(locale);
-  const d = catalogDetails(locale);
-  
-  return (
-    <div className="aptus-site min-h-full flex flex-col bg-[#fafaf8] text-[#111]">
-      <Header />
-      <AuthModal />
-      <RoleSwitcher />
-
-      <main className="aptus-main flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 pt-24 md:pt-32 pb-8">
-        <Outlet />
-      </main>
-
-      <div className="aptus-footer-shell px-4 md:px-8 pb-4 md:pb-8 w-full mt-auto">
-        <footer className="aptus-footer bg-gray-50 text-gray-900 rounded-[2rem] shadow-xl border border-gray-200 overflow-hidden flex flex-col w-full max-w-8xl mx-auto">
-          <div className="aptus-footer-hero w-full h-40 md:h-64 overflow-hidden relative bg-[#1a0c00]">
-            <img src={catalogAsset("blue.png")} alt="APTUS" className="w-full h-full object-cover opacity-80" style={{ objectPosition: "center 30%" }} />
-          </div>
-          
-          <div className="aptus-footer-body px-6 md:px-12 pt-14 pb-8 w-full">
-            <div className="grid md:grid-cols-4 gap-10 mb-12">
-              <div className="md:col-span-1">
-                <img src="/images/aptus-brand.svg" alt={d.companyName} className="aptus-footer-brand" />
-                <p className="mt-3 text-sm text-gray-500 leading-relaxed">{d.about}</p>
-              </div>
-              
-              <div>
-                <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-gray-900 mb-4">{t("nav", "about")}</h4>
-                <ul className="space-y-2.5 list-none m-0 p-0">
-                  <li><a href="/about/location" className="text-sm text-gray-500 hover:text-black transition-colors">{t("nav", "about_location")}</a></li>
-                  <li><a href="/about/contact" className="text-sm text-gray-500 hover:text-black transition-colors">{t("nav", "about_contact")}</a></li>
-                  <li><a href="/projects" className="text-sm text-gray-500 hover:text-black transition-colors">{ui.ourWork}</a></li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-gray-900 mb-4">{t("nav", "elements")}</h4>
-                <ul className="space-y-2.5 list-none m-0 p-0">
-                  <li><a href="/products/foundations" className="text-sm text-gray-500 hover:text-black transition-colors">{t("nav", "elem_foundations")}</a></li>
-                  <li><a href="/products/columns" className="text-sm text-gray-500 hover:text-black transition-colors">{t("nav", "elem_columns")}</a></li>
-                  <li><a href="/products/architectural-panels" className="text-sm text-gray-500 hover:text-black transition-colors">{t("nav", "elem_panels")}</a></li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="text-xs font-semibold tracking-[0.15em] uppercase text-gray-900 mb-4">{t("nav", "about_contact")}</h4>
-                <address className="not-italic space-y-2.5 text-sm text-gray-500">
-                  <p>{d.address}</p>
-                  <a dir="ltr" href={"tel:" + catalogPhone.replace(/[^+\d]/g, "")}>{catalogPhone}</a>
-                </address>
-                {(role === "admin" || role === "manager") && (
-                  <div className="mt-8 flex flex-col gap-2">
-                    <a href="/admin/content" className="text-xs text-gray-400 hover:text-black transition-colors">{ui.contentStudio}</a>
-                    <a href="/admin/pages" className="text-xs text-gray-400 hover:text-black transition-colors">{ui.pageEditor}</a>
-                    <a href="/admin/profile" className="text-xs text-gray-400 hover:text-black transition-colors">{ui.profile}</a>
-                    <a href="/admin/analytics" className="text-xs text-gray-400 hover:text-black transition-colors">{ui.analytics}</a>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-gray-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-gray-500 italic font-medium">{ui.copyright}</p>
-              <p className="aptus-footer-tagline text-sm text-gray-500 italic font-medium">{d.footer.tagline}</p>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </div>
-  );
-}

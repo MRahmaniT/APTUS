@@ -81,6 +81,8 @@ body:has(dialog[open]) { overflow: hidden; }
 .type-detail-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
 .aptus-site .type-detail-heading h1 { margin-bottom: 0; }
 .type-table-note { color: #555; font-size: .9rem; margin-bottom: 16px; }
+.type-table-hint { display: none; color: #555; font-size: .8rem; margin-bottom: 10px; }
+@media (max-width: 1019px) { .type-table-hint { display: block; } }
 .type-detail .type-cell { width: 100%; cursor: pointer; }
 .type-detail .type-cell:focus-visible { outline: 2px solid #a25112; outline-offset: -2px; }
 .type-matrix-dialog { max-width: 440px; }

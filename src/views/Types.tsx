@@ -44,6 +44,7 @@ export function TypeDetail() {
         <Link className="outline-button" to="/types">بازگشت به تیپ‌بندی‌ها</Link>
       </div>
       {isReference && <p className="type-table-note">این جدول، مرجع کاتالوگ سوله تک‌دهانه است. ابعاد تیپ‌بندی دودهانه پس از تأیید منتشر می‌شود.</p>}
+      <p className="type-table-hint">برای دیدن همه دهانه‌ها، جدول را افقی پیمایش کنید.</p>
       <div className="table-wrap" tabIndex={0} role="region" aria-label="جدول ۱۸ ترکیب ارتفاع و دهانه">
         <table className="types-table">
           <thead><tr><th scope="col" className="row-corner">ارتفاع زیر سقف<br/><small>دهانه خالص</small></th>

@@ -72,12 +72,12 @@ export default function Header() {
       </div>
     </header>
     {mobile && <nav id="aptus-mobile-navigation" className="aptus-mobile-menu" aria-label="منوی موبایل">
+      <div className="mobile-account">{account}</div>
       <NavLink to="/" end onClick={close}>خانه</NavLink>
       {visibleMenus.map(menu => <div key={menu.id}>
         <div className="mobile-nav-group"><strong>{menu.label}</strong>{menu.items.map(item => <NavLink key={item.to} to={item.to} onClick={close}>{item.label}</NavLink>)}</div>
         {isEditor && menu.id === "product" && <NavLink className="mobile-projects-link" to="/projects" onClick={close}>پروژه‌ها</NavLink>}
       </div>)}
-      <div className="mobile-account">{account}</div>
     </nav>}
   </div>;
 }

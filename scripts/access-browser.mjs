@@ -58,9 +58,19 @@ try {
   await assertHidden(member);
   await member.locator(".aptus-menu-toggle").click();
   assert.equal(await member.locator(".aptus-mobile-menu a[href='/projects'], .aptus-mobile-menu a[href='/about/statistics']").count(), 0);
-  await member.locator(".aptus-mobile-menu").getByRole("button", { name: "خروج", exact: true }).click();
+  const mobileMenu = member.locator(".aptus-mobile-menu");
+  const viewport = member.viewportSize();
+  const box = await mobileMenu.boundingBox();
+  assert.ok(box.y >= 0 && box.y + box.height <= viewport.height, "Mobile menu fits inside the screen");
+  await mobileMenu.screenshot({ path: "qa-artifacts/mobile-member-menu.png" });
+  await mobileMenu.getByRole("button", { name: "خروج", exact: true }).click();
   await ready(member, production, "/library/articles/ci-article");
   await member.getByRole("button", { name: "ورود و مطالعه متن کامل" }).waitFor();
+  await member.locator(".aptus-menu-toggle").click();
+  await member.locator(".aptus-mobile-menu .account-login").click();
+  await codeForm.getByLabel("شماره همراه یا ایمیل").waitFor();
+  await codeForm.getByRole("button", { name: "بستن پنجره" }).click();
+  await codeForm.waitFor({ state: "detached" });
   await memberContext.close();
 
   const adminContext = await browser.newContext({ viewport: { width: 1440, height: 980 } });

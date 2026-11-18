@@ -117,9 +117,10 @@ try {
   await admin.locator(".access-gate").waitFor();
   await assertHidden(admin);
   await admin.locator(".desktop-account .account-login").click();
+  await modal.waitFor({ state: "visible" });
   await admin.keyboard.press("Escape");
   await modal.waitFor({ state: "detached" });
-  assert.equal(new URL(admin.url()).searchParams.has("auth"), false);
+  await admin.waitForURL(url => !url.searchParams.has("auth"));
   await adminContext.close();
 
   const fallback = await browser.newPage();

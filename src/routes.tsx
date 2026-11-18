@@ -1,11 +1,12 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, redirect } from "react-router";
 import Layout from "./layouts/MainLayout";
 import About from "./views/About";
 import ApplicationPage from "./views/Applications";
-import Types from "./views/Types";
+import Types, { TypeDetail } from "./views/Types";
 import Statistics from "./views/Statistics";
 import { ArticlesIndex, ArticleDetail } from "./views/Articles";
 import Home from "./views/Home";
+import { isTypeFamily } from "./data/typeFamilies";
 import Products from "./views/Products";
 import AdminAnalytics from "./views/AdminAnalytics";
 import AdminContent from "./views/AdminContent";
@@ -25,15 +26,16 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
 
-      { path: "products", Component: Products },
-      { path: "components", Component: () => <Products elementsOnly /> },
+      { path: "products", loader: () => redirect("/types") },
+      { path: "components", Component: Products },
       { path: "types", Component: Types },
+      { path: "types/:slug", Component: TypeDetail },
       { path: "applications/:slug", Component: ApplicationPage },
       { path: "about", Component: About },
       { path: "about/statistics", Component: Statistics },
       { path: "library/articles", Component: ArticlesIndex },
       { path: "library/articles/:slug", Component: ArticleDetail },
-      { path: "products/:slug", Component: ProductDetail },
+      { path: "products/:slug", loader: ({params}) => isTypeFamily(params.slug || "") ? redirect("/types/" + params.slug) : null, Component: ProductDetail },
 
       { path: "news", Component: NewsIndex },
       { path: "news/latest", Component: NewsIndex },

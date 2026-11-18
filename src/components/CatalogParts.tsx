@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { useState, type CSSProperties } from "react";
 import { useAppContext } from "../controllers/AppContext";
 import { catalogDetails, catalogAsset } from "../data/catalogDetails";
@@ -27,11 +28,11 @@ export default function CatalogParts(){
   </div>
   <div className="explore-dock">
    <div className="part-selector" role="group" aria-label={ui.explore.selectGroup}>{d.parts.map(p=><button key={p.id} type="button" data-part={p.id} className={active===p.id?"is-active":""} aria-pressed={active===p.id} onClick={()=>choose(p.id)}><bdi>{number(p.number)}</bdi> {p.name}</button>)}</div>
+   </div>
    {open&&<Modal title={selected.name} onClose={()=>setOpen(false)} className="part-dialog"><aside className="part-dock" id="part-preview">
     <div className="dock-image"><img src={selected.image} alt={ui.explore.imageAlt.replace("{name}",selected.name)}/></div>
-    <div className="dock-body" key={selected.id}><div className="dock-top"/><h3>{selected.name}</h3>{paragraphs.map(p=><p className="dock-text" key={p}>{p}</p>)}<a className="solid-button" href={"/products/"+routes[selected.id]}>{d.more}<svg className="directional-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></a></div>
+    <div className="dock-body" key={selected.id}>{paragraphs.slice(0,2).map(p=><p className="dock-text" key={p}>{p}</p>)}<Link className="solid-button" to={"/products/"+routes[selected.id]}>{d.more}<svg className="directional-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></Link></div>
    </aside></Modal>}
-  </div>
  </section>;
 }
 

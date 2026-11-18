@@ -4,7 +4,7 @@ import {readFileSync} from "node:fs";
 const git=(...args)=>execFileSync("git",args,{encoding:"utf8",maxBuffer:16*1024*1024});
 // Approved November scope includes navigation, auth, articles and analytics.
 const home=readFileSync("src/views/Home.tsx","utf8");
-for(const hook of ['id="cover"','id="about"','<CatalogParts','id="system"','<AccordionGallery'])assert.ok(home.includes(hook),hook);
+for(const hook of ['id="cover"','<HomeShowcase','<CatalogParts','id="system"'])assert.ok(home.includes(hook),hook);
 assert.ok(readFileSync("src/config/site.ts","utf8").includes("LANGUAGE_SWITCH_ENABLED = false"));
 const manifest=JSON.parse(readFileSync("public/catalog-assets/manifest.json","utf8"));
 for(const asset of manifest.assets){

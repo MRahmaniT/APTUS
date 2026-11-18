@@ -7,8 +7,8 @@ import { ContentRepository } from "../repositories/ContentRepository";
 
 const DESIGN_SLUGS = new Set(["single-storey-design", "double-storey-design", "multi-storey-design", "facades"]);
 
-export default function Products({ elementsOnly = false }: { elementsOnly?:boolean }) {
-  const { t, locale } = useAppContext();
+export default function Products() {
+  const { locale } = useAppContext();
   const ui = contentUi(locale);
   const [products, setProducts] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,6 @@ export default function Products({ elementsOnly = false }: { elementsOnly?:boole
     return () => { active = false; };
   }, [locale]);
 
-  const designs = elementsOnly ? [] : products.filter((item) => DESIGN_SLUGS.has(item.slug));
   const elements = products.filter((item) => !DESIGN_SLUGS.has(item.slug));
 
   return (
@@ -31,7 +30,7 @@ export default function Products({ elementsOnly = false }: { elementsOnly?:boole
       <div className="section-inner max-w-7xl mx-auto px-6 lg:px-8 space-y-20">
         <div className="aptus-page-heading max-w-3xl">
           <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#999] mb-4">APTUS</p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{elementsOnly ? "اجزا" : t("nav", "products")}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">اجزا</h1>
           <p className="text-xl text-gray-600 font-light">
             {locale === "fa"
               ? "اجزای سیستم سوله بتنی پیش‌ساخته آپتوس، تیپ‌های استاندارد و طرح‌های نماسازی."
@@ -45,21 +44,9 @@ export default function Products({ elementsOnly = false }: { elementsOnly?:boole
           <div className="py-24 text-center text-[#777]">{ui.loadingProducts}</div>
         ) : (
           <>
-            {designs.length > 0 && (
-              <section>
-                <div className="flex items-center gap-4 mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900">{t("nav", "designs")}</h2>
-                  <div className="h-px bg-gray-200 flex-1" />
-                </div>
-                <div className="aptus-listing-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {designs.map((item) => <ContentCard key={item.id} item={item} />)}
-                </div>
-              </section>
-            )}
-
             <section>
               <div className="flex items-center gap-4 mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">{t("nav", "elements")}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">المان‌های پیش‌ساخته بتنی</h2>
                 <div className="h-px bg-gray-200 flex-1" />
               </div>
               {elements.length > 0 ? (

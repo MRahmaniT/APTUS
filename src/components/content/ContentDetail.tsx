@@ -8,7 +8,7 @@ import { contentUi } from "../../config/contentUi";
 
 function backHref(type: ContentItem["type"]) {
   if (type === "article") return "/library/articles";
-  if (type === "product") return "/products";
+  if (type === "product") return "/components";
   if (type === "news") return "/news/latest";
   return "/projects";
 }
@@ -236,7 +236,7 @@ function GalleryTemplate({ item }: { item: ContentItem }) {
       </header>
       <div className="grid md:grid-cols-2 gap-4">
         {media.map((entry, index) => (
-          <figure key={`${entry.url}-${index}`} className={`overflow-hidden rounded-2xl bg-[#e8e8e3] ${index % 3 === 0 ? "md:col-span-2 aspect-[16/7]" : "aspect-[4/3]"}`}>
+          <figure id={item.slug === "facades" ? `facade-${String(index + 1).padStart(2, "0")}` : undefined} key={`${entry.url}-${index}`} className={`overflow-hidden rounded-2xl bg-[#e8e8e3] ${index % 3 === 0 ? "md:col-span-2 aspect-[16/7]" : "aspect-[4/3]"}`}>
             <Media media={entry} className="w-full h-full object-cover" />
           </figure>
         ))}

@@ -28,7 +28,7 @@ Admin routes include:
 
 ## Authentication
 
-Authentication is self-hosted. Passwords are hashed with Node's `scrypt` implementation and opaque session tokens are stored in PostgreSQL. On a fresh database, the first account created becomes the initial `manager`; later signups default to `member`.
+Authentication is self-hosted. Passwords are hashed with Node's `scrypt` implementation and opaque session tokens are stored in PostgreSQL. Public signups always create a `member` account. A server operator can [provision the first manager](docs/self-hosted-postgres.md#first-administrator).
 
 Automatic password-reset email is not enabled until an SMTP/email provider is configured.
 

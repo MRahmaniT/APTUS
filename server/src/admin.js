@@ -1,12 +1,8 @@
 import { Router } from "express";
-import { optionalUser, requireEditor, requireUser, publicUser } from "./auth.js";
-import { query } from "./db.js";
+import { isEditor, optionalUser, requireEditor, requireManager, requireUser, publicUser } from "./auth.js";
+import { query, withTransaction } from "./db.js";
 
 const adminRouter = Router();
-
-function isEditor(user) {
-  return Boolean(user && ["admin", "manager"].includes(user.role));
-}
 
 adminRouter.get("/profile/:id", optionalUser, requireUser, async (req, res) => {
   if (req.user.id !== req.params.id && !isEditor(req.user)) {
@@ -40,32 +36,46 @@ adminRouter.patch("/profile/:id", optionalUser, requireUser, async (req, res) =>
   res.json(publicUser(result.rows[0]));
 });
 
-adminRouter.get("/profiles", optionalUser, requireEditor, async (_req, res) => {
+adminRouter.get("/profiles", optionalUser, requireManager, async (_req, res) => {
   const rows = (await query("select * from users order by created_at desc")).rows;
   res.json(rows.map(publicUser));
 });
 
-adminRouter.patch("/profiles/:id/role", optionalUser, requireEditor, async (req, res) => {
+adminRouter.patch("/profiles/:id/role", optionalUser, requireManager, async (req, res) => {
   const role = String(req.body?.role || "");
   if (!["member", "admin", "manager"].includes(role)) {
     return res.status(400).json({ message: "Invalid role." });
   }
-  if (req.user.id === req.params.id && req.user.role === "manager" && role !== "manager") {
-    const managers = Number((await query("select count(*)::int as count from users where role = 'manager'")).rows[0].count);
-    if (managers <= 1) return res.status(400).json({ message: "The last manager cannot demote their own account." });
-  }
-  const result = await query("update users set role = $1 where id = $2 returning *", [role, req.params.id]);
-  if (!result.rows[0]) return res.status(404).json({ message: "User not found." });
-  res.json(publicUser(result.rows[0]));
+  const profile = await withTransaction(async client => {
+    await client.query("select pg_advisory_xact_lock(hashtext('aptus-role-management'))");
+    // Another manager may have changed this actor's role while this request was waiting.
+    const actor = (await client.query("select role from users where id = $1", [req.user.id])).rows[0];
+    if (actor?.role !== "manager") return {status: 403, message: "Manager access required."};
+    if (req.user.id === req.params.id && role !== "manager") {
+      const { count } = (await client.query("select count(*)::int as count from users where role = 'manager'")).rows[0];
+      if (count <= 1) return {status: 400, message: "The last manager cannot demote their own account."};
+    }
+    const result = await client.query("update users set role = $1 where id = $2 returning *", [role, req.params.id]);
+    return result.rows[0] ? { user: publicUser(result.rows[0]) } : {status: 404, message: "User not found."};
+  });
+  if (!profile.user) return res.status(profile.status).json({message: profile.message});
+  res.json(profile.user);
 });
 
 adminRouter.get("/settings", optionalUser, async (req, res) => {
   const key = String(req.query.key || "");
   if (!key) return res.status(400).json({ message: "Setting key is required." });
+  const libraryEntry = /^page:(fa|en|tr):library\/(codes|books|glossary|articles)$/.exec(key);
+  if (libraryEntry && libraryEntry[2] !== "articles" && !req.user) {
+    return res.status(401).json({ message: "Authentication required." });
+  }
   const result = await query("select value from site_settings where key = $1 limit 1", [key]);
   if (!result.rows[0]) return res.status(404).json({ message: "Setting not found." });
   const value=result.rows[0].value;
-  if(/^page:(fa|en|tr):library\/articles$/.test(key)&&!req.user)return res.json({...value,body:""});
+  if (libraryEntry?.[2] === "articles" && !req.user) {
+    const { title, abstract, locale, path } = value;
+    return res.json({ title, abstract, locale, path, body: "", heroImage: "" });
+  }
   res.json(value);
 });
 
@@ -98,7 +108,7 @@ adminRouter.post("/analytics/view", async (req, res) => {
   res.status(204).end();
 });
 
-adminRouter.get("/analytics/summary",async(req,res)=>{
+adminRouter.get("/analytics/summary", optionalUser, requireEditor, async(req,res)=>{
   const period=req.query.period==="year"?"year":"month";
   const date=String(req.query.date||new Date().toISOString().slice(0,7));
   if(!(period==="year"?/^(20[2-9]\d|2100)$/:/^(20[2-9]\d|2100)-(0[1-9]|1[0-2])$/).test(date))return res.status(400).json({message:"Invalid period."});

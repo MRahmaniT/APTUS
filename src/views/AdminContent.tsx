@@ -258,7 +258,7 @@ export default function AdminContent() {
             </div>
           </aside>
 
-          <main className="rounded-2xl border border-[#ddd] bg-[#fafaf8] overflow-hidden">
+          <section aria-label="Content editor" className="rounded-2xl border border-[#ddd] bg-[#fafaf8] overflow-hidden">
             <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-[#ddd] p-4 flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-[#666]">{selectedId ? `Editing ${draft.locale.toUpperCase()} content` : `New ${activeLocale.toUpperCase()} content`}</div>
               <div className="flex items-center gap-2">
@@ -346,7 +346,7 @@ export default function AdminContent() {
                 </section>
               </div>
             )}
-          </main>
+          </section>
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ export const CONTENT_UI: Record<Locale, {
 }> = {
   en: {
     viewDetails: "View details",
-    backProducts: "Back to products",
+    backProducts: "Back to components",
     backNews: "Back to news",
     backWork: "Back to work",
     overview: "Overview",
@@ -56,7 +56,7 @@ export const CONTENT_UI: Record<Locale, {
   },
   fa: {
     viewDetails: "مشاهده جزئیات",
-    backProducts: "بازگشت به محصولات",
+    backProducts: "بازگشت به اجزا",
     backNews: "بازگشت به اخبار",
     backWork: "بازگشت به پروژه‌ها",
     overview: "معرفی",
@@ -83,7 +83,7 @@ export const CONTENT_UI: Record<Locale, {
   },
   tr: {
     viewDetails: "Detayları görüntüle",
-    backProducts: "Ürünlere dön",
+    backProducts: "Bileşenlere dön",
     backNews: "Haberlere dön",
     backWork: "Projelere dön",
     overview: "Genel bakış",

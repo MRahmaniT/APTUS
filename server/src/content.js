@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { optionalUser, requireEditor } from "./auth.js";
+import { isEditor, optionalUser, requireEditor } from "./auth.js";
 import { query, withTransaction } from "./db.js";
 
 const contentRouter = Router();
@@ -7,10 +7,6 @@ const contentTypes = new Set(["product", "news", "project", "article"]);
 const locales = new Set(["en", "fa", "tr"]);
 const statuses = new Set(["draft", "published"]);
 const templates = new Set(["showcase", "editorial", "technical", "case-study", "gallery"]);
-
-function isEditor(user) {
-  return Boolean(user && ["admin", "manager"].includes(user.role));
-}
 
 function rowToItem(row, media = []) {
   return {
@@ -121,7 +117,11 @@ async function replaceMedia(client, contentId, media) {
   }
 }
 
-contentRouter.get("/", optionalUser, async (req, res) => {
+function requireProjectEditor(req, res, next) {
+  return (req.params.type || req.query.type) === "project" ? requireEditor(req, res, next) : next();
+}
+
+contentRouter.get("/", optionalUser, requireProjectEditor, async (req, res) => {
   const type = cleanText(req.query.type);
   const locale = cleanText(req.query.locale, "en");
   const includeDrafts = req.query.includeDrafts === "true";
@@ -143,7 +143,7 @@ contentRouter.get("/", optionalUser, async (req, res) => {
   res.json((await hydrateRows(rows)).map(item=>readable(item,req.user)));
 });
 
-contentRouter.get("/:type/:slug", optionalUser, async (req, res) => {
+contentRouter.get("/:type/:slug", optionalUser, requireProjectEditor, async (req, res) => {
   const { type, slug } = req.params;
   const locale = cleanText(req.query.locale, "en");
   const includeDrafts = req.query.includeDrafts === "true";

@@ -1,17 +1,10 @@
 # November website revisions
 
-Implemented from the approved notes on pages 3–4 of Aptus_Website_Changes.pdf.
-
-- Persian is the active public language; the language switch is disabled through `src/config/site.ts`. Existing translations and multilingual CMS records remain available.
-- Header: خانه, درباره محصول (تیپ‌بندی / اجزا), کتابخانه و مقالات, درباره ما, اخبار و رویدادها, پروژه‌ها. Existing product links are retained.
-- Application images have captions and working detail pages. The five-image GSAP accordion remains.
-- Homepage slideshows draw from the existing product, project and news CMS records. In a news record's Specs, `Featured: true` prioritizes important news. An event category (`Events`, `Exhibitions`, رویداد, نمایشگاه) produces an event pop-up trigger. Set `eventEnd` to an ISO date/time for a live event to open automatically once per browser session; records without an active end date remain available through their event buttons.
-- Component pins and the nine component buttons open native modal dialogs, with Escape, focus restoration and background isolation. The full component description and existing product link are included.
-- Footer: contact details and the catalog map on the right, short About summary on the left linking to `/about`. Map routing uses the verified catalog address.
-- `/types` presents single-span, symmetric double-span and asymmetric double-span families. Only single-span designs receive the catalog's standard dimensions. Other families explicitly require project-specific engineering.
-- The catalog PDF is bundled at `/catalog-assets/aptus-catalog.pdf` and linked after the introduction.
-- `/about/statistics` exposes aggregate monthly/yearly views and most-viewed public paths. The date selector explicitly uses Gregorian periods; no member or profile information is returned.
-- Articles are a separate CMS content type. Editors can publish a title, abstract and full body. Guests receive the abstract, not the full body, through both list and detail APIs. A signed-in member can read the complete article. There are no fabricated article records in production.
+- The homepage starts with six expanding panels: the three type families and catalog facade designs. Published projects replace up to three facade panels after an editor signs in. Editors also see the separate five-panel applications gallery.
+- Full About Aptus is at `/about`. The footer shows a short About summary on the right and contact/map on the left. The catalog PDF is linked at the end of the AIPS introduction.
+- News and events use separate paginated image cards. `Featured: true` in a news record's Specs prioritizes it. Event categories (Events, Exhibitions, رویداد, نمایشگاه) open an event dialog. A future ISO `eventEnd` can announce the event once per browser session.
+- Each type family has a detail page with the catalog's 18 height–span combinations. The two double-span pages label this table as a single-span reference until their dimensions are confirmed. Legacy type links redirect to the matching detail.
+- Guests can read article summaries. Members can read full published articles and the protected library. Only admins/managers can access projects and site statistics or see the applications gallery. The relevant API endpoints apply the same permissions. Public signup always creates a member.
 
 ## Verification-code delivery
 
@@ -29,6 +22,6 @@ For local development, put these values in the ignored `.env.dev` file. For Dock
 
 The adapter receives JSON `{channel,to,code,expiresInSeconds}` and must send the message before responding successfully. Credentials stay on the server. Codes are HMAC-protected, expire after five minutes, permit five attempts, and are consumed atomically. Resends have a one-minute cooldown and a limit of three per destination per ten minutes. The public API never returns or logs a code. A verified code creates an ordinary member account, never an administrator. Phone identities are established by verification rather than by trusting editable profile phone fields.
 
-When an adapter is not configured, code delivery returns a clear unavailable response. Password login remains available for existing members and editors. No provider credentials are included in this repository, and real email/SMS delivery has not been exercised by automated tests.
+When no adapter is configured, the login form opens directly in password mode. Password login is also available as an alternative when code delivery is enabled. No provider credentials are included in this repository, and real email/SMS delivery has not been exercised by automated tests.
 
-Apply the new PostgreSQL migration before starting the API. The normal launcher/migration command already discovers migration 002. Test delivery uses only a loopback mock in CI; it is not imported or enabled by the production server.
+The normal launcher applies migration 002 on installations that do not have verification-code tables yet. This revision requires no new schema migration. Test delivery uses only a loopback mock in CI; it is not imported or enabled by the production server.

@@ -1,11 +1,12 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, redirect } from "react-router";
 import Layout from "./layouts/MainLayout";
 import About from "./views/About";
 import ApplicationPage from "./views/Applications";
-import Types from "./views/Types";
+import Types, { TypeDetail } from "./views/Types";
 import Statistics from "./views/Statistics";
 import { ArticlesIndex, ArticleDetail } from "./views/Articles";
 import Home from "./views/Home";
+import { isTypeFamily } from "./data/typeFamilies";
 import Products from "./views/Products";
 import AdminAnalytics from "./views/AdminAnalytics";
 import AdminContent from "./views/AdminContent";
@@ -25,15 +26,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
 
-      { path: "products", Component: Products },
-      { path: "components", Component: () => <Products elementsOnly /> },
+      { path: "products", loader: () => redirect("/types") },
+      { path: "components", Component: Products },
       { path: "types", Component: Types },
-      { path: "applications/:slug", Component: ApplicationPage },
+      { path: "types/:slug", Component: TypeDetail },
       { path: "about", Component: About },
-      { path: "about/statistics", Component: Statistics },
       { path: "library/articles", Component: ArticlesIndex },
       { path: "library/articles/:slug", Component: ArticleDetail },
-      { path: "products/:slug", Component: ProductDetail },
+      { path: "products/:slug", loader: ({params}) => isTypeFamily(params.slug || "") ? redirect("/types/" + params.slug) : null, Component: ProductDetail },
 
       { path: "news", Component: NewsIndex },
       { path: "news/latest", Component: NewsIndex },
@@ -41,9 +41,6 @@ export const router = createBrowserRouter([
       { path: "news/exhibitions", Component: NewsIndex },
       { path: "news/:slug", Component: NewsDetail },
 
-      { path: "projects", Component: ProjectsIndex },
-      { path: "projects/:slug", Component: ProjectDetail },
-      { path: "work", Component: ProjectsIndex },
 
       { path: "about/location", Component: () => <StaticPage pagePath="about/location" /> },
       { path: "about/contact", Component: () => <StaticPage pagePath="about/contact" /> },
@@ -62,13 +59,17 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "admin",
         Component: AdminRoute,
         children: [
-          { path: "analytics", Component: AdminAnalytics },
-          { path: "content", Component: AdminContent },
-          { path: "pages", Component: AdminPages },
-          { path: "profile", Component: AdminProfile },
+          { path: "projects", Component: ProjectsIndex },
+          { path: "projects/:slug", Component: ProjectDetail },
+          { path: "work", loader: () => redirect("/projects") },
+          { path: "about/statistics", Component: Statistics },
+          { path: "applications/:slug", Component: ApplicationPage },
+          { path: "admin/analytics", Component: AdminAnalytics },
+          { path: "admin/content", Component: AdminContent },
+          { path: "admin/pages", Component: AdminPages },
+          { path: "admin/profile", Component: AdminProfile },
         ],
       },
 

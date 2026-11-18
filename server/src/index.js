@@ -34,6 +34,11 @@ app.get("/api/health", async (_req, res) => {
   res.json({ status: "ok", database: "postgresql" });
 });
 
+app.use("/api", (_req, res, next) => {
+  res.set("Cache-Control", "private, no-store");
+  next();
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/content", contentRouter);
 app.use("/api", adminRouter);

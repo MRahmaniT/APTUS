@@ -70,7 +70,13 @@ export async function apiRequest<T = unknown>(path: string, init: RequestInit = 
 }
 
 export const ServerAuth = {
-  getStoredSession: readStoredSession,
+  onSessionChange(listener: () => void) {
+    const handler = (event: StorageEvent) => {
+      if (event.key === SESSION_KEY || event.key === null) listener();
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  },
 
   getAccessToken() {
     return readStoredSession()?.access_token;
@@ -86,13 +92,17 @@ export const ServerAuth = {
     }
     try {
       const result = await apiRequest<{ user: ServerUser }>("/auth/me", {}, session.access_token);
+      if (readStoredSession()?.access_token !== session.access_token) return null;
       const next = { ...session, user: result.user };
-      writeSession(next);
       return { session: next, user: result.user };
     } catch {
-      writeSession(null);
+      if (readStoredSession()?.access_token === session.access_token) writeSession(null);
       return null;
     }
+  },
+
+  getCodeChannels(signal?: AbortSignal) {
+    return apiRequest<{email: boolean; sms: boolean}>("/auth/otp/channels", { signal });
   },
 
   async requestCode(identifier:string) {
@@ -134,13 +144,7 @@ export const ServerAuth = {
 
   async signOut() {
     const token = readStoredSession()?.access_token;
-    try {
-      if (token && isServerDatabaseEnabled) {
-        await apiRequest("/auth/logout", { method: "POST" }, token);
-      }
-    } finally {
-      writeSession(null);
-    }
+    writeSession(null);
+    if (token && isServerDatabaseEnabled) await apiRequest("/auth/logout", { method: "POST" }, token);
   },
 };
-

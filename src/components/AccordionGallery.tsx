@@ -425,25 +425,14 @@ const AccordionGallery = ({
   ) => {
     if (count === 0) return;
 
-    if (
-      e.key === "ArrowRight" ||
-      e.key === "ArrowDown"
-    ) {
-      e.preventDefault();
-
-      setActive(
-        (active + 1) % count
-      );
-    } else if (
-      e.key === "ArrowLeft" ||
-      e.key === "ArrowUp"
-    ) {
-      e.preventDefault();
-
-      setActive(
-        (active - 1 + count) % count
-      );
-    }
+    const rtl = document.documentElement.dir === "rtl";
+    const forward = vertical ? "ArrowDown" : rtl ? "ArrowLeft" : "ArrowRight";
+    const backward = vertical ? "ArrowUp" : rtl ? "ArrowRight" : "ArrowLeft";
+    if (e.key !== forward && e.key !== backward) return;
+    e.preventDefault();
+    const next = (i + (e.key === forward ? 1 : -1) + count) % count;
+    setActive(next);
+    panelRefs.current[next]?.focus();
   };
 
   if (count === 0) {
@@ -474,8 +463,8 @@ const AccordionGallery = ({
             : `${height}px`,
         } as CSSProperties
       }
-      role="list"
-      aria-label="Image accordion gallery"
+      role="group"
+      aria-label="گالری تصاویر"
     >
       {items.map((item, i) => {
         const isActive = i === active;
@@ -516,7 +505,6 @@ const AccordionGallery = ({
             onKeyDown={(e) =>
               handleKeyDown(i, e)
             }
-            role="listitem"
             tabIndex={0}
             aria-current={
               isActive ? "true" : undefined
@@ -535,8 +523,8 @@ const AccordionGallery = ({
                 <img
                   src={item.image}
                   alt={
-                    item.alt ||
-                    item.label ||
+                    item.alt ??
+                    item.label ??
                     ""
                   }
                   draggable={false}

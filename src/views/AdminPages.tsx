@@ -101,7 +101,7 @@ export default function AdminPages() {
           </div>
         </aside>
 
-        <main className="rounded-2xl border border-[#ddd] bg-[#fafaf8] overflow-hidden">
+        <section aria-label="Page editor" className="rounded-2xl border border-[#ddd] bg-[#fafaf8] overflow-hidden">
           <div className="bg-white/90 backdrop-blur border-b border-[#ddd] p-4 flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-medium">/{path}</p>
@@ -131,7 +131,7 @@ export default function AdminPages() {
               </section>
             </>}
           </div>
-        </main>
+        </section>
       </div>
     </div>
   );

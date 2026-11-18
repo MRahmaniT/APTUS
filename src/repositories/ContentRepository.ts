@@ -65,29 +65,35 @@ async function readAsDataUrl(file: File): Promise<string> {
 
 export const ContentRepository = {
   async list(type: ContentType, locale: string, includeDrafts = false): Promise<ContentItem[]> {
-    if (!isServerDatabaseEnabled) return listLocal(type, locale, includeDrafts);
+    if (type === "project") {
+      if (!isServerDatabaseEnabled) return [];
+      return apiRequest<ContentItem[]>(`/content?type=project&locale=${encodeURIComponent(locale)}&includeDrafts=${includeDrafts}`);
+    }
+    if (!isServerDatabaseEnabled) return type === "article" ? [] : listLocal(type, locale, includeDrafts);
 
     try {
       const rows = await apiRequest<ContentItem[]>(
         `/content?type=${encodeURIComponent(type)}&locale=${encodeURIComponent(locale)}&includeDrafts=${includeDrafts ? "true" : "false"}`,
       );
-      return sortContent(mergeBySlug(rows, listLocal(type, locale, includeDrafts)));
+      return type === "article" ? rows : sortContent(mergeBySlug(rows, listLocal(type, locale, includeDrafts)));
     } catch (error) {
-      if (includeDrafts) throw error;
+      if (includeDrafts || type === "article") throw error;
       console.warn("APTUS API unavailable; showing bundled content.", error);
       return listLocal(type, locale, includeDrafts);
     }
   },
 
   async getBySlug(type: ContentType, slug: string, locale: string, includeDrafts = false): Promise<ContentItem | null> {
-    if (!isServerDatabaseEnabled) return getLocalBySlug(type, slug, locale, includeDrafts);
+    const restricted = type === "project" || type === "article";
+    if (!isServerDatabaseEnabled) return restricted ? null : getLocalBySlug(type, slug, locale, includeDrafts);
 
     try {
       return await apiRequest<ContentItem>(
         `/content/${encodeURIComponent(type)}/${encodeURIComponent(slug)}?locale=${encodeURIComponent(locale)}&includeDrafts=${includeDrafts ? "true" : "false"}`,
       );
     } catch (error: any) {
-      if (error?.status === 404 || !includeDrafts) return getLocalBySlug(type, slug, locale, includeDrafts);
+      if (error?.status === 404) return restricted ? null : getLocalBySlug(type, slug, locale, includeDrafts);
+      if (!includeDrafts && !restricted) return getLocalBySlug(type, slug, locale, includeDrafts);
       throw error;
     }
   },

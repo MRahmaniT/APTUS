@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import HomeUpdates from "../components/HomeUpdates";
-import HomeShowcase from "../components/HomeShowcase";
+import HomeShowcase, { AdminApplications } from "../components/HomeShowcase";
 import CatalogParts from "../components/CatalogParts";
 import { useAppContext } from "../controllers/AppContext";
 import { ApiService } from "../services/api";
@@ -28,6 +28,7 @@ export default function Home() {
    <div className="cover-visual"><div className="visual-stage"><img src={catalogAsset("cover-render3.png")} alt={ui.cover.visualAlt}/></div></div>
   </section>
   <HomeShowcase/>
+  <AdminApplications/>
   <CatalogParts/>
   <section id="system" className="page-section system-section">
    <div className="section-inner">

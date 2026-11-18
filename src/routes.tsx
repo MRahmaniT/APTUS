@@ -30,9 +30,7 @@ export const router = createBrowserRouter([
       { path: "components", Component: Products },
       { path: "types", Component: Types },
       { path: "types/:slug", Component: TypeDetail },
-      { path: "applications/:slug", Component: ApplicationPage },
       { path: "about", Component: About },
-      { path: "about/statistics", Component: Statistics },
       { path: "library/articles", Component: ArticlesIndex },
       { path: "library/articles/:slug", Component: ArticleDetail },
       { path: "products/:slug", loader: ({params}) => isTypeFamily(params.slug || "") ? redirect("/types/" + params.slug) : null, Component: ProductDetail },
@@ -43,9 +41,6 @@ export const router = createBrowserRouter([
       { path: "news/exhibitions", Component: NewsIndex },
       { path: "news/:slug", Component: NewsDetail },
 
-      { path: "projects", Component: ProjectsIndex },
-      { path: "projects/:slug", Component: ProjectDetail },
-      { path: "work", Component: ProjectsIndex },
 
       { path: "about/location", Component: () => <StaticPage pagePath="about/location" /> },
       { path: "about/contact", Component: () => <StaticPage pagePath="about/contact" /> },
@@ -64,13 +59,17 @@ export const router = createBrowserRouter([
       },
 
       {
-        path: "admin",
         Component: AdminRoute,
         children: [
-          { path: "analytics", Component: AdminAnalytics },
-          { path: "content", Component: AdminContent },
-          { path: "pages", Component: AdminPages },
-          { path: "profile", Component: AdminProfile },
+          { path: "projects", Component: ProjectsIndex },
+          { path: "projects/:slug", Component: ProjectDetail },
+          { path: "work", loader: () => redirect("/projects") },
+          { path: "about/statistics", Component: Statistics },
+          { path: "applications/:slug", Component: ApplicationPage },
+          { path: "admin/analytics", Component: AdminAnalytics },
+          { path: "admin/content", Component: AdminContent },
+          { path: "admin/pages", Component: AdminPages },
+          { path: "admin/profile", Component: AdminProfile },
         ],
       },
 

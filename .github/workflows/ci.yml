@@ -11,7 +11,7 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:18-alpine
@@ -90,6 +90,7 @@ jobs:
         run: npm run smoke --prefix server
         env:
           API_BASE: http://127.0.0.1:3000/api
+          DATABASE_URL: postgresql://aptus:aptus-ci-password@127.0.0.1:5432/aptus
 
       - name: Check verification codes, protected articles and statistics
         run: node server/src/feature-smoke.js
@@ -118,8 +119,16 @@ jobs:
       - name: Compare website and catalog visually
         run: node scripts/catalog-visual-qa.mjs
 
-      - name: Verify original website and catalog styling in browser
+      - name: Verify public site interactions in browser
         run: node scripts/november-browser.mjs
+
+      - name: Start strict-mode development server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 3003 --strictPort > /tmp/aptus-vite.log 2>&1 &
+          curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:3003/
+
+      - name: Verify login and role access in development and production builds
+        run: node scripts/access-browser.mjs
 
       - name: Upload visual QA screenshots
         if: always()

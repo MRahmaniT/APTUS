@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
-import { query, withTransaction } from "./db.js";
+import { query } from "./db.js";
 
 import { otpChannels, requestOtp, verifyOtp } from "./otp.js";
 
@@ -83,11 +83,19 @@ export function requireUser(req, res, next) {
   next();
 }
 
+export const isEditor = (user) => user?.role === "admin" || user?.role === "manager";
+
 export function requireEditor(req, res, next) {
   if (!req.user) return res.status(401).json({ message: "Authentication required." });
-  if (!['admin', 'manager'].includes(req.user.role)) {
+  if (!isEditor(req.user)) {
     return res.status(403).json({ message: "Admin or manager access required." });
   }
+  next();
+}
+
+export function requireManager(req, res, next) {
+  if (!req.user) return res.status(401).json({ message: "Authentication required." });
+  if (req.user.role !== "manager") return res.status(403).json({ message: "Manager access required." });
   next();
 }
 
@@ -122,28 +130,21 @@ authRouter.post("/signup", authRateLimit, async (req, res) => {
   const email = normalizeEmail(req.body?.email);
   const password = String(req.body?.password || "");
 
-  if (!name || !email || !email.includes("@")) {
+  if (!name || name.length > 120 || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.endsWith("@identity.aptus.invalid")) {
     return res.status(400).json({ message: "A valid name and email are required." });
   }
-  if (password.length < 8) {
-    return res.status(400).json({ message: "Password must be at least 8 characters." });
+  if (password.length < 8 || password.length > 1024) {
+    return res.status(400).json({ message: "Password must be between 8 and 1024 characters." });
   }
 
   const passwordHash = await hashPassword(password);
   let user;
   try {
-    user = await withTransaction(async (client) => {
-      await client.query("lock table users in exclusive mode");
-      const count = Number((await client.query("select count(*)::int as count from users")).rows[0].count);
-      const role = count === 0 ? "manager" : "member";
-      const result = await client.query(
-        `insert into users(email, password_hash, name, role)
-         values($1, $2, $3, $4)
-         returning *`,
-        [email, passwordHash, name, role],
-      );
-      return result.rows[0];
-    });
+    const result = await query(
+      "insert into users(email, password_hash, name, role) values($1, $2, $3, 'member') returning *",
+      [email, passwordHash, name],
+    );
+    user = result.rows[0];
   } catch (error) {
     if (error?.code === "23505") {
       return res.status(409).json({ message: "An account with this email already exists." });
@@ -160,7 +161,7 @@ authRouter.post("/login", authRateLimit, async (req, res) => {
   const password = String(req.body?.password || "");
   const result = await query("select * from users where lower(email) = $1 limit 1", [email]);
   const user = result.rows[0];
-  if (!user || !(await verifyPassword(password, user.password_hash))) {
+  if (!user || password.length > 1024 || !(await verifyPassword(password, user.password_hash))) {
     return res.status(401).json({ message: "Invalid email or password." });
   }
   const session = await createSession(user.id);

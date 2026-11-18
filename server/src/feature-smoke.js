@@ -23,6 +23,52 @@ const guest=await request("/content/article/ci-article?locale=fa");assert.equal(
 const listing=await request("/content?type=article&locale=fa");assert.ok(!JSON.stringify(listing.data).includes("PRIVATE_ARTICLE_BODY"));
 const full=await request("/content/article/ci-article?locale=fa",null,login.data.session.access_token);assert.equal(full.data.body,"PRIVATE_ARTICLE_BODY");
 assert.equal((await request("/content?type=article&locale=fa&includeDrafts=true",null,login.data.session.access_token)).status,403);
-const stats=await request("/analytics/summary?period=month&date=2026-09");assert.equal(stats.status,200);assert.ok(stats.data.pages.some(p=>p.path==="/ci-smoke"));assert.equal((await request("/analytics/summary?period=month&date=2026-99")).status,400);
-console.log("PASS: email/SMS code delivery adapter, invalid/expired/consumed codes, concurrent verification, attempt/resend limits, article redaction/access, statistics.");
+const memberToken = login.data.session.access_token;
+const project = await request("/content", {
+  type:"project", slug:"ci-private-project", locale:"fa", status:"published", templateKey:"case-study",
+  title:"پروژه آزمایشی مدیریت", abstract:"معرفی پروژه خصوصی", body:"PRIVATE_PROJECT_BODY",
+  coverImage:"/catalog-assets/cover-render3.png", category:"آزمایشی",
+},token);
+assert.equal(project.status,201);
+
+for (const path of ["/content?type=project&locale=fa", "/content/project/ci-private-project?locale=fa", "/analytics/summary?period=month&date=2026-09"]) {
+  assert.equal((await request(path)).status,401);
+  assert.equal((await request(path,null,memberToken)).status,403);
+  assert.equal((await request(path,null,token)).status,200);
+}
+const editor = await request("/auth/login",{email:"ci-admin@aptus.test",password:"Aptus-CI-Password-123!"});
+assert.equal(editor.data.user.role,"admin");
+assert.equal((await request("/content/project/ci-private-project?locale=fa",null,editor.data.session.access_token)).data.body,"PRIVATE_PROJECT_BODY");
+const changeRole = await fetch(base+"/profiles/"+login.data.user.id+"/role",{
+  method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+editor.data.session.access_token},
+  body:JSON.stringify({role:"admin"}),
+});
+assert.equal(changeRole.status,403);
+
+for (const key of ["codes","books","glossary","articles"]) {
+  const settingKey="page:fa:library/"+key;
+  await query("insert into site_settings (key,value) values ($1,$2) on conflict (key) do update set value=excluded.value",[
+    settingKey,JSON.stringify({title:"منبع فنی آزمایشی",abstract:"معرفی منبع فنی",body:"PRIVATE_LIBRARY_BODY",heroImage:""}),
+  ]);
+  const path="/settings?key="+encodeURIComponent(settingKey);
+  const anon=await request(path);
+  assert.equal(anon.status,key==="articles"?200:401);
+  assert.ok(!JSON.stringify(anon.data).includes("PRIVATE_LIBRARY_BODY"));
+  assert.equal((await request(path,null,memberToken)).data.body,"PRIVATE_LIBRARY_BODY");
+}
+for (let n=1;n<=4;n++) {
+  const news=await request("/content",{
+    type:"news",slug:"ci-update-"+n,locale:"fa",status:"published",templateKey:"editorial",
+    title:"تازه‌های آزمایشی "+n,abstract:"چکیده آزمایشی مستقل برای بررسی ورق خوردن کارت‌ها و نمایش هم‌زمان دو مطلب در صفحه.",
+    body:"خبر آزمایشی مستقل",category:n<=2?"اخبار":"رویداد",
+    coverImage:n<=2?"/catalog-assets/cover-render1.jpg":"/catalog-assets/render.png",
+    publishedAt:"2026-09-17T08:00:00Z",
+  },token);
+  assert.equal(news.status,201);
+}
+const stats=await request("/analytics/summary?period=month&date=2026-09",null,token);
+assert.equal(stats.status,200);
+assert.ok(stats.data.pages.some(p=>p.path==="/ci-smoke"));
+assert.equal((await request("/analytics/summary?period=month&date=2026-99",null,token)).status,400);
+console.log("PASS: OTP lifecycle, public summaries, member library access, administrator project/statistics permissions and manager-only role changes.");
 await pool.end();

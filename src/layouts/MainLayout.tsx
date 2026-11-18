@@ -1,5 +1,6 @@
 import { Link, Outlet, ScrollRestoration } from "react-router";
 import Header from "../components/Header";
+import PageView from "../components/PageView";
 import AuthModal from "../components/AuthModal";
 import RoleSwitcher from "../components/RoleSwitcher";
 import { useAppContext } from "../controllers/AppContext";
@@ -7,11 +8,11 @@ import { catalogDetails, catalogPhone, catalogAsset } from "../data/catalogDetai
 import "../styles/site-updates.css";
 
 export default function Layout() {
-  const { locale, role } = useAppContext();
+  const { locale, isEditor } = useAppContext();
   const details = catalogDetails(locale);
   const mapUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(details.address);
   return <div className="aptus-site min-h-full flex flex-col">
-    <Header/><AuthModal/><RoleSwitcher/><ScrollRestoration/>
+    <PageView/><Header/><AuthModal/><RoleSwitcher/><ScrollRestoration/>
     <main className="aptus-main flex-1"><Outlet/></main>
     <div className="aptus-footer-shell">
       <footer className="aptus-footer">
@@ -24,9 +25,9 @@ export default function Layout() {
             </div>
             <div className="footer-links">
               <h4>دسترسی سریع</h4>
-              <Link to="/types">تیپ‌بندی</Link><Link to="/components">اجزا</Link><Link to="/projects">پروژه‌ها</Link>
+              <Link to="/types">تیپ‌بندی</Link><Link to="/components">اجزا</Link>{isEditor && <Link to="/projects">پروژه‌ها</Link>}
               <Link to="/library/articles">مقالات</Link><Link to="/about/contact">تماس با ما</Link>
-              {["admin","manager"].includes(role) && <>
+              {isEditor && <>
                 <Link to="/admin/content">مدیریت محتوا</Link><Link to="/admin/pages">ویرایش صفحات</Link>
                 <Link to="/admin/analytics">مدیریت سایت</Link>
               </>}

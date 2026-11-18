@@ -1,3 +1,5 @@
+import { execFileSync } from "node:child_process";
+
 const apiBase = (process.env.API_BASE || "http://127.0.0.1:3000/api").replace(/\/$/, "");
 
 async function request(path, options = {}) {
@@ -19,7 +21,7 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const email = `ci-${Date.now()}@aptus.local`;
+const email = "ci-manager@aptus.test";
 const password = "Aptus-CI-Password-123!";
 
 const signup = await request("/auth/signup", {
@@ -28,13 +30,24 @@ const signup = await request("/auth/signup", {
   body: JSON.stringify({ name: "APTUS CI Manager", email, password }),
 });
 
-assert(signup?.user?.role === "manager", "First account should become manager");
+assert(signup?.user?.role === "member", "Even the first public signup must be a member");
+execFileSync(process.execPath, [new URL("./grant-manager.js", import.meta.url).pathname, email], { stdio: "pipe" });
 assert(signup?.session?.access_token, "Signup should create a session token");
 const token = signup.session.access_token;
 const authHeaders = { Authorization: `Bearer ${token}` };
 
 const me = await request("/auth/me", { headers: authHeaders });
 assert(me?.user?.email === email, "Authenticated /me should return the created account");
+assert(me?.user?.role === "manager", "Only the trusted operator provisioned the manager");
+const editor = await request("/auth/signup", {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ name: "APTUS CI Admin", email: "ci-admin@aptus.test", password }),
+});
+assert(editor.user.role === "member", "New signup should remain a member");
+await request(`/profiles/${editor.user.id}/role`, {
+  method: "PATCH", headers: { ...authHeaders, "Content-Type": "application/json" },
+  body: JSON.stringify({ role: "admin" }),
+});
 
 const created = await request("/content", {
   method: "POST",

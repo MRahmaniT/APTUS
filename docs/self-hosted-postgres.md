@@ -40,7 +40,13 @@ The app container runs SQL migrations automatically before starting the API.
 
 ## First administrator
 
-On a completely new database, the first account created through the website becomes `manager`. Every later signup starts as `member`. Managers/admins can continue using the existing role-management UI/API.
+Every public signup starts as a `member`, including the first account on a new database. Existing account roles are preserved. For a new installation, create the intended operator account, confirm the operator controls its email and account credentials, then run the grant from a trusted server shell:
+
+```bash
+docker compose --env-file .env.server exec app node server/src/grant-manager.js operator@example.com
+```
+
+For a local installation, run `npm run grant-manager --prefix server -- operator@example.com` with the application’s PostgreSQL environment loaded. Sign out and back in after provisioning. Managers can assign roles; administrators can edit content and read site statistics but cannot grant roles.
 
 ## Database UI (Adminer)
 

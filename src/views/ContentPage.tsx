@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import ContentDetail from "../components/content/ContentDetail";
 import { useAppContext } from "../controllers/AppContext";
 import { contentUi } from "../config/contentUi";
@@ -8,6 +8,7 @@ import { ContentRepository } from "../repositories/ContentRepository";
 
 function DetailPage({ type }: { type: ContentType }) {
   const { slug = "" } = useParams();
+  const { hash } = useLocation();
   const { locale } = useAppContext();
   const ui = contentUi(locale);
   const [item, setItem] = useState<ContentItem | null>(null);
@@ -34,6 +35,12 @@ function DetailPage({ type }: { type: ContentType }) {
 
     return () => { active = false; };
   }, [type, slug, locale, ui.loadError, ui.notFoundBody]);
+
+  useEffect(() => {
+    if (!loading && slug === "facades" && /^#facade-\d{2}$/.test(hash)) {
+      document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
+    }
+  }, [loading, slug, hash]);
 
   if (loading) {
     return <div className="min-h-[55vh] grid place-items-center text-sm text-[#777]">{ui.loading}</div>;

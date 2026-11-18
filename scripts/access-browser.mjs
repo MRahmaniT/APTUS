@@ -6,7 +6,7 @@ const development = "http://127.0.0.1:3003";
 const password = "Aptus-CI-Password-123!";
 const editorPaths = ["/projects", "/projects/ci-private-project", "/work", "/about/statistics", "/applications/industrial"];
 const libraryPaths = ["/library/codes", "/library/books", "/library/glossary"];
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.APTUS_CHROME || undefined });
 const errors = [];
 const ready = async (page, base, path = "/") => {
   await page.goto(base + path, { waitUntil: "networkidle" });

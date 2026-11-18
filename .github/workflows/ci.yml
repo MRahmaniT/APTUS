@@ -98,9 +98,14 @@ jobs:
           DATABASE_URL: postgresql://aptus:aptus-ci-password@127.0.0.1:5432/aptus
 
       - name: Install browser QA
+        id: install-browser
         run: |
           npm install --no-save --package-lock=false playwright@1.56.1
-          npx playwright install --with-deps chromium
+          if command -v google-chrome >/dev/null; then
+            echo "APTUS_CHROME=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else
+            npx playwright install --only-shell chromium
+          fi
 
       - name: Checkout catalog visual reference
         uses: actions/checkout@v4
@@ -123,11 +128,14 @@ jobs:
         run: node scripts/november-browser.mjs
 
       - name: Start strict-mode development server
+        if: ${{ !cancelled() && steps.install-browser.outcome == 'success' }}
+        id: start-development
         run: |
           npm run dev -- --host 127.0.0.1 --port 3003 --strictPort > /tmp/aptus-vite.log 2>&1 &
           curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:3003/
 
       - name: Verify login and role access in development and production builds
+        if: ${{ !cancelled() && steps.start-development.outcome == 'success' }}
         run: node scripts/access-browser.mjs
 
       - name: Upload visual QA screenshots

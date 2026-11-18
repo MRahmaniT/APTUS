@@ -10,11 +10,27 @@ const publicRoutes = ["/types", ...slugs.map(slug => "/types/" + slug), "/compon
 const errors = [];
 
 await mkdir("qa-artifacts", { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.APTUS_CHROME || undefined });
 
 async function checkHome(page, name, width) {
   await page.goto(base, { waitUntil: "networkidle" });
-  assert.equal(await page.locator(".home-showcase .ag-panel").count(), 6);
+  const gallery = page.locator(".home-showcase .ag-panel");
+  assert.equal(await gallery.count(), 6);
+  if (name === "desktop") {
+    await gallery.first().focus();
+    await page.keyboard.press("ArrowLeft");
+    assert.equal(await gallery.nth(1).evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("Enter");
+    await page.waitForURL("**/types/" + slugs[1]);
+    await page.goto(base, { waitUntil: "networkidle" });
+    const facade = gallery.nth(3);
+    await facade.hover();
+    await facade.click();
+    await page.waitForURL("**/products/facades#facade-01");
+    await page.locator("#facade-01").waitFor();
+    await page.waitForFunction(() => document.getElementById("facade-01")?.getBoundingClientRect().top < innerHeight / 2);
+    await page.goto(base, { waitUntil: "networkidle" });
+  }
   assert.equal(await page.locator("main #about, main .applications-heading, .explore-dock .part-dock").count(), 0);
   assert.equal(await page.locator(".system-copy > p + a[download]").count(), 1);
   assert.equal(await page.locator(".part-selector button").count(), 9);
@@ -48,11 +64,19 @@ async function checkHome(page, name, width) {
   assert.equal(await page.locator(".footer-about img").count(), 0);
   assert.equal(await page.locator(".footer-map img").count(), 1);
 
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: "qa-artifacts/" + name + "-home.png", fullPage: true });
-  await page.locator(".footer-links a[href='/types']").click();
-  await page.waitForURL("**/types");
-  await page.waitForFunction(() => scrollY === 0);
+  const footerTypes = page.locator(".footer-links a[href='/types']");
+  await footerTypes.scrollIntoViewIfNeeded();
+  assert.ok(await page.evaluate(() => scrollY > innerHeight), name + " starts at the footer");
+  await footerTypes.click();
+  try {
+    await page.waitForURL("**/types", { timeout: 6000 });
+    await page.waitForFunction(() => scrollY === 0);
+  } catch (error) {
+    await page.screenshot({ path: "qa-artifacts/" + name + "-footer-navigation-failure.png" });
+    throw new Error(name + " footer navigation remained at " + page.url() + ": " + error.message);
+  }
 
   if (name === "desktop") {
     const menu = page.getByRole("button", { name: "درباره محصول", exact: true });

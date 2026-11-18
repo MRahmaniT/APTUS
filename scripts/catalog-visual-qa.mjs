@@ -3,7 +3,7 @@ import { chromium } from "playwright";
 import { mkdir, writeFile } from "node:fs/promises";
 
 await mkdir("qa-artifacts",{recursive:true});
-const browser = await chromium.launch();
+const browser = await chromium.launch({ executablePath: process.env.APTUS_CHROME || undefined });
 const comparisons=[];
 const differences=[];
 const groups=[
